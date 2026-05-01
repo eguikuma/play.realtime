@@ -3,7 +3,9 @@ import type { Response } from "express";
 import { MemberNotFound } from "../../../domain/room";
 
 /**
- * `MemberNotFound` を 404 の JSON 応答に変換する例外フィルタ
+ * `MemberNotFound` を 401 の JSON 応答に変換する例外フィルタ
+ * ルームは存在するが cookie のメンバーが該当ルームに居ないという認証文脈の食い違いを表し
+ * 404 に畳まないことで フロントは入室フォーム経路にフォールバックできる
  * クライアントはコード値で事象を機械的に判別できる
  */
 @Catch(MemberNotFound)
@@ -13,7 +15,7 @@ export class MemberNotFoundFilter implements ExceptionFilter {
    */
   catch(exception: MemberNotFound, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse<Response>();
-    response.status(404).json({
+    response.status(401).json({
       code: "MemberNotFound",
       message: exception.message,
       roomId: exception.roomId,
