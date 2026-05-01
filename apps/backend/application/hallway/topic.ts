@@ -1,35 +1,13 @@
-import {
-  HallwayServerMessages,
-  type HallwayTopic,
-  type MemberId,
-  type RoomId,
-} from "@play.realtime/contracts";
-import type { z } from "zod";
-import type { WsHub } from "../../infrastructure/transport/ws";
+import type { HallwayTopic, MemberId, RoomId } from "@play.realtime/contracts";
 
 /**
- * 廊下トークのトピック名を組み立てるヘルパ
- * メンバー単位で購読を区切るため `room:{roomId}:hallway:{memberId}` 形式にしており、ルーム閉鎖時に `PubSub.closeByPrefix` で `room:{roomId}:hallway:` をまとめて掃除できる
+ * 廊下トークの PubSub トピックを組み立てるヘルパ束
+ * 招待や通話の開始終了は在室メンバー全員に同じイベントを届けるため `Topic.room(roomId)` のルーム単位トピックを使い、通話メッセージは参加者 2 名のみに届けるため `Topic.message(roomId, memberId)` のメンバー単位トピックを使い分ける
  * 戻り値は `HallwayTopic` ブランド付きにして、他機能のトピックを受け取るメソッドに誤って渡せないようにする
+ * 全件 `room:{roomId}:` プレフィックス配下に揃え、`PubSub.closeByPrefix` でルーム閉鎖時にまとめて掃除できる
  */
-export const topic = (roomId: RoomId, memberId: MemberId): HallwayTopic =>
-  `room:${roomId}:hallway:${memberId}` as HallwayTopic;
-
-/**
- * 指定メンバー全員宛に並列で WebSocket 配信するヘルパ
- * 送信先メンバー数は通常 2 名の通話参加者、またはルーム人数分で、直列配信では遅延が積み重なるため `Promise.all` で捌く
- * `name` と `data` は `HallwayServerMessages` 辞書で型が束縛され、辞書にないキーや payload 不一致を呼び出し側で弾く
- */
-export const broadcastToMembers = async <
-  K extends Extract<keyof typeof HallwayServerMessages, string>,
->(
-  hub: WsHub,
-  roomId: RoomId,
-  memberIds: readonly MemberId[],
-  name: K,
-  data: z.infer<(typeof HallwayServerMessages)[K]>,
-): Promise<void> => {
-  await Promise.all(
-    memberIds.map((memberId) => hub.broadcast(topic(roomId, memberId), name, data)),
-  );
-};
+export const Topic = {
+  room: (roomId: RoomId): HallwayTopic => `room:${roomId}:hallway` as HallwayTopic,
+  message: (roomId: RoomId, memberId: MemberId): HallwayTopic =>
+    `room:${roomId}:hallway:message:${memberId}` as HallwayTopic,
+} as const;
