@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { RoomCleanupRegistrar } from "./application/room/cleanup-registrar";
 import { RoomLifecycleModule } from "./application/room/lifecycle.module";
+import { EnvironmentModule } from "./environment.module";
 import { IdModule } from "./infrastructure/id";
 import { PubSubModule } from "./infrastructure/pubsub";
 import { BgmsModule } from "./presentation/http/bgms.module";
@@ -17,6 +18,7 @@ import { HallwayModule } from "./presentation/ws/hallway.module";
  */
 @Module({
   imports: [
+    EnvironmentModule,
     IdModule,
     PubSubModule,
     RoomLifecycleModule,
