@@ -105,7 +105,7 @@ describe("WsHub", () => {
     expect(stop).toHaveBeenCalledOnce();
   });
 
-  it("ブロードキャストは封筒形式で PubSub に流す", async () => {
+  it("ブロードキャストは封筒形式で PubSub に配信する", async () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
 
@@ -117,7 +117,7 @@ describe("WsHub", () => {
     });
   });
 
-  it("トピックへの publish 後に購読中の接続へ封筒を転送する", async () => {
+  it("トピックへの配信後に購読中の接続へ封筒を転送する", async () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection();
@@ -128,7 +128,7 @@ describe("WsHub", () => {
     expect(connection.send).toHaveBeenCalledWith("Message", { text: "hi" });
   });
 
-  it("Pong 封筒の受信は onMessage に渡さずハートビートにのみ通知する", () => {
+  it("`Pong` 封筒の受信は `onMessage` に渡さずハートビートにのみ通知する", () => {
     const { pubsub } = buildPubSub();
     const onPong = vi.fn();
     const hub = new WsHub(
@@ -145,7 +145,7 @@ describe("WsHub", () => {
     expect(onMessage).not.toHaveBeenCalled();
   });
 
-  it("Pong 以外の封筒は onMessage に転送する", () => {
+  it("`Pong` 以外の封筒は `onMessage` に転送する", () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
     const { connection, fireMessage } = buildConnection();
@@ -160,7 +160,7 @@ describe("WsHub", () => {
     });
   });
 
-  it("不正な JSON や name を持たないメッセージは無視する", () => {
+  it("不正な JSON や `name` を持たないメッセージは無視する", () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
     const { connection, fireMessage } = buildConnection();
@@ -174,7 +174,7 @@ describe("WsHub", () => {
     expect(onMessage).not.toHaveBeenCalled();
   });
 
-  it("接続時の初期処理 callback を実行する", async () => {
+  it("接続時の初期処理コールバックを実行する", async () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection();
@@ -186,7 +186,7 @@ describe("WsHub", () => {
     expect(onAttach).toHaveBeenCalledWith(connection);
   });
 
-  it("起動時に member-leave トピックを購読する", () => {
+  it("起動時に `member-leave` トピックを購読する", () => {
     const { pubsub, subscribers } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
 
@@ -195,7 +195,7 @@ describe("WsHub", () => {
     expect(subscribers.get(GlobalTopic.MemberLeft)?.length).toBe(1);
   });
 
-  it("closeByMember は同一 roomId と memberId の接続だけを GoingAway で閉じる", () => {
+  it("`closeByMember` は同一 `roomId` と `memberId` の接続だけを `GoingAway` で閉じる", () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
     const target = buildConnection(testRoomId, testMemberId);
@@ -213,7 +213,7 @@ describe("WsHub", () => {
     expect(otherRoom.connection.close).not.toHaveBeenCalled();
   });
 
-  it("member-leave 配信を受けると同一メンバーの接続を閉じる", () => {
+  it("`member-leave` 配信を受けると同一メンバーの接続を閉じる", () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection(testRoomId, testMemberId);
@@ -225,7 +225,7 @@ describe("WsHub", () => {
     expect(connection.close).toHaveBeenCalledWith(WsCloseCode.GoingAway);
   });
 
-  it("member-leave のペイロードが不正なら何もしない", () => {
+  it("`member-leave` のペイロードが不正なら何もしない", () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection(testRoomId, testMemberId);

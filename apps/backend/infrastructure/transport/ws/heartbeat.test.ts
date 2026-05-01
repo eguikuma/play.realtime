@@ -19,7 +19,7 @@ describe("WsHeartbeat", () => {
     vi.useRealTimers();
   });
 
-  it("開始すると一定間隔で Ping 封筒を送る", () => {
+  it("開始すると一定間隔で `Ping` 封筒を送る", () => {
     const heartbeat = new WsHeartbeat();
     const connection = buildConnection();
 
@@ -32,7 +32,7 @@ describe("WsHeartbeat", () => {
     expect(connection.send).toHaveBeenCalledWith("Ping", {});
   });
 
-  it("onPong が呼ばれていなければ pong タイムアウトでソケットを閉じる", () => {
+  it("`onPong` が呼ばれていなければ `Pong` タイムアウトでソケットを閉じる", () => {
     const heartbeat = new WsHeartbeat();
     const connection = buildConnection();
 
@@ -43,7 +43,7 @@ describe("WsHeartbeat", () => {
     expect(connection.close).toHaveBeenCalledWith(WsCloseCode.PongTimeout);
   });
 
-  it("onPong を呼ぶとタイムアウトが延びてソケットを閉じない", () => {
+  it("`onPong` を呼ぶとタイムアウトが延びてソケットを閉じない", () => {
     const heartbeat = new WsHeartbeat();
     const connection = buildConnection();
 
@@ -55,7 +55,7 @@ describe("WsHeartbeat", () => {
     expect(connection.close).not.toHaveBeenCalled();
   });
 
-  it("stop を呼ぶと以後 Ping を送らない", () => {
+  it("停止コールバックを呼ぶと以後 `Ping` を送らない", () => {
     const heartbeat = new WsHeartbeat();
     const connection = buildConnection();
 
