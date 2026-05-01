@@ -8,13 +8,15 @@ import type { MemberId, RoomId } from "@play.realtime/contracts";
 export type HallwayConnectionCounter = {
   /**
    * 接続を 1 本追加し、そのメンバー初の接続かを `isFirst` で返す
+   * Redis 実装側の `HINCRBY` は本質的に非同期のため、戻り値は `Promise` で受け取る
    */
-  attach: (roomId: RoomId, memberId: MemberId) => { isFirst: boolean };
+  attach: (roomId: RoomId, memberId: MemberId) => Promise<{ isFirst: boolean }>;
   /**
    * 接続を 1 本減らし、そのメンバー最後の接続が切れたかを `isLast` で返す
    * `isLast` が `true` のときだけ呼び出し側は `CleanupHallwayOnDisconnect` を実行して、招待と通話の掃除を走らせる
+   * Redis 実装側の `HINCRBY` は本質的に非同期のため、戻り値は `Promise` で受け取る
    */
-  detach: (roomId: RoomId, memberId: MemberId) => { isLast: boolean };
+  detach: (roomId: RoomId, memberId: MemberId) => Promise<{ isLast: boolean }>;
 };
 
 /**

@@ -1,6 +1,8 @@
 import { Global, Module } from "@nestjs/common";
 import { HallwayConnectionCounter } from "../../application/hallway/connection-counter";
+import { Environment } from "../../environment";
 import { InMemoryHallwayConnectionCounter } from "./in-memory/hallway-connection-counter";
+import { RedisHallwayConnectionCounter } from "./redis/hallway-connection-counter";
 
 /**
  * 接続数カウンタ系 port に driver 別実装を紐付ける Global モジュール
@@ -12,7 +14,14 @@ import { InMemoryHallwayConnectionCounter } from "./in-memory/hallway-connection
   providers: [
     {
       provide: HallwayConnectionCounter,
-      useFactory: () => new InMemoryHallwayConnectionCounter(),
+      useFactory: (environment: Environment) => {
+        if (environment.STORAGE_DRIVER === "redis") {
+          return new RedisHallwayConnectionCounter(environment.REDIS_URL as string);
+        }
+
+        return new InMemoryHallwayConnectionCounter();
+      },
+      inject: [Environment],
     },
   ],
   exports: [HallwayConnectionCounter],

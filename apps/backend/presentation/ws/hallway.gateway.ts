@@ -166,7 +166,7 @@ export class HallwayGateway implements OnModuleInit {
     this.hub.attach(connection, {
       topics: [Topic.room(roomId), Topic.message(roomId, memberId)],
       onAttach: async (attached) => {
-        this.counter.attach(roomId, memberId);
+        await this.counter.attach(roomId, memberId);
         attached.send("Welcome", { connectionId });
         const snapshot = await this.getSnapshot.execute({ roomId });
         attached.send("Snapshot", snapshot);
@@ -178,13 +178,17 @@ export class HallwayGateway implements OnModuleInit {
 
     connection.onClose(() => {
       this.presence.deregister(roomId);
-      const { isLast } = this.counter.detach(roomId, memberId);
-      if (!isLast) {
-        return;
-      }
-      void this.cleanupOnDisconnect.execute({ roomId, memberId }).catch((error: unknown) => {
-        this.logger.warn(`cleanup-on-disconnect failed ${String(error)}`);
-      });
+      void this.counter
+        .detach(roomId, memberId)
+        .then(({ isLast }) => {
+          if (!isLast) {
+            return;
+          }
+          return this.cleanupOnDisconnect.execute({ roomId, memberId });
+        })
+        .catch((error: unknown) => {
+          this.logger.warn(`cleanup-on-disconnect failed ${String(error)}`);
+        });
     });
   }
 
