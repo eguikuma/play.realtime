@@ -4,6 +4,11 @@ import { HallwayRepository } from "../../domain/hallway";
 import { HallwayBroadcaster } from "./broadcaster";
 import { HallwayInvitationTimers } from "./invitation-timers";
 
+/**
+ * WebSocket の最終接続が切れたメンバーに紐づく招待と通話を掃除する usecase
+ * 発信中招待は `cancelled`、着信中招待は `declined`、通話は `disconnect` として `InvitationEnded` / `CallEnded` を配信する
+ * 切断イベントは能動的な操作と区別できないため、発信側と受信側でそれぞれ自然な終了理由を当てる
+ */
 @Injectable()
 export class HandleHallwayDisconnect {
   constructor(

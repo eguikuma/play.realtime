@@ -7,8 +7,15 @@ import { HallwayBroadcaster } from "./broadcaster";
 import { ExpireHallwayInvitation } from "./expire-invitation.usecase";
 import { HallwayInvitationTimers } from "./invitation-timers";
 
+/**
+ * 招待の有効時間、10 秒以内に相手が応答しなければ自動で `expired` として終わらせる
+ */
 const INVITATION_TTL_MS = 10_000;
 
+/**
+ * 廊下トークの招待を発行する usecase
+ * 取り込み中判定と Vibe の在室判定を並列で取得し、`canInvite` のガードを通ってから永続化と SSE 配信を走らせる
+ */
 @Injectable()
 export class InviteHallway {
   constructor(
@@ -20,6 +27,10 @@ export class InviteHallway {
     private readonly expirer: ExpireHallwayInvitation,
   ) {}
 
+  /**
+   * 招待者 / 被招待者の取り込み状況と被招待者の Vibe を並列取得し、`canInvite` で不成立ケースを弾く
+   * 招待を保存した後に 10 秒の失効タイマーを登録し、`Invited` をルーム全体へ配信する
+   */
   async execute(input: {
     roomId: RoomId;
     inviterId: MemberId;
@@ -58,6 +69,9 @@ export class InviteHallway {
     return invitation;
   }
 
+  /**
+   * 対象メンバーが発信中招待 / 着信中招待 / 通話中のいずれかに該当すれば取り込み中と判定する
+   */
   private async isBusy(memberId: MemberId): Promise<boolean> {
     const [outgoing, incoming, call] = await Promise.all([
       this.hallway.findOutgoingInvitation(memberId),
