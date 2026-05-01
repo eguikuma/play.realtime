@@ -1,0 +1,27 @@
+{
+  "name": "@play.realtime/benches",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "bench": "playwright test",
+    "bench:room-3": "playwright test scenarios/room-3.spec.ts",
+    "bench:room-10": "playwright test scenarios/room-10.spec.ts",
+    "report": "tsx report.ts",
+    "snapshot:baseline": "tsx variants/baseline.ts",
+    "verify": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.59.1",
+    "ioredis": "^5.10.1"
+  },
+  "devDependencies": {
+    "@play.realtime/tsconfig": "workspace:*",
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "6.0.3"
+  }
+}
