@@ -4,6 +4,10 @@ import { PubSub } from "../ports/pubsub";
 import { RoomLifecycle } from "./lifecycle";
 import { RoomPresence } from "./presence";
 
+/**
+ * `RoomPresence` と `RoomLifecycle` をアプリ全体へ提供する Global モジュール
+ * `useFactory` で生成し、`ROOM_GRACE_MS` が既定値と異なる場合のみ `overrideGracePeriod` で差し替える
+ */
 @Global()
 @Module({
   providers: [

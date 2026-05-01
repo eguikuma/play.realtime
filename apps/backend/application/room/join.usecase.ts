@@ -3,6 +3,10 @@ import { Member, type MemberId, type Room, type RoomId } from "@play.realtime/co
 import { join, RoomNotFound, RoomRepository } from "../../domain/room";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 
+/**
+ * 既存ルームへメンバーを追加する usecase
+ * ブラウザリロード直後の再入室では既存 `MemberId` をそのまま返して冪等にし、新規参加者の場合のみ `Member` を採番して `join` する
+ */
 @Injectable()
 export class JoinRoom {
   constructor(
@@ -10,6 +14,11 @@ export class JoinRoom {
     private readonly ids: NanoidIdGenerator,
   ) {}
 
+  /**
+   * `roomId` の存在を確認し、`existingMemberId` が既に登録済みなら新規採番せずに同じメンバーを返す
+   * 未登録なら新しい `Member` を生成して `join` し、更新後のルームを保存する
+   * ルームが見つからなければ `RoomNotFound` を投げる
+   */
   async execute(input: {
     roomId: RoomId;
     name: string;

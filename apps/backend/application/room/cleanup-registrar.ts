@@ -7,6 +7,10 @@ import { RoomRepository } from "../../domain/room";
 import { VibeRepository } from "../../domain/vibe";
 import { RoomLifecycle } from "./lifecycle";
 
+/**
+ * 起動時に各リポジトリの `remove` を `RoomLifecycle` のクリーンアップへ登録する
+ * 登録順がそのまま閉鎖時の削除順になるため、周辺データ (vibe / bgm / murmur / hallway) を先に消してから最後にルーム本体を消す並びにしている
+ */
 @Injectable()
 export class RoomCleanupRegistrar implements OnModuleInit {
   constructor(
