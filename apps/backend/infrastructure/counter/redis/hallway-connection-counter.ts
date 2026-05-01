@@ -3,13 +3,13 @@ import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { Redis, type RedisOptions } from "ioredis";
 import type { HallwayConnectionCounter } from "../../../application/hallway/connection-counter";
 
-const PREFIX = "hallway:wsconns:";
+const PREFIX = "hallway:connections:";
 
 const keyOf = (roomId: RoomId) => `${PREFIX}${roomId}`;
 
 /**
  * `HallwayConnectionCounter` port の Redis 実装
- * `HINCRBY hallway:wsconns:{roomId} {memberId} ±1` の戻り値でメンバー単位の `isFirst` / `isLast` を判定し、複数 backend にまたがる接続を 1 つのカウンタに集約する
+ * `HINCRBY hallway:connections:{roomId} {memberId} ±1` の戻り値でメンバー単位の `isFirst` / `isLast` を判定し、複数 backend にまたがる接続を 1 つのカウンタに集約する
  * `detach` で 0 になった field は `HDEL` で即座に掃除し、in-memory 実装の `delete` 後に `next <= 0` で `isLast=true` を返す挙動と semantics 互換にする
  * 異常な double detach で戻り値が負になった場合は warn ログを残しつつ field を `HDEL` で完全削除して、整合を回復する
  */
