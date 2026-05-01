@@ -14,6 +14,7 @@
     "snapshot:baseline": "tsx variants/baseline.ts",
     "snapshot:throttle": "tsx variants/throttle.ts",
     "snapshot:no-hexists": "tsx variants/no-hexists.ts",
+    "snapshot:room-cache": "tsx variants/room-cache.ts",
     "verify": "tsc --noEmit"
   },
   "dependencies": {
