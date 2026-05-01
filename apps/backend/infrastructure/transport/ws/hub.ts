@@ -41,14 +41,15 @@ export class WsHub implements OnModuleInit {
   }
 
   /**
-   * 接続にトピック購読と Ping Pong を張り、クライアント発のメッセージを `onMessage` へ受け渡す
+   * 接続に複数トピック購読と Ping Pong を張り、クライアント発のメッセージを `onMessage` へ受け渡す
+   * `topics` で渡したトピック全件に対して個別に subscription を持ち、いずれかのトピック宛配信を購読中の接続に転送する
    * `Pong` 種別のメッセージは heartbeat 側が吸収して、usecase 側 `onMessage` には届けない
-   * 切断時は購読解除と heartbeat 停止、自インスタンスの追跡集合からの除去を自動で行う
+   * 切断時は全 subscription の解除と heartbeat 停止、自インスタンスの追跡集合からの除去を自動で行う
    */
   attach(
     connection: WsConnection,
     options: {
-      topic: Topic;
+      topics: readonly Topic[];
       onAttach?: (connection: WsConnection) => void | Promise<void>;
       onMessage?: (connection: WsConnection, envelope: WsEnvelope) => void | Promise<void>;
     },
@@ -56,9 +57,11 @@ export class WsHub implements OnModuleInit {
     this.connections.add(connection);
     const { stop: stopHeartbeat, onPong } = this.heartbeat.start(connection);
 
-    const subscription = this.pubsub.subscribe<WsEnvelope>(options.topic, (envelope) => {
-      connection.send(envelope.name, envelope.data);
-    });
+    const subscriptions = options.topics.map((each) =>
+      this.pubsub.subscribe<WsEnvelope>(each, (envelope) => {
+        connection.send(envelope.name, envelope.data);
+      }),
+    );
 
     connection.onMessage((raw) => {
       const envelope = parse(raw);
@@ -75,7 +78,9 @@ export class WsHub implements OnModuleInit {
 
     connection.onClose(() => {
       this.connections.delete(connection);
-      subscription.unsubscribe();
+      for (const subscription of subscriptions) {
+        subscription.unsubscribe();
+      }
       stopHeartbeat();
     });
 
