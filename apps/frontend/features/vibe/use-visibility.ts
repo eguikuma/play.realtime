@@ -1,24 +1,25 @@
 "use client";
 
-import type { VibeStatus } from "@play.realtime/contracts";
+import type { ConnectionId, VibeStatus } from "@play.realtime/contracts";
 import { useEffect, useRef } from "react";
 
 const visibleDebounceMs = 8_000;
 
 /**
  * `document.visibilityState` をもとに `present` と `focused` の送信を自動化するフック
- * `enabled` が `false` の間は購読しないため、入室前や `connectionId` 未確定の状態で空送信しない
+ * `connectionId` が `null` の間は購読しないため、入室前や `Welcome` 未着の状態で空送信しない
  * 同じ状態の連続送信は `lastSent` で抑止し、サーバ側の集約ロジックに無駄な `Updated` を流さない
  * 初回マウントは `visible` (= `present`) のときだけ `lastSent` の同期に留めて送信を抑制する（サーバ側で SSE 接続成立時に `notifyJoined` が `present` を必ず登録しているため再送が無駄な `Updated` を増やすため）
  * `hidden` (= `focused`) で開かれた稀ケースは初回送信して状態を同期する
  * 以降の `visibilitychange` のうち `hidden` 方向はモバイル系の BFCache 入りで JS が即凍結される経路を踏むため、デバウンスせず `keepalive: true` で即時送信して `pagehide` 前にネットワーク層へ渡し切る
  * `visible` 方向は復帰直後の連打を抑える Upstash 削減目的で `visibleDebounceMs` のトレーリングデバウンスで丸めて短時間のタブ往復を 1 通信に吸収する
+ * `connectionId` が変化したときは SSE が再接続して接続単位の Vibe が `present` で振り出し直されたとみなし、依存配列で effect を作り直して `lastSent` を再同期する
  */
 export const useVisibility = ({
-  enabled,
+  connectionId,
   onChange,
 }: {
-  enabled: boolean;
+  connectionId: ConnectionId | null;
   onChange: (status: VibeStatus, options?: { keepalive?: boolean }) => void;
 }): void => {
   const latestOnChange = useRef(onChange);
@@ -28,7 +29,7 @@ export const useVisibility = ({
   const pendingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!enabled) {
+    if (!connectionId) {
       lastSent.current = null;
 
       if (pendingTimer.current !== null) {
@@ -94,5 +95,5 @@ export const useVisibility = ({
         pendingTimer.current = null;
       }
     };
-  }, [enabled]);
+  }, [connectionId]);
 };

@@ -42,7 +42,7 @@ export const useRow = ({ roomId, busyMemberIds, callingMemberIds, invite }: Row)
 
   useStream(me ? roomId : null);
   const change = useChange(roomId);
-  useVisibility({ enabled: me !== null && connectionId !== null, onChange: change });
+  useVisibility({ connectionId: me !== null ? connectionId : null, onChange: change });
 
   const selfBusy = me !== null && busyMemberIds.has(me.id);
 
