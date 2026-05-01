@@ -4,6 +4,10 @@ import { MessageCircleHeart } from "lucide-react";
 
 import { cn } from "@/libraries/classname";
 
+/**
+ * 1 人分のアバターが取りうる状態
+ * `self` は自分のアバター、`present` は在室中で招待できる相手、`focused` はタブ非表示などで集中中の相手、`calling` は他の誰かと通話中の相手を示す
+ */
 export type AvatarState = "present" | "focused" | "calling" | "self";
 
 const statusLabel: Record<AvatarState, string> = {
@@ -21,12 +25,21 @@ const statusSr: Record<AvatarState, string> = {
 };
 
 type Avatar = {
+  /** メンバーの表示名、頭文字アバターと名前ラベルに使う */
   name: string;
+  /** 現在の状態、ring / breath / opacity のスタイル切り替えとラベル文言に影響する */
   state: AvatarState;
+  /** 招待を受け付けない状態のとき true、自分 / 相手の取り込み中 / 通話中などで立てる */
   disabled: boolean;
+  /** 招待可能なときにコールバック、招待できない場合は null、null が来たときは UI 側でボタンを出さない */
   onInvite: (() => void) | null;
 };
 
+/**
+ * Vibe 行に並ぶ 1 人分のアバター
+ * 状態に応じて周囲の光 (ring) と頭文字円の呼吸アニメーション、ラベル色、話しかけるボタンの見え方を切り替える
+ * 招待可能なときのみ要素全体を `<button>` として扱い、招待不可のときは `<div>` に退避させることでフォーカス可能な操作だけを押せる状態にする
+ */
 export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
   const label = `${name}、${statusSr[state]}`;
   const ring =

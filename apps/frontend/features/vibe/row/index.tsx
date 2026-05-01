@@ -6,7 +6,16 @@ import { Avatar } from "../avatar";
 import { Heading } from "./heading";
 import { useRow } from "./use-row";
 
-export const VibeRow = ({ roomId }: { roomId: RoomId }) => {
+type VibeRow = {
+  /** 表示対象のルーム ID、SSE 購読と可視状態送信の宛先に使う */
+  roomId: RoomId;
+};
+
+/**
+ * ルーム画面の上部に置くメンバー在籍ビュー
+ * Vibe 購読で集まった各メンバーの状態をアバター行として並べ、招待可能な相手には話しかけるボタンを表示する
+ */
+export const VibeRow = ({ roomId }: VibeRow) => {
   const row = useRow(roomId);
 
   return (

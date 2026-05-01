@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * Vibe 行の見出し
+ * 見出し文と案内テキストを左に寄せ、右側に細い罫線を引いて区切りを示す
+ */
 export const Heading = () => (
   <div className="flex items-center justify-between gap-3">
     <div className="flex items-center gap-2">
