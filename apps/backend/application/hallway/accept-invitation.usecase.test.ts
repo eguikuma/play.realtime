@@ -65,7 +65,7 @@ describe("AcceptHallwayInvitation", () => {
     vi.useRealTimers();
   });
 
-  it("invitee が受諾すると InvitationEnded accepted → CallStarted の順でルーム全員に配信する", async () => {
+  it("招待先が受諾すると InvitationEnded `accepted` → CallStarted の順でルーム全員に配信する", async () => {
     const hallway = buildHallway();
     const broadcaster = buildBroadcaster();
     const cancel = vi.fn();
@@ -95,7 +95,7 @@ describe("AcceptHallwayInvitation", () => {
     expect(broadcaster.callStarted).toHaveBeenCalledWith(roomId, { call });
   });
 
-  it("invitee 以外が受諾しようとすると InvitationNotFound を投げる", async () => {
+  it("招待先ではないメンバーが受諾しようとすると InvitationNotFound を投げる", async () => {
     const usecase = new AcceptHallwayInvitation(
       buildHallway(),
       buildBroadcaster(),

@@ -45,7 +45,7 @@ const buildBroadcaster = (
   }) as unknown as HallwayBroadcaster;
 
 describe("LeaveHallwayCall", () => {
-  it("参加者が明示的に退出すると通話を削除し CallEnded explicit をルーム全員に配信する", async () => {
+  it("参加者が明示的に退出すると通話を削除し CallEnded `explicit` をルーム全員に配信する", async () => {
     const hallway = buildHallway();
     const broadcaster = buildBroadcaster();
     const usecase = new LeaveHallwayCall(hallway, broadcaster);

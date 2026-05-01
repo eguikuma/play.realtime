@@ -43,7 +43,7 @@ const buildBroadcaster = (
   }) as unknown as HallwayBroadcaster;
 
 describe("ExpireHallwayInvitation", () => {
-  it("招待を削除し InvitationEnded expired をルーム全員に配信する", async () => {
+  it("招待を削除し InvitationEnded `expired` をルーム全員に配信する", async () => {
     const hallway = buildHallway();
     const broadcaster = buildBroadcaster();
     const usecase = new ExpireHallwayInvitation(hallway, broadcaster);

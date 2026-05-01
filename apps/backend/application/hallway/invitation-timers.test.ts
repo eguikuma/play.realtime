@@ -11,7 +11,7 @@ describe("HallwayInvitationTimers", () => {
     vi.useRealTimers();
   });
 
-  it("登録した遅延時間の経過後に callback が呼ばれる", () => {
+  it("登録した遅延時間の経過後にコールバックが呼ばれる", () => {
     const timers = new HallwayInvitationTimers();
     const callback = vi.fn();
 
@@ -21,7 +21,7 @@ describe("HallwayInvitationTimers", () => {
     expect(callback).toHaveBeenCalledOnce();
   });
 
-  it("キャンセルすると callback は呼ばれない", () => {
+  it("取り消すとコールバックは呼ばれない", () => {
     const timers = new HallwayInvitationTimers();
     const callback = vi.fn();
 
@@ -32,7 +32,7 @@ describe("HallwayInvitationTimers", () => {
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it("存在しない id をキャンセルしても無視する", () => {
+  it("存在しない ID を取り消しても無視する", () => {
     const timers = new HallwayInvitationTimers();
 
     expect(() => timers.cancel("absent" as InvitationId)).not.toThrow();

@@ -48,7 +48,7 @@ const buildTimers = (cancel = vi.fn()): HallwayInvitationTimers =>
   ({ cancel, register: vi.fn() }) as unknown as HallwayInvitationTimers;
 
 describe("CleanupHallwayOnDisconnect", () => {
-  it("送信中の招待があれば InvitationEnded cancelled をルーム全員に配信する", async () => {
+  it("発信中の招待があれば InvitationEnded `cancelled` をルーム全員に配信する", async () => {
     const outgoing: Invitation = {
       id: "out-1" as InvitationId,
       roomId,
@@ -71,7 +71,7 @@ describe("CleanupHallwayOnDisconnect", () => {
     });
   });
 
-  it("受信中の招待があれば InvitationEnded declined をルーム全員に配信する", async () => {
+  it("着信中の招待があれば InvitationEnded `declined` をルーム全員に配信する", async () => {
     const incoming: Invitation = {
       id: "in-1" as InvitationId,
       roomId,
@@ -91,7 +91,7 @@ describe("CleanupHallwayOnDisconnect", () => {
     });
   });
 
-  it("進行中の通話があれば CallEnded disconnect をルーム全員に配信する", async () => {
+  it("進行中の通話があれば CallEnded `disconnect` をルーム全員に配信する", async () => {
     const call: Call = {
       id: "call-1" as CallId,
       roomId,

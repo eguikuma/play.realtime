@@ -57,7 +57,7 @@ describe("GetHallwaySnapshot", () => {
     expect(snapshot).toEqual({ invitations: [invitation], calls: [call] });
   });
 
-  it("何もないときは invitations と calls を空配列で返す", async () => {
+  it("何もないときは招待リストと通話リストを空配列で返す", async () => {
     const usecase = new GetHallwaySnapshot(buildHallway());
 
     expect(await usecase.execute({ roomId })).toEqual({ invitations: [], calls: [] });

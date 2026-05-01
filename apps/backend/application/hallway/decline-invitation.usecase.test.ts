@@ -50,7 +50,7 @@ const buildTimers = (cancel = vi.fn()): HallwayInvitationTimers =>
   ({ cancel, register: vi.fn() }) as unknown as HallwayInvitationTimers;
 
 describe("DeclineHallwayInvitation", () => {
-  it("invitee が拒否すると招待を削除し InvitationEnded declined をルーム全員に配信する", async () => {
+  it("招待先が拒否すると招待を削除し InvitationEnded `declined` をルーム全員に配信する", async () => {
     const hallway = buildHallway();
     const broadcaster = buildBroadcaster();
     const cancel = vi.fn();
@@ -66,7 +66,7 @@ describe("DeclineHallwayInvitation", () => {
     });
   });
 
-  it("invitee 以外が拒否しようとすると InvitationNotFound を投げる", async () => {
+  it("招待先ではないメンバーが拒否しようとすると InvitationNotFound を投げる", async () => {
     const usecase = new DeclineHallwayInvitation(buildHallway(), buildBroadcaster(), buildTimers());
 
     await expect(

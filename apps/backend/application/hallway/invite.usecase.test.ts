@@ -83,7 +83,7 @@ describe("InviteHallway", () => {
     vi.useRealTimers();
   });
 
-  it("present かつ busy でない相手には招待を生成しルーム全員に Invited を配信する", async () => {
+  it("`present` かつ取り込み中ではない相手には招待を生成しルーム全員に Invited を配信する", async () => {
     const hallway = buildHallway();
     const broadcaster = buildBroadcaster();
     const usecase = new InviteHallway(
@@ -139,7 +139,7 @@ describe("InviteHallway", () => {
     ).rejects.toBeInstanceOf(SelfInviteNotAllowed);
   });
 
-  it("inviter が他の招待を持つときは InviterBusy を投げる", async () => {
+  it("招待元が他の招待を持つときは InviterBusy を投げる", async () => {
     const existing: Invitation = {
       id: "existing" as InvitationId,
       roomId,
@@ -162,7 +162,7 @@ describe("InviteHallway", () => {
     );
   });
 
-  it("invitee が present でないときは InviteeUnavailable を投げる", async () => {
+  it("招待先が `present` でないときは InviteeUnavailable を投げる", async () => {
     const vibes = buildVibes({ get: vi.fn(async () => "focused" as VibeStatus) });
     const usecase = new InviteHallway(
       buildHallway(),
