@@ -44,6 +44,10 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
     return { isFirst: sizeAfter === 1, aggregated };
   }
 
+  /**
+   * `HSET` 戻り値で「既存 field の更新」と「新規 field の作成」を見分け、剥がれた接続への update を補正 `HDEL` で打ち消すことで `HEXISTS` 単発ガードを撤廃する
+   * 1 connection は 1 client に固定される仕様で同 `connectionId` への並列 update が発生しないため、`HSET` と補正 `HDEL` の間に他クライアントの `snapshot` が走る数 ms の窓は実害ゼロとみなす
+   */
   async update(
     roomId: RoomId,
     memberId: MemberId,
@@ -51,17 +55,13 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
     status: VibeStatus,
   ): Promise<{ updated: boolean; aggregated: VibeStatus | null }> {
     const memberKey = this.memberKey(roomId, memberId);
-    const exists = await this.client.hexists(memberKey, connectionId);
-    if (exists === 0) {
+    const created = await this.client.hset(memberKey, connectionId, JSON.stringify(status));
+    if (created === 1) {
+      await this.client.hdel(memberKey, connectionId);
       return { updated: false, aggregated: null };
     }
 
-    const results = await this.client
-      .multi()
-      .hset(memberKey, connectionId, JSON.stringify(status))
-      .hvals(memberKey)
-      .exec();
-    const rawValues = this.coerceArray(results, 1);
+    const rawValues = await this.client.hvals(memberKey);
     const aggregated = aggregate(rawValues.map((raw) => VibeStatus.parse(JSON.parse(raw))));
     return { updated: true, aggregated };
   }
