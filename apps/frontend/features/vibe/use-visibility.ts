@@ -15,8 +15,8 @@ export const useVisibility = ({
   enabled: boolean;
   onChange: (status: VibeStatus) => void;
 }): void => {
-  const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
+  const latestOnChange = useRef(onChange);
+  latestOnChange.current = onChange;
 
   const lastSent = useRef<VibeStatus | null>(null);
 
@@ -31,7 +31,7 @@ export const useVisibility = ({
         return;
       }
       lastSent.current = next;
-      onChangeRef.current(next);
+      latestOnChange.current(next);
     };
 
     const handle = () => {

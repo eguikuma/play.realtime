@@ -23,8 +23,8 @@ export const useWs = <TMap extends WsEvents>({
   send: <TData>(name: string, data: TData) => void;
 } => {
   const [state, setState] = useState<WsState>(WsState.Closed);
-  const latest = useRef(onEvent);
-  latest.current = onEvent;
+  const latestOnEvent = useRef(onEvent);
+  latestOnEvent.current = onEvent;
   const connection = useRef<WsConnection | null>(null);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export const useWs = <TMap extends WsEvents>({
       url,
       events,
       onEvent: (name, payload) => {
-        latest.current(name, payload);
+        latestOnEvent.current(name, payload);
       },
       onStateChange: setState,
     });

@@ -19,8 +19,8 @@ export const useSse = <TMap extends SseEvents>({
   onEvent: <K extends keyof TMap>(name: K, payload: z.infer<TMap[K]>) => void;
 }): { state: SseState } => {
   const [state, setState] = useState<SseState>(SseState.Closed);
-  const latest = useRef(onEvent);
-  latest.current = onEvent;
+  const latestOnEvent = useRef(onEvent);
+  latestOnEvent.current = onEvent;
 
   useEffect(() => {
     if (!url) {
@@ -31,7 +31,7 @@ export const useSse = <TMap extends SseEvents>({
     const connection = client.connect({
       url,
       events,
-      onEvent: (name, payload) => latest.current(name, payload),
+      onEvent: (name, payload) => latestOnEvent.current(name, payload),
       onStateChange: setState,
     });
 
