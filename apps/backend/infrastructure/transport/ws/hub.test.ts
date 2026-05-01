@@ -198,17 +198,17 @@ describe("WsHub", () => {
   it("`closeByMember` は同一 `roomId` と `memberId` の接続だけを `GoingAway` で閉じる", () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
-    const target = buildConnection(testRoomId, testMemberId);
+    const member = buildConnection(testRoomId, testMemberId);
     const otherMember = buildConnection(testRoomId, "another-member" as MemberId);
     const otherRoom = buildConnection("another-room" as RoomId, testMemberId);
 
-    hub.attach(target.connection, { topic: testTopic });
+    hub.attach(member.connection, { topic: testTopic });
     hub.attach(otherMember.connection, { topic: testTopic });
     hub.attach(otherRoom.connection, { topic: testTopic });
 
     hub.closeByMember(testRoomId, testMemberId);
 
-    expect(target.connection.close).toHaveBeenCalledWith(WsCloseCode.GoingAway);
+    expect(member.connection.close).toHaveBeenCalledWith(WsCloseCode.GoingAway);
     expect(otherMember.connection.close).not.toHaveBeenCalled();
     expect(otherRoom.connection.close).not.toHaveBeenCalled();
   });

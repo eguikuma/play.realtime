@@ -134,17 +134,17 @@ describe("SseHub", () => {
   it("`closeByMember` は同一 `roomId` と `memberId` の接続だけを閉じる", () => {
     const { pubsub } = buildPubSub();
     const hub = new SseHub(pubsub, buildHeartbeat());
-    const target = buildConnection(testRoomId, testMemberId);
+    const member = buildConnection(testRoomId, testMemberId);
     const otherMember = buildConnection(testRoomId, "another-member" as MemberId);
     const otherRoom = buildConnection("another-room" as RoomId, testMemberId);
 
-    hub.attach(target.connection, { topic: testTopic });
+    hub.attach(member.connection, { topic: testTopic });
     hub.attach(otherMember.connection, { topic: testTopic });
     hub.attach(otherRoom.connection, { topic: testTopic });
 
     hub.closeByMember(testRoomId, testMemberId);
 
-    expect(target.connection.close).toHaveBeenCalledOnce();
+    expect(member.connection.close).toHaveBeenCalledOnce();
     expect(otherMember.connection.close).not.toHaveBeenCalled();
     expect(otherRoom.connection.close).not.toHaveBeenCalled();
   });
