@@ -36,7 +36,7 @@ export class VibePresenceGrace {
 
   /**
    * 指定メンバーの稼働中タイマーを取り消す、取り消せたかどうかを `boolean` で返す
-   * 戻り値が `true` のとき、呼び出し側は「再入室だったので `Joined` ではなく `Update` を配信する」判断に使える
+   * 戻り値が `true` のとき、呼び出し側は「再入室だったので `Joined` ではなく `Updated` を配信する」判断に使える
    */
   cancel(roomId: RoomId, memberId: MemberId): boolean {
     const key = keyOf(roomId, memberId);

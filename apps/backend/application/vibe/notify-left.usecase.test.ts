@@ -47,7 +47,7 @@ describe("NotifyVibeLeft", () => {
     });
   });
 
-  it("他の接続が残るときは集約結果を Update として即時配信し grace には積まない", async () => {
+  it("他の接続が残るときは集約結果を Updated として即時配信し grace には積まない", async () => {
     const vibes = buildVibes({
       delete: vi.fn(async () => ({ isLast: false, aggregated: "focused" as VibeStatus })),
     });
@@ -57,7 +57,7 @@ describe("NotifyVibeLeft", () => {
 
     await usecase.execute({ roomId, memberId, connectionId });
 
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Updated", {
       memberId,
       status: "focused",
     });

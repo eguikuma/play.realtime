@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 /**
  * `document.visibilityState` をもとに `present` と `focused` の送信を自動化するフック
  * `enabled` が `false` の間は購読しないため、入室前や `connectionId` 未確定の状態で空送信しない
- * 同じ状態の連続送信は `lastSent` で抑止し、サーバ側の集約ロジックに無駄な `Update` を流さない
+ * 同じ状態の連続送信は `lastSent` で抑止し、サーバ側の集約ロジックに無駄な `Updated` を流さない
  */
 export const useVisibility = ({
   enabled,

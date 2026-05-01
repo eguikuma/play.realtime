@@ -73,16 +73,16 @@ export const VibeLeft = z.object({
 export type VibeLeft = z.infer<typeof VibeLeft>;
 
 /**
- * 既存メンバーの在室状態が変化したことを通知する `Update` イベント
+ * 既存メンバーの在室状態が変化したことを通知する `Updated` イベント
  * タブの可視状態変化や明示的な状態切替のたびに、集約後の値で 1 回だけ配信する
  */
-export const VibeUpdate = z.object({
+export const VibeUpdated = z.object({
   /** 状態が変化したメンバーの `MemberId` */
   memberId: MemberId,
   /** 集約後の新しい在室状態 */
   status: VibeStatus,
 });
-export type VibeUpdate = z.infer<typeof VibeUpdate>;
+export type VibeUpdated = z.infer<typeof VibeUpdated>;
 
 /**
  * Vibe SSE でサーバからクライアントへ配信する全イベント名と対応する schema のマップ
@@ -98,7 +98,7 @@ export const VibeEvents = {
   /** メンバー退室の逐次通知 */
   Left: VibeLeft,
   /** 既存メンバーの状態変化の逐次通知 */
-  Update: VibeUpdate,
+  Updated: VibeUpdated,
 } as const;
 
 /**

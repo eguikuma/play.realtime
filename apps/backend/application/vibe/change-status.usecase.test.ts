@@ -50,7 +50,7 @@ describe("ChangeVibeStatus", () => {
     ).rejects.toBeInstanceOf(RoomNotFound);
   });
 
-  it("既存接続のステータスを書き換え 集約結果を Update として購読者全員に配信する", async () => {
+  it("既存接続のステータスを書き換え 集約結果を Updated として購読者全員に配信する", async () => {
     const rooms = {
       find: vi.fn(async () => buildRoom()),
       save: vi.fn(),
@@ -66,7 +66,7 @@ describe("ChangeVibeStatus", () => {
 
     expect(vibes.update).toHaveBeenCalledWith(roomId, memberId, connectionId, "focused");
     expect(vibes.save).not.toHaveBeenCalled();
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Updated", {
       memberId,
       status: "present",
     });

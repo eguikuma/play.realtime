@@ -19,7 +19,7 @@ export class NotifyVibeLeft {
 
   /**
    * 接続 1 本を削除し、そのメンバー最後の接続だった、または集約結果が `null` になったら `VibePresenceGrace` に登録して猶予後に `Left` を配信する
-   * まだ別接続が残っている場合は集約後の値で `Update` を即時配信する
+   * まだ別接続が残っている場合は集約後の値で `Updated` を即時配信する
    */
   async execute(input: {
     roomId: RoomId;
@@ -39,7 +39,7 @@ export class NotifyVibeLeft {
       });
       return;
     }
-    await this.broadcaster.broadcast(topic(input.roomId), "Update", {
+    await this.broadcaster.broadcast(topic(input.roomId), "Updated", {
       memberId: input.memberId,
       status: aggregated,
     });

@@ -44,7 +44,7 @@ describe("NotifyVibeJoined", () => {
     });
   });
 
-  it("2 本目以降の接続では集約結果を Update として配信し Joined は再送しない", async () => {
+  it("2 本目以降の接続では集約結果を Updated として配信し Joined は再送しない", async () => {
     const vibes = buildVibes({
       save: vi.fn(async () => ({ isFirst: false, aggregated: "focused" as VibeStatus })),
     });
@@ -53,14 +53,14 @@ describe("NotifyVibeJoined", () => {
 
     await usecase.execute({ roomId, member, connectionId });
 
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Updated", {
       memberId: member.id,
       status: "focused",
     });
     expect(broadcast).not.toHaveBeenCalledWith(`room:${roomId}:vibe`, "Joined", expect.anything());
   });
 
-  it("grace 期間中に再接続した場合は Left 予約を cancel し Joined ではなく Update を配信する", async () => {
+  it("grace 期間中に再接続した場合は Left 予約を cancel し Joined ではなく Updated を配信する", async () => {
     const vibes = buildVibes();
     const broadcast = vi.fn();
     const grace = buildGrace(() => true);
@@ -69,7 +69,7 @@ describe("NotifyVibeJoined", () => {
     await usecase.execute({ roomId, member, connectionId });
 
     expect(grace.cancel).toHaveBeenCalledWith(roomId, member.id);
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Updated", {
       memberId: member.id,
       status: "present",
     });

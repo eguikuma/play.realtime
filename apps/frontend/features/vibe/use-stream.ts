@@ -38,7 +38,7 @@ export const useStream = (roomId: RoomId | null) => {
       setStatus(member.id, status);
     },
     Left: ({ memberId }) => remove(memberId),
-    Update: ({ memberId, status }) => setStatus(memberId, status),
+    Updated: ({ memberId, status }) => setStatus(memberId, status),
   } satisfies {
     [K in keyof typeof VibeEvents]: (payload: z.infer<(typeof VibeEvents)[K]>) => void;
   };

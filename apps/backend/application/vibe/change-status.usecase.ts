@@ -6,7 +6,7 @@ import { VibeBroadcaster } from "./broadcaster";
 import { topic } from "./topic";
 
 /**
- * クライアントからのタブ可視状態変化を受けて接続単位の Vibe を更新し、集約結果が変わった場合だけ `Update` を配信する usecase
+ * クライアントからのタブ可視状態変化を受けて接続単位の Vibe を更新し、集約結果が変わった場合だけ `Updated` を配信する usecase
  * 同一メンバーの複数接続で他タブが `present` を保っている場合など、集約後の値が変わらないケースでは配信を抑制する
  */
 @Injectable()
@@ -18,7 +18,7 @@ export class ChangeVibeStatus {
   ) {}
 
   /**
-   * ルーム存在確認、`Update` 適用、集約結果の差分チェック、SSE 配信の順で流れる
+   * ルーム存在確認、接続単位の状態更新、集約結果の差分チェック、SSE 配信の順で流れる
    * `updated` が `false`、または `aggregated` が `null` のときは配信しない
    */
   async execute(input: {
@@ -40,7 +40,7 @@ export class ChangeVibeStatus {
     if (!updated || aggregated === null) {
       return;
     }
-    await this.broadcaster.broadcast(topic(input.roomId), "Update", {
+    await this.broadcaster.broadcast(topic(input.roomId), "Updated", {
       memberId: input.memberId,
       status: aggregated,
     });
