@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Backdrop, Notice } from "@/components/layout";
+import { Backdrop } from "@/components/backdrop";
+import { Notice } from "@/components/notice";
 
 /**
  * ルームが存在しないとき、`useLoad` 経由の 404 や 400 を受けて表示する専用 404 画面

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Backdrop, Notice } from "@/components/layout";
+import { Backdrop } from "@/components/backdrop";
+import { Notice } from "@/components/notice";
 import { Button } from "@/components/ui/button";
 
 /**

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Backdrop, Notice } from "@/components/layout";
+import { Backdrop } from "@/components/backdrop";
+import { Notice } from "@/components/notice";
 
 /**
  * どのルートにも一致しないアクセスを受けたときに表示する 404 画面

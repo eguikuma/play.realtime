@@ -2,7 +2,7 @@
 
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { useMemo } from "react";
-import { BrandMark } from "@/components/layout";
+import { BrandMark } from "@/components/brand-mark";
 import { BgmStrip } from "@/features/bgm";
 import { HallwayOverlays, useHallway } from "@/features/hallway";
 import { Compose, MurmurBody } from "@/features/murmur";

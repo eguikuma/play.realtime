@@ -1,7 +1,9 @@
 "use client";
 
 import type { RoomId } from "@play.realtime/contracts";
-import { Backdrop, Label, Shell } from "@/components/layout";
+import { Backdrop } from "@/components/backdrop";
+import { Label } from "@/components/label";
+import { Shell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEntrance } from "./use-entrance";
