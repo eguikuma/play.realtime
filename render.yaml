@@ -4,7 +4,7 @@ services:
     runtime: docker
     plan: free
     region: singapore
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./containers/Dockerfile
     dockerContext: .
     healthCheckPath: /health
     autoDeploy: true
@@ -23,3 +23,7 @@ services:
         value: "true"
       - key: ROOM_GRACE_MS
         value: 30000
+      - key: STORAGE_DRIVER
+        value: redis
+      - key: REDIS_URL
+        sync: false
