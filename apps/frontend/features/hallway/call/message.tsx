@@ -35,7 +35,7 @@ export const Message = ({ text, sentAt, clock, fromName, mine, hasMeta }: Messag
     )}
     <p
       className={cn(
-        "max-w-[75%] whitespace-pre-wrap break-words rounded-xl px-3 py-2 font-sans text-[14px] leading-relaxed",
+        "max-w-[85%] whitespace-pre-wrap break-words rounded-xl px-3 py-2 font-sans text-[14px] leading-relaxed sm:max-w-[75%]",
         mine ? "rounded-br-sm bg-ink text-paper" : "rounded-bl-sm bg-paper-2 text-ink",
       )}
     >

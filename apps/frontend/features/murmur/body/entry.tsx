@@ -37,7 +37,7 @@ export const Entry = ({ murmur, authorName, fresh }: Entry) => (
       </time>
     </header>
     <p
-      className="max-w-[62ch] whitespace-pre-wrap break-words font-sans text-[15.5px] text-ink leading-[1.75]"
+      className="max-w-full whitespace-pre-wrap break-words font-sans text-[15.5px] text-ink leading-[1.75] md:max-w-[62ch]"
       style={{ textWrap: "pretty" as unknown as string }}
     >
       {murmur.text}
