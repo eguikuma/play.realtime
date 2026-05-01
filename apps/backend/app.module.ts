@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { RoomCleanupRegistrar } from "./application/room/cleanup-registrar";
 import { RoomLifecycleModule } from "./application/room/lifecycle.module";
 import { EnvironmentModule } from "./environment.module";
+import { CounterModule } from "./infrastructure/counter";
 import { IdModule } from "./infrastructure/id";
 import { PresenceModule } from "./infrastructure/presence";
 import { PubSubModule } from "./infrastructure/pubsub";
@@ -27,6 +28,7 @@ import { HallwayModule } from "./presentation/ws/hallway.module";
     RepositoryModule,
     PresenceModule,
     TimerModule,
+    CounterModule,
     RoomLifecycleModule,
     HealthModule,
     RoomsModule,

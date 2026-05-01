@@ -38,7 +38,7 @@ export class HallwayGateway implements OnModuleInit {
     private readonly adapter: HttpAdapterHost,
     private readonly hub: WsHub,
     private readonly ids: NanoidIdGenerator,
-    private readonly counter: HallwayConnectionCounter,
+    @Inject(HallwayConnectionCounter) private readonly counter: HallwayConnectionCounter,
     @Inject(RoomPresence) private readonly presence: RoomPresence,
     private readonly membership: GetRoomMembership,
     private readonly getSnapshot: GetHallwaySnapshot,
