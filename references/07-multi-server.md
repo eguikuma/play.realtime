@@ -132,7 +132,9 @@ POST を受け取ったサーバ a は、自分の Map に書き込む前に、R
 
 「全員に届ける」ものはどのサーバが受け取っても問題ありませんが、1 度だけ走らせたい処理はそうはいきません
 
-代表例が、ルームから最後の人が抜けたときの片付け処理です —— 第 6 章で扱った 30 秒の grace の終了に相当します
+代表例が、ルームから最後の人が抜けたときの片付け処理です
+
+第 6 章で扱った 30 秒の grace の終了に相当します
 
 この片付けは、複数サーバの中の 1 つだけが走らせる必要があります
 
@@ -185,8 +187,10 @@ sequenceDiagram
 
 タイマーを張った時点で、Redis には次の 2 つのキーが置かれます
 
-- `room:grace:room-X` —— TTL 30 秒で expire する予定キー
-- `room:grace:owner:room-X` —— 値は `instance-a`、TTL は 5 分の余裕を持たせたオーナー印キー
+- `room:grace:room-X`
+  - TTL 30 秒で expire する予定キー
+- `room:grace:owner:room-X`
+  - 値は `instance-a`、TTL は 5 分の余裕を持たせたオーナー印キー
 
 タイマー切れの expired notification は、Redis を subscribe しているすべてのサーバに同時に届きます
 

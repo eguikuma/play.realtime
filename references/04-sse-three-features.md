@@ -105,7 +105,7 @@ heartbeat の間隔 15 秒、retry の待ち時間 3 秒、`Content-Type` の文
 
 ヘッダの送出、`retry` フィールドの送信、`event` 名つきの 1 件配信、コメント行の送出、close の冪等化、ここで全部やっています
 
-NestJS の `@Sse()` デコレータをあえて使わず、Express の `Response` に直接書き込んでいる —— というのが学習目的としての筋です
+NestJS の `@Sse()` デコレータをあえて使わず、Express の `Response` に直接書き込んでいるというのが学習目的としての筋です
 
 - `apps/backend/infrastructure/transport/sse/heartbeat.ts`
 
@@ -141,4 +141,4 @@ NestJS の `@Sse()` デコレータをあえて使わず、Express の `Response
 
 その生地には heartbeat と retry と close 検知が編み込まれていて、実用に耐えるためにはこの 3 つのどれも欠かせません
 
-第 5 章では、この生地で足りなくなる場面 —— 廊下トーク —— に踏み込んで、なぜ WebSocket でないと組めないかを見ていきます
+第 5 章では、この生地で足りなくなる場面に踏み込んで、なぜ WebSocket でないと組めないかを見ていきます

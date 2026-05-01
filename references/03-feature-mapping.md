@@ -69,8 +69,12 @@
 
 リポジトリの中で、この使い分けが見えるのは主に次のファイルです
 
-- `apps/backend/presentation/http/` —— SSE で配信している 3 機能のエンドポイント、機能ごとに `vibes`、`bgms`、`murmurs` の controller が並ぶ
-- `apps/backend/presentation/ws/` —— WebSocket で配信している廊下トークのエンドポイント
-- `packages/transport-protocol/` —— SSE と WebSocket の通信仕様が並んで定義されている
+- `apps/backend/presentation/http/`
+  - SSE で配信している 3 機能のエンドポイント
+  - 機能ごとに `vibes`、`bgms`、`murmurs` の controller が並ぶ
+- `apps/backend/presentation/ws/`
+  - WebSocket で配信している廊下トークのエンドポイント
+- `packages/transport-protocol/`
+  - SSE と WebSocket の通信仕様が並んで定義されている
 
 次章では SSE 側に絞って、中で何が流れているかを見ていきます
