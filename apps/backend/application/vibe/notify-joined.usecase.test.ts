@@ -37,7 +37,7 @@ const buildGrace = (cancel: () => boolean = () => false): VibePresenceGrace =>
   ({ cancel: vi.fn(cancel), schedule: vi.fn() }) as unknown as VibePresenceGrace;
 
 describe("NotifyVibeJoined", () => {
-  it("初回接続では present として保存し Joined を購読者全員に配信する", async () => {
+  it("初回接続では `present` として保存し Joined を購読者全員に配信する", async () => {
     const vibes = buildVibes();
     const broadcaster = buildBroadcaster();
     const usecase = new NotifyVibeJoined(vibes, broadcaster, buildGrace());
@@ -67,7 +67,7 @@ describe("NotifyVibeJoined", () => {
     expect(broadcaster.joined).not.toHaveBeenCalled();
   });
 
-  it("grace 期間中に再接続した場合は Left 予約を cancel し Joined ではなく Updated を配信する", async () => {
+  it("猶予期間中に再接続した場合は Left 予約を取り消し Joined ではなく Updated を配信する", async () => {
     const vibes = buildVibes();
     const broadcaster = buildBroadcaster();
     const grace = buildGrace(() => true);

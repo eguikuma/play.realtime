@@ -33,7 +33,7 @@ const buildGrace = (): VibePresenceGrace =>
   ({ cancel: vi.fn(), schedule: vi.fn() }) as unknown as VibePresenceGrace;
 
 describe("NotifyVibeLeft", () => {
-  it("最後の接続が消えると grace 経由で Left を購読者全員に配信する", async () => {
+  it("最後の接続が消えると猶予を経て Left を購読者全員に配信する", async () => {
     const vibes = buildVibes();
     const broadcaster = buildBroadcaster();
     const grace = buildGrace();
@@ -52,7 +52,7 @@ describe("NotifyVibeLeft", () => {
     expect(broadcaster.left).toHaveBeenCalledWith(roomId, { memberId });
   });
 
-  it("他の接続が残るときは集約結果を Updated として即時配信し grace には積まない", async () => {
+  it("他の接続が残るときは集約結果を Updated として即時配信し猶予予約には積まない", async () => {
     const vibes = buildVibes({
       delete: vi.fn(async () => ({ isLast: false, aggregated: "focused" as VibeStatus })),
     });

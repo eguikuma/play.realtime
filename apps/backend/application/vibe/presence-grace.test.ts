@@ -14,7 +14,7 @@ describe("VibePresenceGrace", () => {
     vi.useRealTimers();
   });
 
-  it("schedule は 1500ms 後に fire を実行する", async () => {
+  it("予約は 1500ms 後に発火を実行する", async () => {
     const grace = new VibePresenceGrace();
     const fire = vi.fn();
 
@@ -25,7 +25,7 @@ describe("VibePresenceGrace", () => {
     expect(fire).toHaveBeenCalledTimes(1);
   });
 
-  it("cancel は pending な予約を取り消し true を返し fire されない", async () => {
+  it("取り消しは保留中の予約を取り消し true を返し発火しない", async () => {
     const grace = new VibePresenceGrace();
     const fire = vi.fn();
 
@@ -37,12 +37,12 @@ describe("VibePresenceGrace", () => {
     expect(fire).not.toHaveBeenCalled();
   });
 
-  it("予約が無ければ cancel は false を返す", () => {
+  it("予約が無ければ取り消しは false を返す", () => {
     const grace = new VibePresenceGrace();
     expect(grace.cancel(roomId, memberId)).toBe(false);
   });
 
-  it("別の room または member では干渉しない", async () => {
+  it("別のルームまたはメンバーでは干渉しない", async () => {
     const grace = new VibePresenceGrace();
     const fireA = vi.fn();
     const fireB = vi.fn();
@@ -58,7 +58,7 @@ describe("VibePresenceGrace", () => {
     expect(fireB).toHaveBeenCalledTimes(1);
   });
 
-  it("同キーで再 schedule すると前のタイマーは上書きされる", async () => {
+  it("同キーで再予約すると前のタイマーは上書きされる", async () => {
     const grace = new VibePresenceGrace();
     const first = vi.fn();
     const second = vi.fn();

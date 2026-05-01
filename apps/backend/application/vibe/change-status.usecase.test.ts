@@ -57,7 +57,7 @@ describe("ChangeVibeStatus", () => {
     ).rejects.toBeInstanceOf(RoomNotFound);
   });
 
-  it("既存接続のステータスを書き換え 集約結果を Updated として購読者全員に配信する", async () => {
+  it("既存接続のステータスを書き換え、集約結果を Updated として購読者全員に配信する", async () => {
     const rooms = {
       find: vi.fn(async () => buildRoom()),
       save: vi.fn(),
@@ -79,7 +79,7 @@ describe("ChangeVibeStatus", () => {
     });
   });
 
-  it("既に閉じられた接続への遅延 POST は 何も書き込まず配信もしない", async () => {
+  it("既に閉じられた接続への遅延 POST は何も書き込まず配信もしない", async () => {
     const rooms = {
       find: vi.fn(async () => buildRoom()),
       save: vi.fn(),
