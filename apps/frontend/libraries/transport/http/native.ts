@@ -3,6 +3,11 @@ import type { z } from "zod";
 import { HttpFailure } from "./errors";
 import type { HttpClient } from "./port";
 
+/**
+ * native fetch を使った `HttpClient` の実装を生成するファクトリ
+ * Cookie を同送するため `credentials: "include"` を固定で指定し、ローカル開発時の Cross-Origin Cookie 運用に合わせる
+ * レスポンス検証失敗は同じ `HttpFailure` に載せてステータスとセットで上位へ伝播させる
+ */
 export const createNativeHttpClient = ({ origin }: { origin: string }): HttpClient => {
   const execute = async <T>(
     path: string,

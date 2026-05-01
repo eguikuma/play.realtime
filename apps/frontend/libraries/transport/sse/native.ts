@@ -3,6 +3,11 @@ import type { z } from "zod";
 import { SseValidationFailed } from "./errors";
 import { type SseClient, type SseConnection, type SseEvents, SseState } from "./port";
 
+/**
+ * ブラウザ native `EventSource` を使った `SseClient` の実装を生成するファクトリ
+ * Cookie を同送するため `withCredentials: true` を固定で指定し、ブラウザ組み込みの自動再接続に挙動を委ねる
+ * JSON パース失敗や Zod 検証失敗はログを残すだけで他イベントへの配信は止めない、1 件の不正ペイロードでストリーム全体を壊さない
+ */
 export const createNativeSseClient = (): SseClient => {
   return {
     connect: <TMap extends SseEvents>({

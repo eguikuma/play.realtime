@@ -3,6 +3,11 @@ import type { z } from "zod";
 
 import { type WsClient, type WsConnection, type WsEvents, WsState } from "./port";
 
+/**
+ * WebSocket 接続 1 本を React の Effect ライフサイクルに同期させるフック
+ * `url` が `null` のときは接続せず `Closed` を返し、URL が変わるたびに旧接続を閉じて新しい接続を張り直す
+ * `send` は `useCallback` で安定参照を返し、依存の発火で再描画を巻き込まないようにしている
+ */
 export const useWs = <TMap extends WsEvents>({
   client,
   url,

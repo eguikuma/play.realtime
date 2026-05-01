@@ -3,11 +3,19 @@ import type { z } from "zod";
 import { WsValidationFailed } from "./errors";
 import { type WsClient, type WsConnection, type WsEvents, WsState } from "./port";
 
+/**
+ * サーバとクライアントで形を揃えた 2 段封筒、`name` と `data` の 2 フィールド固定
+ */
 type Envelope = {
   name: string;
   data: unknown;
 };
 
+/**
+ * ブラウザ native `WebSocket` を使った `WsClient` の実装を生成するファクトリ
+ * サーバからの `Ping` には自動で `Pong` を返してハートビート応答責任を接続内部に閉じ込め、使用側は業務メッセージだけに集中できる
+ * JSON パース失敗や Zod 検証失敗は console.warn を残すだけで他メッセージの処理は継続する
+ */
 export const createNativeWsClient = (): WsClient => {
   return {
     connect: <TMap extends WsEvents>({
@@ -69,6 +77,9 @@ export const createNativeWsClient = (): WsClient => {
   };
 };
 
+/**
+ * 接続が `OPEN` のときのみ送信を試みる安全送信、送信例外は飲み込んで切断検知を `onclose` に任せる
+ */
 const send = <TData>(socket: WebSocket, name: string, data: TData): void => {
   if (socket.readyState !== WebSocket.OPEN) {
     return;
@@ -78,6 +89,9 @@ const send = <TData>(socket: WebSocket, name: string, data: TData): void => {
   } catch {}
 };
 
+/**
+ * 受信文字列を `Envelope` 形状に緩くパースする、JSON 失敗 / 非オブジェクト / `name` が string でないいずれかで `null` を返す
+ */
 const parse = (raw: string): Envelope | null => {
   try {
     const parsed: unknown = JSON.parse(raw);
