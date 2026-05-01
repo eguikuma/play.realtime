@@ -2,13 +2,23 @@
 
 import { cn } from "@/libraries/classname";
 
+/**
+ * ランディングで切り替えるタブの値
+ * `create` は新しくルームを作る側、`join` はルーム ID を指定して参加する側
+ */
 export type TabValue = "create" | "join";
 
 type Tabs = {
+  /** 現在選ばれているタブ */
   tab: TabValue;
+  /** タブを切り替えたときに親へ通知するコールバック */
   onTab: (value: TabValue) => void;
 };
 
+/**
+ * Create / Join を切り替えるピル形のタブ
+ * 選択中のタブはやや浮いた背景に、非選択のタブは薄色に寄せて状態を視覚的に分ける
+ */
 export const Tabs = ({ tab, onTab }: Tabs) => (
   <div
     role="tablist"

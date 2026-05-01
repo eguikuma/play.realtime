@@ -3,9 +3,14 @@
 import type { ReactNode } from "react";
 
 type Backdrop = {
+  /** 背景に重ねて中央に表示したい要素、Landing や Entrance の `Shell` が入る */
   children: ReactNode;
 };
 
+/**
+ * Landing / Entrance / Notice の背景レイヤー
+ * 画面全体に柔らかな lamp グラデーションを敷き、中央寄せの配置領域に子要素を置く
+ */
 export const Backdrop = ({ children }: Backdrop) => (
   <div className="scrollable relative h-svh overflow-y-auto">
     <div

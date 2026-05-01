@@ -8,7 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Backdrop, Label, Shell } from "../layout";
 import { useEntrance } from "./use-entrance";
 
-export const Entrance = ({ roomId }: { roomId: RoomId }) => {
+type Entrance = {
+  /** 入室対象のルーム ID、参加 API の送信先に使う */
+  roomId: RoomId;
+};
+
+/**
+ * URL 経由でやってきた未入室ユーザの入室フォーム画面
+ * 名前を入力して送信するだけで `useRoom` にメンバー情報を書き込み、画面を入室済みに切り替える
+ */
+export const Entrance = ({ roomId }: Entrance) => {
   const entrance = useEntrance(roomId);
 
   return (

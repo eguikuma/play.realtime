@@ -6,6 +6,10 @@ import { Join } from "./join";
 import { Tabs } from "./tabs";
 import { useLanding } from "./use-landing";
 
+/**
+ * トップページのランディング画面
+ * タブで `Create` と `Join` を切り替えつつ、共通の Shell レイアウトにフォームを載せる
+ */
 export const Landing = () => {
   const landing = useLanding();
 

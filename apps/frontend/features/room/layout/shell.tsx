@@ -4,11 +4,18 @@ import type { ReactNode } from "react";
 import { Wordmark } from "./wordmark";
 
 type Shell = {
+  /** 画面左側に大きく置く見出し文 */
   headline: string;
+  /** 見出しの下に並べる説明文 */
   lede: ReactNode;
+  /** 画面右側に置くフォームなどの操作領域 */
   children: ReactNode;
 };
 
+/**
+ * Landing / Entrance の 2 段組レイアウト
+ * 左にワードマークと大きな見出し、右にフォームを並べ、スマートフォン幅では 1 列に畳む
+ */
 export const Shell = ({ headline, lede, children }: Shell) => (
   <div className="grid w-full max-w-4xl grid-cols-1 gap-12 md:grid-cols-[1.1fr_1fr] md:gap-16">
     <div className="flex flex-col gap-7">

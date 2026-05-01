@@ -4,11 +4,18 @@ import type { ReactNode } from "react";
 import { Wordmark } from "./wordmark";
 
 type Notice = {
+  /** 大きく見せる見出し文、ルームが見つからないなど状態を端的に伝える */
   headline: string;
+  /** 見出しの下に補足する説明文、複数行の React ノードを渡せる */
   lede: ReactNode;
+  /** 説明の下に並べる行動導線、戻るボタンやリンクなど */
   children: ReactNode;
 };
 
+/**
+ * ルートエラーや 404 など、単独メッセージを中央寄せで見せる案内レイアウト
+ * ワードマーク / 見出し / 説明 / 操作導線の 4 段を縦に並べる
+ */
 export const Notice = ({ headline, lede, children }: Notice) => (
   <div className="flex w-full max-w-md flex-col items-center gap-7 text-center">
     <Wordmark />

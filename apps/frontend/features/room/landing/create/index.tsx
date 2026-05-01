@@ -6,6 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "../../layout";
 import { useCreate } from "./use-create";
 
+/**
+ * ランディングの Create タブで使うホスト名入力フォーム
+ * 名前を入力して送信するとルームが作られ、発行された URL を共有することで他のメンバーが参加できるようになる
+ */
 export const Create = () => {
   const create = useCreate();
 
