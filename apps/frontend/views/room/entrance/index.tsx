@@ -4,8 +4,8 @@ import type { RoomId } from "@play.realtime/contracts";
 import { Backdrop } from "@/components/backdrop";
 import { Label } from "@/components/label";
 import { Shell } from "@/components/shell";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/libraries/ui/button";
+import { Input } from "@/libraries/ui/input";
 import { useEntrance } from "./use-entrance";
 
 type Entrance = {

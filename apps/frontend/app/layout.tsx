@@ -8,8 +8,8 @@ import {
 } from "next/font/google";
 import { ConnectionBanner } from "@/components/connection-banner";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/libraries/classname";
+import { Toaster } from "@/libraries/ui/sonner";
 import "./globals.css";
 import type { ReactNode } from "react";
 

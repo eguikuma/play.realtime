@@ -1,8 +1,8 @@
 "use client";
 
 import { Label } from "@/components/label";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/libraries/ui/button";
+import { Input } from "@/libraries/ui/input";
 import { useCreate } from "./use-create";
 
 /**

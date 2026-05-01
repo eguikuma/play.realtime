@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Backdrop } from "@/components/backdrop";
 import { Notice } from "@/components/notice";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/libraries/ui/button";
 
 /**
  * Next.js App Router の既定エラーバウンダリ
