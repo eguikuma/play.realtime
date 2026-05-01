@@ -73,6 +73,41 @@ describe("createNativeHttpClient", () => {
     );
   });
 
+  it("`POST` の `keepalive` を渡したとき `fetch` 側にも `keepalive: true` を立てる", async () => {
+    const mock = vi.fn(async () => new Response(JSON.stringify({}), { status: 200 }));
+    vi.stubGlobal("fetch", mock);
+
+    const http = createNativeHttpClient({ origin: "http://api.test" });
+    await http.post({
+      endpoint: "/items",
+      body: { title: "hello" },
+      response: z.unknown(),
+      keepalive: true,
+    });
+
+    expect(mock).toHaveBeenCalledWith(
+      "http://api.test/items",
+      expect.objectContaining({ method: "POST", keepalive: true }),
+    );
+  });
+
+  it("`POST` で `keepalive` を渡さなければ `fetch` 側にも立てない", async () => {
+    const mock = vi.fn(async () => new Response(JSON.stringify({}), { status: 200 }));
+    vi.stubGlobal("fetch", mock);
+
+    const http = createNativeHttpClient({ origin: "http://api.test" });
+    await http.post({
+      endpoint: "/items",
+      body: { title: "hello" },
+      response: z.unknown(),
+    });
+
+    expect(mock).toHaveBeenCalledWith(
+      "http://api.test/items",
+      expect.not.objectContaining({ keepalive: true }),
+    );
+  });
+
   it("cookie 送信のため `credentials` を `include` で常時付与する", async () => {
     const mock = vi.fn(async () => new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", mock);

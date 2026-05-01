@@ -18,12 +18,14 @@ export type HttpClient = {
    * `POST {endpoint}` でボディを送信する
    * `request` を渡せば送信前にバリデーションする
    * サーバ側も Zod で再検証するため `request` 省略時は呼び出し側で型が合っていれば十分
+   * `keepalive` を渡したときは `fetch` の `keepalive: true` を立て、タブ非表示遷移直前でもブラウザが背後で送信を完遂させる
    */
   post<TRequest, TResponse>(parameters: {
     endpoint: string;
     body: TRequest;
     request?: z.ZodType<TRequest>;
     response: z.ZodType<TResponse>;
+    keepalive?: boolean;
   }): Promise<TResponse>;
   /** `DELETE {endpoint}` を呼ぶ、戻り値は返さない前提の経路で使う */
   delete(parameters: { endpoint: string }): Promise<void>;

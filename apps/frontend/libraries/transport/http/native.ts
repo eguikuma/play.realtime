@@ -33,9 +33,17 @@ export const createNativeHttpClient = ({ origin }: { origin: string }): HttpClie
 
   return {
     get: ({ endpoint, response }) => execute(endpoint, { method: "GET" }, response),
-    post: ({ endpoint, body, request, response }) => {
+    post: ({ endpoint, body, request, response, keepalive }) => {
       const payload = request ? request.parse(body) : body;
-      return execute(endpoint, { method: "POST", body: JSON.stringify(payload) }, response);
+      return execute(
+        endpoint,
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+          ...(keepalive ? { keepalive: true } : {}),
+        },
+        response,
+      );
     },
     delete: async ({ endpoint }) => {
       const result = await fetch(`${origin}${endpoint}`, {
