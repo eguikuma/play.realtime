@@ -8,7 +8,6 @@ import { HallwayOverlays, useHallway } from "@/features/hallway";
 import { Compose, MurmurBody } from "@/features/murmur";
 import { useVibe, VibeRow } from "@/features/vibe";
 import { useSession } from "@/stores/session";
-import { useLeave } from "../use-leave";
 import { MeBadge } from "./me-badge";
 
 type Stage = {
@@ -24,13 +23,12 @@ type Stage = {
  * Hallway の招待と通話オーバーレイは fixed 配置でレイアウトと独立しており、Grid 化の影響を受けない
  * Hallway 由来の取り込み中、通話中、招待送信は composition feature の責務としてここで集計し、`VibeRow` に props で渡す
  */
-export const RoomStage = ({ roomId }: Stage) => {
+export const Stage = ({ roomId }: Stage) => {
   const me = useSession((state) => state.me);
   const presentCount = useVibe((state) => Object.keys(state.statuses).length);
   const invitations = useHallway((state) => state.invitations);
   const calls = useHallway((state) => state.calls);
   const send = useHallway((state) => state.send);
-  useLeave(roomId);
 
   const busyMemberIds = useMemo(() => {
     const set = new Set<MemberId>();

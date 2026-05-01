@@ -2,28 +2,13 @@
 
 import type { RoomId } from "@play.realtime/contracts";
 import { use } from "react";
-import { LoadingBadge } from "@/components/loading-badge";
-import { Entrance, RoomStage, useLoad } from "@/features/room";
-import { useSession } from "@/stores/session";
+import { Room } from "@/views/room";
 
 /**
- * `/rooms/{roomId}` のエントリー
- * `useLoad` が読み込み中の間はローディングバッジだけを出し、未入室で成功したら入室フォームの `Entrance`、入室済みなら `RoomStage` を描画する
- * `useLoad` が 404 や 400 を検知すると内部で `notFound()` を呼ぶため、missing 時はこのコンポーネントは描画されずに `not-found.tsx` へ遷移する
+ * `/rooms/{roomId}` のエントリー、ルーム画面の orchestrator `Room` を 1 行で呼ぶだけのルート層
+ * 読み込み、入室フォーム、入室済みステージの切り替えはすべて `Room` 内部で行う
  */
 export default function RoomEntry({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params);
-  const branded = roomId as RoomId;
-  const { loading } = useLoad(branded);
-  const me = useSession((state) => state.me);
-
-  if (loading) {
-    return <LoadingBadge />;
-  }
-
-  if (!me) {
-    return <Entrance roomId={branded} />;
-  }
-
-  return <RoomStage roomId={branded} />;
+  return <Room roomId={roomId as RoomId} />;
 }
