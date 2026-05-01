@@ -1,7 +1,7 @@
 import type { z } from "zod";
 
 import { SseValidationFailed } from "./errors";
-import { type SseClient, type SseConnection, type SseEventMap, SseState } from "./port";
+import { type SseClient, type SseConnection, type SseEvents, SseState } from "./port";
 
 /**
  * ブラウザの EventSource を使った SSE クライアント実装を組み立てる
@@ -9,7 +9,7 @@ import { type SseClient, type SseConnection, type SseEventMap, SseState } from "
  */
 export const createNativeSseClient = (): SseClient => {
   return {
-    connect: <TMap extends SseEventMap>({
+    connect: <TMap extends SseEvents>({
       url,
       events,
       onEvent,

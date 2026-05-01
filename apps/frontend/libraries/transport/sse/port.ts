@@ -17,7 +17,7 @@ export type SseState = (typeof SseState)[keyof typeof SseState];
  * イベント名から Zod スキーマへの対応表
  * サーバー側のイベント名と 1 対 1 に揃える前提とする
  */
-export type SseEventMap = Record<string, z.ZodTypeAny>;
+export type SseEvents = Record<string, z.ZodTypeAny>;
 
 /**
  * 1 本の SSE 接続を表す操作ハンドル
@@ -32,7 +32,7 @@ export type SseConnection = {
  * ブラウザ標準の EventSource を使う実装を差し替え可能にするため 機能層はこのインタフェース越しに使う
  */
 export type SseClient = {
-  connect<TMap extends SseEventMap>(parameters: {
+  connect<TMap extends SseEvents>(parameters: {
     url: string;
     events: TMap;
     onEvent: <K extends keyof TMap>(name: K, payload: z.infer<TMap[K]>) => void;

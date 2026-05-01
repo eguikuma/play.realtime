@@ -1,9 +1,11 @@
 "use client";
 
 import { MurmurEvents, type RoomId } from "@play.realtime/contracts";
+import { useEffect } from "react";
 import type { z } from "zod";
 
 import { sse } from "@/libraries/clients";
+import { useConnectionStatus } from "@/libraries/connection-status/store";
 import { origin } from "@/libraries/environment";
 import { useSse } from "@/libraries/transport";
 
@@ -12,10 +14,12 @@ import { useMurmur } from "./store";
 /**
  * ひとこと投稿の SSE 購読を張り 受信内容をストアへ転写するフック
  * スナップショットは全置換 投稿イベントは末尾追加として扱い UI は 1 箇所の一覧だけを見ていれば済む
+ * 接続状態の遷移は共通ストアへ流し 切断バーの判定素材に使う
  */
 export const useStream = (roomId: RoomId | null) => {
-  const append = useMurmur((state) => state.append);
-  const replace = useMurmur((state) => state.replace);
+  const append = useMurmur((store) => store.append);
+  const replace = useMurmur((store) => store.replace);
+  const setConnectionStatus = useConnectionStatus((store) => store.setStatus);
 
   const url = roomId ? `${origin}/rooms/${roomId}/murmurs/stream` : null;
 
@@ -26,7 +30,7 @@ export const useStream = (roomId: RoomId | null) => {
     [K in keyof typeof MurmurEvents]: (payload: z.infer<(typeof MurmurEvents)[K]>) => void;
   };
 
-  useSse({
+  const { state } = useSse({
     client: sse,
     url,
     events: MurmurEvents,
@@ -34,4 +38,8 @@ export const useStream = (roomId: RoomId | null) => {
       (handlers[name] as (value: unknown) => void)(payload);
     },
   });
+
+  useEffect(() => {
+    setConnectionStatus("sse:murmur", state);
+  }, [state, setConnectionStatus]);
 };

@@ -1,10 +1,12 @@
 "use client";
 
 import { type RoomId, VibeEvents } from "@play.realtime/contracts";
+import { useEffect } from "react";
 import type { z } from "zod";
 
 import { useRoom } from "@/features/room/store";
 import { sse } from "@/libraries/clients";
+import { useConnectionStatus } from "@/libraries/connection-status/store";
 import { origin } from "@/libraries/environment";
 import { useSse } from "@/libraries/transport";
 
@@ -13,6 +15,7 @@ import { useVibe } from "./store";
 /**
  * 空気の SSE 購読を張り `Welcome` `Snapshot` `Joined` `Left` `Update` をストアへ転写するフック
  * `Joined` とスナップショット経由でルーム側のメンバー一覧にも差分追加し UI の顔表示欠落を防ぐ
+ * 接続状態の遷移は共通ストアへ流し 切断バーの判定素材に使う
  */
 export const useStream = (roomId: RoomId | null) => {
   const addMember = useRoom((state) => state.addMember);
@@ -20,6 +23,7 @@ export const useStream = (roomId: RoomId | null) => {
   const setStatus = useVibe((state) => state.setStatus);
   const remove = useVibe((state) => state.remove);
   const setConnectionId = useVibe((state) => state.setConnectionId);
+  const setConnectionStatus = useConnectionStatus((store) => store.setStatus);
 
   const url = roomId ? `${origin}/rooms/${roomId}/vibe/stream` : null;
 
@@ -39,7 +43,7 @@ export const useStream = (roomId: RoomId | null) => {
     [K in keyof typeof VibeEvents]: (payload: z.infer<(typeof VibeEvents)[K]>) => void;
   };
 
-  useSse({
+  const { state } = useSse({
     client: sse,
     url,
     events: VibeEvents,
@@ -47,4 +51,8 @@ export const useStream = (roomId: RoomId | null) => {
       (handlers[name] as (value: unknown) => void)(payload);
     },
   });
+
+  useEffect(() => {
+    setConnectionStatus("sse:vibe", state);
+  }, [state, setConnectionStatus]);
 };

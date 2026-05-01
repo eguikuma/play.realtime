@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import type { z } from "zod";
 
 import { ws } from "@/libraries/clients";
+import { useConnectionStatus } from "@/libraries/connection-status/store";
 import { wsOrigin } from "@/libraries/environment";
 import { useWs } from "@/libraries/transport/ws";
 
@@ -13,6 +14,7 @@ import { useHallway } from "./store";
 /**
  * 廊下トークの WebSocket 購読を張り 受信イベントをストアへ転写するフック
  * 送信関数もストアに載せ 他のフックから操作層越しに呼べるようにする
+ * 接続状態の遷移は共通ストアへ流し 切断バーの判定素材に使う
  * ルーム ID がなしの間は接続を張らず 切断時は接続 ID もなしに戻す
  */
 export const useStream = (roomId: RoomId | null) => {
@@ -24,6 +26,7 @@ export const useStream = (roomId: RoomId | null) => {
   const addCall = useHallway((state) => state.addCall);
   const removeCall = useHallway((state) => state.removeCall);
   const appendMessage = useHallway((state) => state.appendMessage);
+  const setStatus = useConnectionStatus((state) => state.setStatus);
 
   const url = roomId ? `${wsOrigin}/rooms/${roomId}/hallway` : null;
 
@@ -41,7 +44,7 @@ export const useStream = (roomId: RoomId | null) => {
     ) => void;
   };
 
-  const { send } = useWs({
+  const { state, send } = useWs({
     client: ws,
     url,
     events: HallwayServerMessages,
@@ -49,6 +52,10 @@ export const useStream = (roomId: RoomId | null) => {
       (handlers[name] as (value: unknown) => void)(payload);
     },
   });
+
+  useEffect(() => {
+    setStatus("ws:hallway", state);
+  }, [state, setStatus]);
 
   useEffect(() => {
     if (!url) {

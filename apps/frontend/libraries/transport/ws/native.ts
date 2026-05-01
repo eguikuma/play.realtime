@@ -1,7 +1,7 @@
 import type { z } from "zod";
 
 import { WsValidationFailed } from "./errors";
-import { type WsClient, type WsConnection, type WsEventMap, WsState } from "./port";
+import { type WsClient, type WsConnection, type WsEvents, WsState } from "./port";
 
 /**
  * WebSocket の通信路で流れる 1 フレームの包み
@@ -18,7 +18,7 @@ type Envelope = {
  */
 export const createNativeWsClient = (): WsClient => {
   return {
-    connect: <TMap extends WsEventMap>({
+    connect: <TMap extends WsEvents>({
       url,
       events,
       onEvent,

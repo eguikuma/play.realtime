@@ -17,7 +17,7 @@ export type WsState = (typeof WsState)[keyof typeof WsState];
  * イベント名から Zod スキーマへの対応表
  * サーバー側のメッセージ一覧と 1 対 1 に揃える前提とする
  */
-export type WsEventMap = Record<string, z.ZodTypeAny>;
+export type WsEvents = Record<string, z.ZodTypeAny>;
 
 /**
  * 1 本の WebSocket 接続を表す操作ハンドル
@@ -33,7 +33,7 @@ export type WsConnection = {
  * ブラウザ標準の WebSocket を使う実装を差し替え可能にするため 機能層はこのインタフェース越しに使う
  */
 export type WsClient = {
-  connect: <TMap extends WsEventMap>(parameters: {
+  connect: <TMap extends WsEvents>(parameters: {
     url: string;
     events: TMap;
     onEvent: <K extends keyof TMap>(name: K, payload: z.infer<TMap[K]>) => void;
