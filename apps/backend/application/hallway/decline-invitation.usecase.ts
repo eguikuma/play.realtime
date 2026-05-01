@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { InvitationId, MemberId, RoomId } from "@play.realtime/contracts";
-import { HallwayRepository, InvitationNotFound } from "../../domain/hallway";
+import { canDecline, HallwayRepository, InvitationNotFound } from "../../domain/hallway";
 import { HallwayBroadcaster } from "./broadcaster";
 import { HallwayInvitationTimers } from "./invitation-timers";
 
@@ -17,7 +17,8 @@ export class DeclineHallwayInvitation {
   ) {}
 
   /**
-   * 招待の存在と被招待者一致を確認する、他人の招待に Decline を投げつけるルートを塞ぐために受信者判定を必須にする
+   * 招待の存在を確認した後、受信者本人かどうかは domain ガード `canDecline` で検証する
+   * 他人の招待に Decline を投げつけるルートを塞ぐために受信者判定を必須にする
    * 招待が見つからない、または受信者が自分でない場合は `InvitationNotFound` を投げる
    */
   async execute(input: {
@@ -26,9 +27,10 @@ export class DeclineHallwayInvitation {
     invitationId: InvitationId;
   }): Promise<void> {
     const invitation = await this.hallway.findInvitation(input.invitationId);
-    if (!invitation || invitation.toMemberId !== input.memberId) {
+    if (!invitation) {
       throw new InvitationNotFound(input.invitationId);
     }
+    canDecline(invitation, input.memberId);
 
     this.timers.cancel(input.invitationId);
     await this.hallway.deleteInvitation(input.invitationId);

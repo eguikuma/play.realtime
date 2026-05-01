@@ -7,11 +7,17 @@ import type {
   RoomId,
 } from "@play.realtime/contracts";
 import { describe, expect, it } from "vitest";
-import { canInvite, isBusy } from "./entity";
-import { InviteeUnavailable, InviterBusy, SelfInviteNotAllowed } from "./errors";
+import { acceptInvitation, canAccept, canDecline, canInvite, isBusy } from "./entity";
+import {
+  InvitationNotFound,
+  InviteeUnavailable,
+  InviterBusy,
+  SelfInviteNotAllowed,
+} from "./errors";
 
 const m1 = "m1" as MemberId;
 const m2 = "m2" as MemberId;
+const m3 = "m3" as MemberId;
 const roomId = "room-abc-1234" as RoomId;
 const invitationId = "inv-1" as InvitationId;
 const callId = "call-1" as CallId;
@@ -93,5 +99,55 @@ describe("isBusy", () => {
 
   it("通話に参加しているときは取り込み中と判定する", () => {
     expect(isBusy({ outgoing: null, incoming: null, call: buildCall() })).toBe(true);
+  });
+});
+
+describe("canAccept", () => {
+  it("受信者本人ならば何も投げずに通る", () => {
+    expect(() => canAccept(buildInvitation(), m2)).not.toThrow();
+  });
+
+  it("受信者でないメンバーが受諾しようとすると InvitationNotFound を投げる", () => {
+    expect(() => canAccept(buildInvitation(), m3)).toThrow(InvitationNotFound);
+  });
+});
+
+describe("canDecline", () => {
+  it("受信者本人ならば何も投げずに通る", () => {
+    expect(() => canDecline(buildInvitation(), m2)).not.toThrow();
+  });
+
+  it("受信者でないメンバーが辞退しようとすると InvitationNotFound を投げる", () => {
+    expect(() => canDecline(buildInvitation(), m3)).toThrow(InvitationNotFound);
+  });
+});
+
+describe("acceptInvitation", () => {
+  it("受信者本人が受諾すると 2 人参加の Call を組み立てて返す", () => {
+    const now = new Date("2026-04-20T09:00:00.000Z");
+    const { call } = acceptInvitation({
+      invitation: buildInvitation(),
+      callerId: m2,
+      callId,
+      now,
+    });
+
+    expect(call).toEqual({
+      id: callId,
+      roomId,
+      memberIds: [m1, m2],
+      startedAt: now.toISOString(),
+    });
+  });
+
+  it("受信者でないメンバーが受諾しようとすると InvitationNotFound を投げる", () => {
+    expect(() =>
+      acceptInvitation({
+        invitation: buildInvitation(),
+        callerId: m3,
+        callId,
+        now: new Date("2026-04-20T09:00:00.000Z"),
+      }),
+    ).toThrow(InvitationNotFound);
   });
 });

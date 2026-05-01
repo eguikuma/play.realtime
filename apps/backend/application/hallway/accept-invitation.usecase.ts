@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { Call, InvitationId, MemberId, RoomId } from "@play.realtime/contracts";
-import { HallwayRepository, InvitationNotFound } from "../../domain/hallway";
+import { acceptInvitation, HallwayRepository, InvitationNotFound } from "../../domain/hallway";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { HallwayBroadcaster } from "./broadcaster";
 import { HallwayInvitationTimers } from "./invitation-timers";
@@ -19,8 +19,8 @@ export class AcceptHallwayInvitation {
   ) {}
 
   /**
-   * 招待の存在と被招待者一致を確認し、失効タイマーと招待本体を消した後に `InvitationEnded(accepted)` を先に配信する
-   * その後 `Call` を採番して保存し、`CallStarted` を配信することで UI の着信ダイアログが閉じてから通話画面が立ち上がる順序になる
+   * 招待の存在を確認した後、`acceptInvitation` で「受信者本人ガードと `Call` の組み立て」を domain に委ね、結果として返ってきた `Call` を永続化と配信に流す
+   * 失効タイマー停止と招待削除を済ませてから `InvitationEnded(accepted)` を先に配信し、`Call` 保存後に `CallStarted` を配信することで UI の着信ダイアログが閉じてから通話画面が立ち上がる順序になる
    * 招待が見つからない、または受信者が自分でない場合は `InvitationNotFound` を投げる
    */
   async execute(input: {
@@ -29,9 +29,16 @@ export class AcceptHallwayInvitation {
     invitationId: InvitationId;
   }): Promise<Call> {
     const invitation = await this.hallway.findInvitation(input.invitationId);
-    if (!invitation || invitation.toMemberId !== input.memberId) {
+    if (!invitation) {
       throw new InvitationNotFound(input.invitationId);
     }
+
+    const { call } = acceptInvitation({
+      invitation,
+      callerId: input.memberId,
+      callId: this.ids.call(),
+      now: new Date(),
+    });
 
     this.timers.cancel(input.invitationId);
     await this.hallway.deleteInvitation(input.invitationId);
@@ -41,12 +48,6 @@ export class AcceptHallwayInvitation {
       reason: "accepted" as const,
     });
 
-    const call: Call = {
-      id: this.ids.call(),
-      roomId: input.roomId,
-      memberIds: [invitation.fromMemberId, invitation.toMemberId],
-      startedAt: new Date().toISOString(),
-    };
     await this.hallway.saveCall(call);
 
     await this.broadcaster.callStarted(input.roomId, { call });
