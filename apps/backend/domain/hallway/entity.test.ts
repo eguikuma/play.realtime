@@ -56,25 +56,25 @@ describe("canInvite", () => {
     );
   });
 
-  it("inviter が busy のときは InviterBusy を投げる", () => {
+  it("招待元が取り込み中のときは InviterBusy を投げる", () => {
     expect(() => canInvite({ ...valid, inviter: { ...valid.inviter, busy: true } })).toThrow(
       InviterBusy,
     );
   });
 
-  it("invitee が present でないときは InviteeUnavailable を投げる", () => {
+  it("招待先が在室中でないときは InviteeUnavailable を投げる", () => {
     expect(() => canInvite({ ...valid, invitee: { ...valid.invitee, present: false } })).toThrow(
       InviteeUnavailable,
     );
   });
 
-  it("invitee が busy のときは InviteeUnavailable を投げる", () => {
+  it("招待先が取り込み中のときは InviteeUnavailable を投げる", () => {
     expect(() => canInvite({ ...valid, invitee: { ...valid.invitee, busy: true } })).toThrow(
       InviteeUnavailable,
     );
   });
 
-  it("self-invite は inviter busy / invitee 条件より先に判定する", () => {
+  it("自己招待は招待元の取り込み中チェックや招待先条件より先に判定する", () => {
     expect(() =>
       canInvite({
         inviter: { id: m1, busy: true },
@@ -123,7 +123,7 @@ describe("canDecline", () => {
 });
 
 describe("acceptInvitation", () => {
-  it("受信者本人が受諾すると 2 人参加の Call を組み立てて返す", () => {
+  it("受信者本人が受諾すると 2 人参加の通話を組み立てて返す", () => {
     const now = new Date("2026-04-20T09:00:00.000Z");
     const { call } = acceptInvitation({
       invitation: buildInvitation(),
