@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Backdrop, Notice } from "@/features/room/layout";
 
 /**
- * アプリ内で拾いきれなかった例外の最終受け皿となるエラーページ
+ * ルート単位の例外の最終受け皿
  * 中央 1 列のお知らせレイアウトで 再試行と トップへ戻る 2 つの導線を縦積みにする
  */
-export default function ErrorPage({ reset }: { reset: () => void }) {
+export default function RouteError({ reset }: { reset: () => void }) {
   return (
     <Backdrop>
       <Notice headline="うまくいきませんでした" lede="通信の途中で、想定外の状態になったようです">
