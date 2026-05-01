@@ -1,5 +1,4 @@
 import type { z } from "zod";
-
 import { WsValidationFailed } from "./errors";
 import { type WsClient, type WsConnection, type WsEvents, WsState } from "./port";
 
@@ -62,6 +61,7 @@ export const createNativeWsClient = (): WsClient => {
           console.warn(new WsValidationFailed(envelope.name, parsed.error));
           return;
         }
+
         onEvent(envelope.name as keyof TMap, parsed.data as z.infer<TMap[keyof TMap]>);
       };
 

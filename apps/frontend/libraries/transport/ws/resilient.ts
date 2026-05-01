@@ -1,5 +1,4 @@
 import type { z } from "zod";
-
 import { type WsClient, type WsConnection, type WsEvents, WsState } from "./port";
 
 const BACKOFF_MIN_MS = 1_000;
@@ -31,6 +30,7 @@ export const createResilientWsClient = (inner: WsClient): WsClient => {
 
       const cancelRetry = () => {
         if (retryTimer === null) return;
+
         clearTimeout(retryTimer);
         retryTimer = null;
       };
@@ -51,6 +51,7 @@ export const createResilientWsClient = (inner: WsClient): WsClient => {
 
       const schedule = () => {
         if (closedByUser || retryTimer !== null) return;
+
         const delay = Math.min(BACKOFF_MIN_MS * 2 ** attempt, BACKOFF_MAX_MS);
         attempt += 1;
         retryTimer = setTimeout(() => {
@@ -62,6 +63,7 @@ export const createResilientWsClient = (inner: WsClient): WsClient => {
       const reconnectNow = () => {
         if (closedByUser) return;
         if (lastState === WsState.Open || lastState === WsState.Connecting) return;
+
         cancelRetry();
         attempt = 0;
         current = open();

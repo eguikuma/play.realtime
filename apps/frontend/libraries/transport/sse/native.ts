@@ -1,5 +1,4 @@
 import type { z } from "zod";
-
 import { SseValidationFailed } from "./errors";
 import { type SseClient, type SseConnection, type SseEvents, SseState } from "./port";
 
@@ -43,6 +42,7 @@ export const createNativeSseClient = (): SseClient => {
             console.warn(new SseValidationFailed(name, error));
             return;
           }
+
           const parsed = shape.safeParse(payload);
           if (!parsed.success) {
             console.warn(new SseValidationFailed(name, parsed.error));

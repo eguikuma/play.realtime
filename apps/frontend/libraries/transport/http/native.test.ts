@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as z from "zod";
-
 import { HttpFailure } from "./errors";
 import { createNativeHttpClient } from "./native";
 

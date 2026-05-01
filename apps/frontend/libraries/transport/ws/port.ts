@@ -10,6 +10,7 @@ export const WsState = {
   Closed: "closed",
   Error: "error",
 } as const;
+
 export type WsState = (typeof WsState)[keyof typeof WsState];
 
 /**

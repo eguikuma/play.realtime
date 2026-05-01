@@ -1,5 +1,4 @@
 import type { z } from "zod";
-
 import { HttpFailure } from "./errors";
 import type { HttpClient } from "./port";
 
@@ -23,6 +22,7 @@ export const createNativeHttpClient = ({ origin }: { origin: string }): HttpClie
       const text = await result.text().catch(() => "");
       throw new HttpFailure(result.status, text || result.statusText);
     }
+
     const payload = await result.json();
     const parsed = response.safeParse(payload);
     if (!parsed.success) {

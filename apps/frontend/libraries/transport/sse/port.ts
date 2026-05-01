@@ -10,6 +10,7 @@ export const SseState = {
   Closed: "closed",
   Error: "error",
 } as const;
+
 export type SseState = (typeof SseState)[keyof typeof SseState];
 
 /**

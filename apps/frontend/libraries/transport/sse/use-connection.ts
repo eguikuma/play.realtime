@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import type { z } from "zod";
-
 import { type SseClient, type SseEvents, SseState } from "./port";
 
 /**

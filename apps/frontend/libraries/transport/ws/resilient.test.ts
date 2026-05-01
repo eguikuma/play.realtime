@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
 import type { WsClient, WsConnection } from "./port";
 import { WsState } from "./port";
 import { createResilientWsClient } from "./resilient";
