@@ -2,6 +2,11 @@
 
 import { type RefObject, useEffect } from "react";
 
+/**
+ * 指定コンテナ外のクリックと Escape キーで `onDismiss` を呼ぶフック
+ * BGM パネルや他のオーバーレイ UI の「外側クリックで閉じる」挙動を共通化するために用意している
+ * `enabled` が `false` の間はリスナーを張らず、閉じている状態で無駄にグローバルイベントを拾わない
+ */
 export const useDismiss = (
   container: RefObject<HTMLElement | null>,
   enabled: boolean,

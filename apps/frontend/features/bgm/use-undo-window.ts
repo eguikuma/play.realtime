@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+/**
+ * undo 窓の残り秒数と期限切れフラグを 250ms おきに更新するフック
+ * 時刻そのものを毎描画計算すると取り逃しが起きるため、サーバ発行の `until` を起点に一定間隔で再計算する
+ */
 export const useUndoWindow = (until: string) => {
   const [remainingMs, setRemainingMs] = useState(() => new Date(until).getTime() - Date.now());
 

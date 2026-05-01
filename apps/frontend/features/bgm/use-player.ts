@@ -2,12 +2,24 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+/**
+ * 音量 / 停止状態を永続化する `localStorage` キー群
+ * キー名はプロダクト固有の接頭辞を付けて、同一ドメインに同居する他アプリとの衝突を避ける
+ */
 const VOLUME_STORAGE_KEY = "rimodoki:bgm:volume";
 
 const PAUSED_STORAGE_KEY = "rimodoki:bgm:paused";
 
+/**
+ * 音量スライダーの初期値、0 〜 100 のスケール、控えめな 5 を選ぶ
+ */
 const DEFAULT_VOLUME = 5;
 
+/**
+ * `<audio>` 要素への `ref` と操作関数を組み立てるフック
+ * 音量と停止状態は `localStorage` に永続化し、リロード / タブ再訪での一貫性を保つ
+ * 自動再生の失敗 (ブラウザ側のユーザー操作要件) は `paused = true` を永続化して、UI 側の再生ボタンから明示再開を促す
+ */
 export const usePlayer = (src: string | null, gain: number) => {
   const ref = useRef<HTMLAudioElement | null>(null);
 

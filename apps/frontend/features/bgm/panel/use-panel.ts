@@ -14,6 +14,10 @@ type Panel = {
   onClose: () => void;
 };
 
+/**
+ * BGM 選曲パネルに必要な描画データと操作ハンドラを組み立てるフック
+ * 選曲または停止を実行すると即座に `onClose` でパネルを閉じ、以降の描画は SSE `Changed` の配信に委ねる
+ */
 export const usePanel = ({ roomId, onClose }: Panel) => {
   const members = useRoom((state) => state.room?.members ?? []);
   const state = useBgm((state) => state.state);

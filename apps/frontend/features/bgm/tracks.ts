@@ -1,5 +1,9 @@
 import type { TrackId } from "@play.realtime/contracts";
 
+/**
+ * 1 曲分のメタデータ
+ * `title` はクレジット表記、`src` は `public/bgms/` 以下の静的配信パス、`gain` は曲ごとの音量補正係数で 0 〜 1 で指定する
+ */
 export type Track = {
   title: string;
   artist: string;
@@ -7,6 +11,10 @@ export type Track = {
   gain: number;
 };
 
+/**
+ * フロントエンドで参照する曲メタデータのマップ
+ * 契約の `TrackId` 全件に対応する 1 件を `satisfies` で型制約し、サーバ側と曲 ID を食い違わせないようにしている
+ */
 export const Tracks = {
   Blues: {
     title: "ブルースバラード",
