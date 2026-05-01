@@ -20,11 +20,16 @@ const buildVibes = (snapshot: Vibe[] = []): VibeRepository => ({
   delete: vi.fn(),
   snapshot: vi.fn(async () => snapshot),
   get: vi.fn(),
+  remove: vi.fn(),
 });
 
 describe("GetVibeSnapshot", () => {
   it("存在しないルームでは RoomNotFound を投げる", async () => {
-    const rooms = { find: vi.fn(async () => null), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => null),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new GetVibeSnapshot(rooms, buildVibes());
 
     await expect(usecase.execute({ roomId })).rejects.toBeInstanceOf(RoomNotFound);
@@ -32,7 +37,11 @@ describe("GetVibeSnapshot", () => {
 
   it("メンバー一覧と現在オンラインのステータス一覧をまとめて返す", async () => {
     const room = buildRoom();
-    const rooms = { find: vi.fn(async () => room), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => room),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const statuses: Vibe[] = [{ memberId, status: "present" }];
     const usecase = new GetVibeSnapshot(rooms, buildVibes(statuses));
 

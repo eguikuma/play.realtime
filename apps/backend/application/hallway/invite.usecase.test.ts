@@ -36,6 +36,7 @@ const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayReposi
   findCallForMember: vi.fn(async () => null),
   findAllCallsInRoom: vi.fn(async () => []),
   deleteCall: vi.fn(),
+  remove: vi.fn(),
   ...overrides,
 });
 
@@ -44,6 +45,7 @@ const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => 
   delete: vi.fn(),
   snapshot: vi.fn(),
   get: vi.fn(async () => "present" as VibeStatus),
+  remove: vi.fn(),
   ...overrides,
 });
 

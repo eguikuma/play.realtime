@@ -196,4 +196,36 @@ export class InMemoryHallwayRepository implements HallwayRepository {
       }
     }
   }
+
+  /**
+   * 指定ルームに紐づく招待と通話を本体と逆引き索引もまとめて破棄する
+   * ルーム生命サイクル終了時に呼ぶ一括破棄で 個別 ID 削除とは別軸で動く
+   */
+  async remove(roomId: RoomId): Promise<void> {
+    const invitationIds = this.invitationsByRoom.get(roomId);
+    if (invitationIds) {
+      for (const id of invitationIds) {
+        const invitation = this.invitations.get(id);
+        if (invitation) {
+          this.invitations.delete(id);
+          this.outgoingByMember.delete(invitation.fromMemberId);
+          this.incomingByMember.delete(invitation.toMemberId);
+        }
+      }
+      this.invitationsByRoom.delete(roomId);
+    }
+    const callIds = this.callsByRoom.get(roomId);
+    if (callIds) {
+      for (const id of callIds) {
+        const call = this.calls.get(id);
+        if (call) {
+          this.calls.delete(id);
+          for (const memberId of call.memberIds) {
+            this.callByMember.delete(memberId);
+          }
+        }
+      }
+      this.callsByRoom.delete(roomId);
+    }
+  }
 }

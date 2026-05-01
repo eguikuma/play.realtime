@@ -28,6 +28,7 @@ const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => 
   delete: vi.fn(),
   snapshot: vi.fn(),
   get: vi.fn(),
+  remove: vi.fn(),
   ...overrides,
 });
 
@@ -36,7 +37,11 @@ const buildHub = (broadcast = vi.fn()): SseHub =>
 
 describe("ChangeVibeStatus", () => {
   it("存在しないルームへの変更は RoomNotFound を投げる", async () => {
-    const rooms = { find: vi.fn(async () => null), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => null),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new ChangeVibeStatus(rooms, buildVibes(), buildHub());
 
     await expect(
@@ -45,7 +50,11 @@ describe("ChangeVibeStatus", () => {
   });
 
   it("接続単位でステータスを保存し集約結果を Update として購読者全員に配信する", async () => {
-    const rooms = { find: vi.fn(async () => buildRoom()), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const vibes = buildVibes({
       save: vi.fn(async () => ({ isFirst: false, aggregated: "present" as VibeStatus })),
     });

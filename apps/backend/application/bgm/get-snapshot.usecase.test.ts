@@ -24,18 +24,27 @@ const buildRoom = (): Room =>
 const buildBgms = (initial: BgmState | null): BgmRepository => ({
   get: vi.fn(async () => initial),
   save: vi.fn(),
+  remove: vi.fn(),
 });
 
 describe("GetBgmSnapshot", () => {
   it("存在しないルームでは RoomNotFound を投げる", async () => {
-    const rooms = { find: vi.fn(async () => null), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => null),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new GetBgmSnapshot(rooms, buildBgms(null));
 
     await expect(usecase.execute({ roomId })).rejects.toBeInstanceOf(RoomNotFound);
   });
 
   it("repository に entry が無い room では empty state を返す", async () => {
-    const rooms = { find: vi.fn(async () => buildRoom()), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new GetBgmSnapshot(rooms, buildBgms(null));
 
     const result = await usecase.execute({ roomId });
@@ -52,7 +61,11 @@ describe("GetBgmSnapshot", () => {
       },
       undoable: null,
     };
-    const rooms = { find: vi.fn(async () => buildRoom()), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new GetBgmSnapshot(rooms, buildBgms(existing));
 
     const result = await usecase.execute({ roomId });

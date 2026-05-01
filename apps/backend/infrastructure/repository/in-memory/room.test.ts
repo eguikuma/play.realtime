@@ -52,4 +52,19 @@ describe("InMemoryRoomRepository", () => {
 
     expect(found).toBeNull();
   });
+
+  it("保存済みのルームを取り除くと find は null を返す", async () => {
+    const room = create({ id: roomId, host, createdAt });
+    await repository.save(room);
+
+    await repository.remove(roomId);
+
+    expect(await repository.find(roomId)).toBeNull();
+  });
+
+  it("存在しないルームを取り除いても例外を投げない", async () => {
+    const unknown = RoomId.parse("unknown-room-9999");
+
+    await expect(repository.remove(unknown)).resolves.toBeUndefined();
+  });
 });

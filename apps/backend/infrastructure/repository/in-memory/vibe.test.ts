@@ -87,4 +87,27 @@ describe("InMemoryVibeRepository", () => {
     expect(await repository.snapshot(roomA)).toEqual([{ memberId, status: "present" }]);
     expect(await repository.snapshot(roomB)).toEqual([{ memberId, status: "focused" }]);
   });
+
+  it("ルーム単位の取り除きで配下の全接続データが破棄される", async () => {
+    const repository = new InMemoryVibeRepository();
+    const target = "room-abc-aaaa" as RoomId;
+    const keep = "room-abc-bbbb" as RoomId;
+    const memberId = "member-alice" as MemberId;
+
+    await repository.save(target, memberId, "conn-1" as ConnectionId, "present");
+    await repository.save(target, memberId, "conn-2" as ConnectionId, "focused");
+    await repository.save(keep, memberId, "conn-3" as ConnectionId, "present");
+
+    await repository.remove(target);
+
+    expect(await repository.snapshot(target)).toEqual([]);
+    expect(await repository.get(target, memberId)).toBeNull();
+    expect(await repository.snapshot(keep)).toEqual([{ memberId, status: "present" }]);
+  });
+
+  it("存在しないルームを取り除いても例外を投げない", async () => {
+    const repository = new InMemoryVibeRepository();
+
+    await expect(repository.remove("room-abc-zzzz" as RoomId)).resolves.toBeUndefined();
+  });
 });

@@ -34,8 +34,12 @@ const buildHub = (broadcast = vi.fn()): SseHub =>
 
 describe("PostMurmur", () => {
   it("存在しないルームへの投稿は RoomNotFound を投げる", async () => {
-    const rooms = { find: vi.fn(async () => null), save: vi.fn() } as RoomRepository;
-    const murmurs = { save: vi.fn(), latest: vi.fn() } as MurmurRepository;
+    const rooms = {
+      find: vi.fn(async () => null),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
+    const murmurs = { save: vi.fn(), latest: vi.fn(), remove: vi.fn() } as MurmurRepository;
     const usecase = new PostMurmur(rooms, murmurs, buildIds(), buildHub());
 
     await expect(usecase.execute({ roomId, memberId, text: "hi" })).rejects.toBeInstanceOf(
@@ -44,9 +48,13 @@ describe("PostMurmur", () => {
   });
 
   it("投稿成功時に一言をルームに記録する", async () => {
-    const rooms = { find: vi.fn(async () => buildRoom()), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const save = vi.fn();
-    const murmurs = { save, latest: vi.fn() } as MurmurRepository;
+    const murmurs = { save, latest: vi.fn(), remove: vi.fn() } as MurmurRepository;
     const usecase = new PostMurmur(rooms, murmurs, buildIds(), buildHub());
 
     const result = await usecase.execute({ roomId, memberId, text: "good morning" });
@@ -56,8 +64,12 @@ describe("PostMurmur", () => {
   });
 
   it("投稿成功時に一言を購読者全員へ即時配信する", async () => {
-    const rooms = { find: vi.fn(async () => buildRoom()), save: vi.fn() } as RoomRepository;
-    const murmurs = { save: vi.fn(), latest: vi.fn() } as MurmurRepository;
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
+    const murmurs = { save: vi.fn(), latest: vi.fn(), remove: vi.fn() } as MurmurRepository;
     const broadcast = vi.fn();
     const usecase = new PostMurmur(rooms, murmurs, buildIds(), buildHub(broadcast));
 

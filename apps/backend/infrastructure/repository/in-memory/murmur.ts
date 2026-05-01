@@ -30,4 +30,12 @@ export class InMemoryMurmurRepository implements MurmurRepository {
     const items = this.store.get(roomId) ?? [];
     return items.slice(-limit);
   }
+
+  /**
+   * 指定ルームのひとこと投稿を台帳から取り除く
+   * 既に存在しない場合も冪等に無視する
+   */
+  async remove(roomId: RoomId): Promise<void> {
+    this.store.delete(roomId);
+  }
 }

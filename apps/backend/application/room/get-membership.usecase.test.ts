@@ -17,7 +17,11 @@ const buildRoom = (): Room =>
 
 describe("GetRoomMembership", () => {
   it("存在しないルームでは RoomNotFound を投げる", async () => {
-    const rooms = { find: vi.fn(async () => null), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => null),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new GetRoomMembership(rooms);
 
     await expect(usecase.execute({ roomId, memberId: hostId })).rejects.toBeInstanceOf(
@@ -26,7 +30,11 @@ describe("GetRoomMembership", () => {
   });
 
   it("ルームにいないメンバーでは MemberNotFound を投げる", async () => {
-    const rooms = { find: vi.fn(async () => buildRoom()), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new GetRoomMembership(rooms);
 
     await expect(usecase.execute({ roomId, memberId: otherId })).rejects.toBeInstanceOf(
@@ -36,7 +44,11 @@ describe("GetRoomMembership", () => {
 
   it("ルームに所属するメンバーに対してルームとメンバーの両方を返す", async () => {
     const room = buildRoom();
-    const rooms = { find: vi.fn(async () => room), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => room),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new GetRoomMembership(rooms);
 
     const result = await usecase.execute({ roomId, memberId: hostId });

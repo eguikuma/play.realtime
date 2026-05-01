@@ -9,6 +9,7 @@ describe("GetMurmurSnapshot", () => {
     const murmurs: MurmurRepository = {
       save: vi.fn(),
       latest: vi.fn(async () => items),
+      remove: vi.fn(),
     };
     const usecase = new GetMurmurSnapshot(murmurs);
     const roomId = "room-abc-1234" as RoomId;

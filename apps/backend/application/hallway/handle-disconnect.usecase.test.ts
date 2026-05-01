@@ -28,6 +28,7 @@ const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayReposi
   findCallForMember: vi.fn(async () => null),
   findAllCallsInRoom: vi.fn(async () => []),
   deleteCall: vi.fn(),
+  remove: vi.fn(),
   ...overrides,
 });
 

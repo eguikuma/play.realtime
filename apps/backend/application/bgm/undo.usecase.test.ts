@@ -31,6 +31,7 @@ const buildRoom = (): Room =>
 const buildBgms = (initial: BgmState | null): BgmRepository => ({
   get: vi.fn(async () => initial),
   save: vi.fn(),
+  remove: vi.fn(),
 });
 
 const buildHub = (broadcast = vi.fn()): SseHub =>
@@ -57,7 +58,11 @@ const existing: BgmState = {
 
 describe("UndoBgm", () => {
   it("存在しないルームに対する undo は RoomNotFound を投げる", async () => {
-    const rooms = { find: vi.fn(async () => null), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => null),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new UndoBgm(rooms, buildBgms(existing), buildHub());
 
     await expect(usecase.execute({ roomId, memberId: alice, now })).rejects.toBeInstanceOf(
@@ -66,7 +71,11 @@ describe("UndoBgm", () => {
   });
 
   it("他 member の undo は previous に戻した state を Changed で配信する", async () => {
-    const rooms = { find: vi.fn(async () => buildRoom()), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const bgms = buildBgms(existing);
     const broadcast = vi.fn();
     const usecase = new UndoBgm(rooms, bgms, buildHub(broadcast));
@@ -80,7 +89,11 @@ describe("UndoBgm", () => {
   });
 
   it("domain.undo が投げた Error はそのまま呼び出し側に伝わる", async () => {
-    const rooms = { find: vi.fn(async () => buildRoom()), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const empty: BgmState = { current: null, undoable: null };
     const usecase = new UndoBgm(rooms, buildBgms(empty), buildHub());
 

@@ -24,6 +24,7 @@ const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => 
   delete: vi.fn(),
   snapshot: vi.fn(),
   get: vi.fn(),
+  remove: vi.fn(),
   ...overrides,
 });
 

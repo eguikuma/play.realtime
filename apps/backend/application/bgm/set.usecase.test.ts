@@ -27,6 +27,7 @@ const buildRoom = (): Room =>
 const buildBgms = (initial: BgmState | null = null): BgmRepository => ({
   get: vi.fn(async () => initial),
   save: vi.fn(),
+  remove: vi.fn(),
 });
 
 const buildHub = (broadcast = vi.fn()): SseHub =>
@@ -34,7 +35,11 @@ const buildHub = (broadcast = vi.fn()): SseHub =>
 
 describe("SetBgm", () => {
   it("存在しないルームに対する set は RoomNotFound を投げる", async () => {
-    const rooms = { find: vi.fn(async () => null), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => null),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new SetBgm(rooms, buildBgms(), buildHub());
 
     await expect(usecase.execute({ roomId, memberId, trackId, now })).rejects.toBeInstanceOf(
@@ -43,7 +48,11 @@ describe("SetBgm", () => {
   });
 
   it("新 state を save し Changed event で購読者全員に配信する", async () => {
-    const rooms = { find: vi.fn(async () => buildRoom()), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const bgms = buildBgms();
     const broadcast = vi.fn();
     const usecase = new SetBgm(rooms, bgms, buildHub(broadcast));

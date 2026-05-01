@@ -26,4 +26,12 @@ export class InMemoryBgmRepository implements BgmRepository {
   async save(roomId: RoomId, state: BgmState): Promise<void> {
     this.store.set(roomId, state);
   }
+
+  /**
+   * 指定ルームの BGM 状態を台帳から取り除く
+   * 既に存在しない場合も冪等に無視する
+   */
+  async remove(roomId: RoomId): Promise<void> {
+    this.store.delete(roomId);
+  }
 }

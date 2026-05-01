@@ -26,6 +26,7 @@ const buildRoom = (): Room =>
 const buildBgms = (initial: BgmState | null = null): BgmRepository => ({
   get: vi.fn(async () => initial),
   save: vi.fn(),
+  remove: vi.fn(),
 });
 
 const buildHub = (broadcast = vi.fn()): SseHub =>
@@ -42,14 +43,22 @@ const existing: BgmState = {
 
 describe("StopBgm", () => {
   it("存在しないルームに対する stop は RoomNotFound を投げる", async () => {
-    const rooms = { find: vi.fn(async () => null), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => null),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new StopBgm(rooms, buildBgms(existing), buildHub());
 
     await expect(usecase.execute({ roomId, memberId, now })).rejects.toBeInstanceOf(RoomNotFound);
   });
 
   it("鳴っている曲を無音化し previous に退避した state を Changed で配信する", async () => {
-    const rooms = { find: vi.fn(async () => buildRoom()), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const bgms = buildBgms(existing);
     const broadcast = vi.fn();
     const usecase = new StopBgm(rooms, bgms, buildHub(broadcast));

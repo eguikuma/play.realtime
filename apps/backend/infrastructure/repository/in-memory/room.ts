@@ -26,4 +26,12 @@ export class InMemoryRoomRepository implements RoomRepository {
   async find(id: RoomId): Promise<Room | null> {
     return this.store.get(id) ?? null;
   }
+
+  /**
+   * 指定 ID のルームを台帳から取り除く
+   * 既に存在しない場合も Map.delete が false を返すだけなので冪等になる
+   */
+  async remove(id: RoomId): Promise<void> {
+    this.store.delete(id);
+  }
 }

@@ -51,4 +51,25 @@ describe("InMemoryMurmurRepository", () => {
     expect(a.map((each) => each.text)).toEqual(["a"]);
     expect(b.map((each) => each.text)).toEqual(["b"]);
   });
+
+  it("ルーム単位の取り除きで配下の投稿が破棄される", async () => {
+    const repository = new InMemoryMurmurRepository();
+    const target = "room-abc-aaaa" as RoomId;
+    const keep = "room-abc-bbbb" as RoomId;
+
+    await repository.save(buildMurmur(target, "x", 1));
+    await repository.save(buildMurmur(target, "y", 2));
+    await repository.save(buildMurmur(keep, "z", 3));
+
+    await repository.remove(target);
+
+    expect(await repository.latest(target, 10)).toEqual([]);
+    expect((await repository.latest(keep, 10)).map((each) => each.text)).toEqual(["z"]);
+  });
+
+  it("存在しないルームを取り除いても例外を投げない", async () => {
+    const repository = new InMemoryMurmurRepository();
+
+    await expect(repository.remove("room-abc-zzzz" as RoomId)).resolves.toBeUndefined();
+  });
 });

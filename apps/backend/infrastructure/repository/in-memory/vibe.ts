@@ -80,4 +80,12 @@ export class InMemoryVibeRepository implements VibeRepository {
     }
     return aggregate([...connections.values()]);
   }
+
+  /**
+   * 指定ルームの階層ごと台帳から取り除く
+   * 既に存在しない場合も Map.delete が false を返すだけなので冪等になる
+   */
+  async remove(roomId: RoomId): Promise<void> {
+    this.store.delete(roomId);
+  }
 }
