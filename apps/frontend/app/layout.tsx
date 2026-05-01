@@ -48,7 +48,8 @@ const zenKaku = Zen_Kaku_Gothic_New({
 
 export const metadata: Metadata = {
   title: "りもどき",
-  description: "リモートだけどリモートじゃない — ブラウザだけで空気を共有する",
+  description:
+    "リモートだけど、リモートじゃない、出社していたら自然に発生していた日常をブラウザだけで取り戻す",
 };
 
 /**
