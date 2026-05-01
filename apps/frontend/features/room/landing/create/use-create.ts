@@ -6,7 +6,7 @@ import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
 
 import { useRoom } from "@/features/room/store";
-import { http } from "@/libraries/clients";
+import { http } from "@/libraries/http-client";
 
 /**
  * ルーム新規発行のビューモデルを組み立てるフック

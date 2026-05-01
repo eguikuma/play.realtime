@@ -3,7 +3,7 @@
 import { ChangeVibeStatusRequest, type RoomId, type VibeStatus } from "@play.realtime/contracts";
 import { z } from "zod";
 
-import { http } from "@/libraries/clients";
+import { http } from "@/libraries/http-client";
 
 import { useVibe } from "./store";
 

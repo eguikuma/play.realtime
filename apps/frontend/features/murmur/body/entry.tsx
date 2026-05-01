@@ -3,14 +3,7 @@
 import type { Murmur } from "@play.realtime/contracts";
 
 import { cn } from "@/libraries/classname";
-
-/**
- * ISO 形式の日時を「時 分」の 2 桁表現に整える
- */
-const formatClock = (iso: string) => {
-  const date = new Date(iso);
-  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-};
+import { toHHMM } from "@/libraries/date";
 
 /**
  * 投稿 1 件の入力
@@ -41,7 +34,7 @@ export const Entry = ({ murmur, authorName, fresh }: Entry) => (
       </span>
       <span className="font-bold font-display text-[14px] text-ink">{authorName}</span>
       <time dateTime={murmur.postedAt} className="font-sans text-[11px] text-ink-mute tabular-nums">
-        {formatClock(murmur.postedAt)}
+        {toHHMM(murmur.postedAt)}
       </time>
     </header>
     <p

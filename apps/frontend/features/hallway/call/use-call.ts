@@ -4,18 +4,11 @@ import type { CallId, MemberId } from "@play.realtime/contracts";
 import { type SyntheticEvent, useRef, useState } from "react";
 
 import { useRoom } from "@/features/room/store";
+import { toHHMM } from "@/libraries/date";
 
 import { useHallway } from "../store";
 import { useActions } from "../use-actions";
 import { useAutoscroll } from "../use-autoscroll";
-
-/**
- * ISO 形式の日時を「時 分」の 2 桁表現に整える
- */
-const formatClock = (iso: string) => {
-  const date = new Date(iso);
-  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-};
 
 /**
  * 通話フックの入力
@@ -57,7 +50,7 @@ export const useCall = ({ callId }: Call) => {
       key: `${message.sentAt}-${message.fromMemberId}-${message.text.length}`,
       text: message.text,
       sentAt: message.sentAt,
-      clock: formatClock(message.sentAt),
+      clock: toHHMM(message.sentAt),
       fromName: mine ? "じぶん" : nameOf(message.fromMemberId),
       mine,
       hasMeta,

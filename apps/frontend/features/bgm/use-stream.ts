@@ -3,10 +3,9 @@
 import { BgmEvents, type RoomId } from "@play.realtime/contracts";
 import { useEffect } from "react";
 import type { z } from "zod";
-
-import { sse } from "@/libraries/clients";
 import { useConnectionStatus } from "@/libraries/connection-status/store";
 import { origin } from "@/libraries/environment";
+import { sse } from "@/libraries/sse-client";
 import { useSse } from "@/libraries/transport";
 
 import { useBgm } from "./store";

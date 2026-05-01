@@ -4,11 +4,10 @@ import { HallwayServerMessages, type RoomId } from "@play.realtime/contracts";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import type { z } from "zod";
-
-import { ws } from "@/libraries/clients";
 import { useConnectionStatus } from "@/libraries/connection-status/store";
 import { wsOrigin } from "@/libraries/environment";
 import { useWs } from "@/libraries/transport/ws";
+import { ws } from "@/libraries/ws-client";
 
 import { hallwayErrorMessages } from "./errors";
 import { useHallway } from "./store";

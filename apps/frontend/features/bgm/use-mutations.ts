@@ -2,7 +2,7 @@
 
 import { BgmState, type RoomId, SetBgmRequest, type TrackId } from "@play.realtime/contracts";
 
-import { http } from "@/libraries/clients";
+import { http } from "@/libraries/http-client";
 
 /**
  * BGM 変更系の API を呼び出す変更用フック

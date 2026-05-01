@@ -4,7 +4,7 @@ import { type Member, Room, type RoomId, RoomMembership } from "@play.realtime/c
 import { notFound } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { http } from "@/libraries/clients";
+import { http } from "@/libraries/http-client";
 import { HttpFailure } from "@/libraries/transport/http";
 
 import { isMissing } from "./errors";

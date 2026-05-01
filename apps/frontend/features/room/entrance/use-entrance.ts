@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
 
-import { http } from "@/libraries/clients";
+import { http } from "@/libraries/http-client";
 
 import { isMissing } from "../errors";
 import { useRoom } from "../store";

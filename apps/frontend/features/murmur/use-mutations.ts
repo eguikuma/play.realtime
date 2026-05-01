@@ -2,7 +2,7 @@
 
 import { Murmur, PostMurmurRequest, type RoomId } from "@play.realtime/contracts";
 
-import { http } from "@/libraries/clients";
+import { http } from "@/libraries/http-client";
 
 /**
  * ひとこと投稿の変更用フック
