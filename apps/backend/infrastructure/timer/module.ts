@@ -7,6 +7,7 @@ import { InMemoryHallwayInvitationTimers } from "./in-memory/hallway-invitation-
 import { InMemoryRoomLifecycleGrace } from "./in-memory/room-lifecycle-grace";
 import { InMemoryVibePresenceGrace } from "./in-memory/vibe-presence-grace";
 import { RedisExpiredListener } from "./redis/expired-listener";
+import { RedisHallwayInvitationTimers } from "./redis/hallway-invitation-timers";
 import { RedisVibePresenceGrace } from "./redis/vibe-presence-grace";
 
 /**
@@ -45,7 +46,17 @@ import { RedisVibePresenceGrace } from "./redis/vibe-presence-grace";
     },
     {
       provide: HallwayInvitationTimers,
-      useFactory: () => new InMemoryHallwayInvitationTimers(),
+      useFactory: (environment: Environment, listener: RedisExpiredListener | null) => {
+        if (environment.STORAGE_DRIVER === "redis") {
+          return new RedisHallwayInvitationTimers(
+            environment.REDIS_URL as string,
+            listener as RedisExpiredListener,
+          );
+        }
+
+        return new InMemoryHallwayInvitationTimers();
+      },
+      inject: [Environment, RedisExpiredListener],
     },
     {
       provide: RoomLifecycleGrace,
