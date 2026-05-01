@@ -3,12 +3,20 @@ import { PubSub } from "../../../application/ports/pubsub";
 import type { SseConnection } from "./connection";
 import { SseHeartbeat } from "./heartbeat";
 
+/**
+ * PubSub を経由して SSE クライアントへ配信するイベント 1 件の内部形式
+ * `name` は SSE の `event` 行、`id` は `Last-Event-ID` の再送起点に対応する
+ */
 type Envelope = {
   name: string;
   data: unknown;
   id?: string;
 };
 
+/**
+ * SSE 接続を PubSub トピックへ紐付け、クライアントへの emit を集約するサービス
+ * usecase 層は `broadcast(topic, name, data, id?)` を呼ぶだけでよく、接続単位の購読管理と heartbeat は hub 側に閉じ込めている
+ */
 @Injectable()
 export class SseHub {
   constructor(
@@ -16,6 +24,11 @@ export class SseHub {
     private readonly heartbeat: SseHeartbeat,
   ) {}
 
+  /**
+   * 接続を開いてトピックを購読し、heartbeat を開始する
+   * `onAttach` は購読成立直後に 1 度だけ呼ばれる、`Welcome` や初回 `Snapshot` の送出に使う
+   * 接続切断時は購読解除と heartbeat 停止を自動で行う
+   */
   attach(
     connection: SseConnection,
     options: {
@@ -38,6 +51,9 @@ export class SseHub {
     void options.onAttach?.(connection);
   }
 
+  /**
+   * 指定トピックへ `Envelope` を配信する、`id` は省略時 undefined を保持しない形でシリアライズする
+   */
   async broadcast<T>(topic: string, name: string, data: T, id?: string): Promise<void> {
     const envelope: Envelope = { name, data, ...(id !== undefined ? { id } : {}) };
     await this.pubsub.publish(topic, envelope);
