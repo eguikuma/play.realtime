@@ -32,7 +32,7 @@ export const Compose = ({ roomId }: Compose) => {
         maxLength={compose.maxLength}
         placeholder="いま、思いついたこと"
         disabled={compose.disabled}
-        className="h-9 flex-1 border-0 bg-transparent font-sans text-[15px] text-ink placeholder:text-ink-mute/70 focus-visible:ring-0"
+        className="h-9 flex-1 border-0 bg-transparent font-sans text-base text-ink placeholder:text-ink-mute/70 focus-visible:ring-0"
       />
       <span
         aria-live="polite"

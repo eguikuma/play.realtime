@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Geist,
   Instrument_Serif,
@@ -50,6 +50,16 @@ export const metadata: Metadata = {
   title: "りもどき",
   description:
     "リモートだけど、リモートじゃない、出社していたら自然に発生していた日常をブラウザだけで取り戻す",
+};
+
+/**
+ * モバイルの入力フォーカス時オートズームを抑える viewport 指定
+ * `maximumScale: 1` で focus 時の拡大を止め、`userScalable` は明示せずブラウザ既定のピンチ操作は許す
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 /**
