@@ -148,7 +148,9 @@ describe.skipIf(!REDIS_URL)("RedisHallwayRepository", () => {
     expect(await repository.findCallForMember(inviterId)).toBeNull();
     expect(await repository.findCallForMember(inviteeId)).toBeNull();
     expect(await repository.findAllCallsInRoom(roomId)).toEqual([]);
-    expect(await repository.findInvitation("keep-invitation" as InvitationId)).toEqual(keepInvitation);
+    expect(await repository.findInvitation("keep-invitation" as InvitationId)).toEqual(
+      keepInvitation,
+    );
   });
 
   it("存在しないルームを取り除いても例外を投げない", async () => {
