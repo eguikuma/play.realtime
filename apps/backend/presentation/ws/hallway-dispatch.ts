@@ -1,12 +1,19 @@
 import {
   HallwayClientMessages,
-  type HallwayCommandName,
+  HallwayCommandName,
   type MemberId,
   type RoomId,
 } from "@play.realtime/contracts";
 import type { z } from "zod";
 import type { WsConnection } from "../../infrastructure/transport/ws";
-import { hallwayErrorCodeOf, isHallwayCommand } from "./hallway-errors";
+import { hallwayErrorCodeOf } from "./hallway-errors";
+
+/**
+ * 受信した名前がクライアント命令として妥当かを型安全に判定する
+ * 判定元は contracts 側の `HallwayCommandName` Zod enum に一本化し 手書きの一覧との二重管理を避ける
+ */
+export const isHallwayCommand = (name: string): name is HallwayCommandName =>
+  HallwayCommandName.safeParse(name).success;
 
 /**
  * ハンドラが参照する接続ごとの文脈

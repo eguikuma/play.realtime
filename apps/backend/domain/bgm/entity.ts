@@ -11,7 +11,7 @@ const UNDO_WINDOW_MS = 10_000;
 /**
  * 高速な検証のために `TrackIds` を集合として持ったキャッシュ
  */
-const VALID_TRACK_IDS = new Set<string>(TrackIds);
+const ValidTrackIds = new Set<string>(TrackIds);
 
 /**
  * 無音で undo 窓も持たない初期状態を返す
@@ -28,7 +28,7 @@ export const set = (
   state: BgmState,
   input: { trackId: TrackId; memberId: MemberId; now: Date },
 ): BgmState => {
-  if (!VALID_TRACK_IDS.has(input.trackId)) {
+  if (!ValidTrackIds.has(input.trackId)) {
     throw new UnknownTrack(input.trackId);
   }
   return {

@@ -1,4 +1,4 @@
-import type { HallwayCommandName, HallwayErrorCode } from "@play.realtime/contracts";
+import type { HallwayErrorCode } from "@play.realtime/contracts";
 import {
   CallNotFound,
   InvitationNotFound,
@@ -32,21 +32,3 @@ export const hallwayErrorCodeOf = (error: unknown): HallwayErrorCode | null => {
   const entry = HallwayErrors.find(({ match }) => match(error));
   return entry?.code ?? null;
 };
-
-/**
- * クライアント命令として妥当な名前の列
- */
-const HallwayCommandNames: readonly HallwayCommandName[] = [
-  "Invite",
-  "Accept",
-  "Decline",
-  "Cancel",
-  "Send",
-  "Leave",
-];
-
-/**
- * 受信した名前がクライアント命令として妥当かを型安全に判定する
- */
-export const isHallwayCommand = (name: string): name is HallwayCommandName =>
-  (HallwayCommandNames as readonly string[]).includes(name);

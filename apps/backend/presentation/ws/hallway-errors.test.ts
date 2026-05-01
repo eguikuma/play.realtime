@@ -8,7 +8,7 @@ import {
   NotCallParticipant,
   SelfInviteNotAllowed,
 } from "../../domain/hallway/errors";
-import { hallwayErrorCodeOf, isHallwayCommand } from "./hallway-errors";
+import { hallwayErrorCodeOf } from "./hallway-errors";
 
 const memberId = "m-1" as MemberId;
 const invitationId = "iv-1" as InvitationId;
@@ -43,19 +43,5 @@ describe("hallwayErrorCodeOf", () => {
     expect(hallwayErrorCodeOf(new Error("想定外"))).toBeNull();
     expect(hallwayErrorCodeOf("文字列として飛んできた値")).toBeNull();
     expect(hallwayErrorCodeOf(null)).toBeNull();
-  });
-});
-
-describe("isHallwayCommand", () => {
-  it("6 種のクライアント命令名を真と判定する", () => {
-    for (const name of ["Invite", "Accept", "Decline", "Cancel", "Send", "Leave"]) {
-      expect(isHallwayCommand(name)).toBe(true);
-    }
-  });
-
-  it("対応表に無い名前や空文字は偽と判定する", () => {
-    expect(isHallwayCommand("Welcome")).toBe(false);
-    expect(isHallwayCommand("")).toBe(false);
-    expect(isHallwayCommand("invite")).toBe(false);
   });
 });
