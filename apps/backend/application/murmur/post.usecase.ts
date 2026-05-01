@@ -27,6 +27,7 @@ export class PostMurmur {
     if (!room) {
       throw new RoomNotFound(input.roomId);
     }
+
     const murmur = post({
       id: this.ids.murmur(),
       roomId: input.roomId,
@@ -35,7 +36,9 @@ export class PostMurmur {
       postedAt: new Date().toISOString(),
     });
     await this.murmurs.save(murmur);
+
     await this.broadcaster.posted(input.roomId, murmur, murmur.id);
+
     return murmur;
   }
 }
