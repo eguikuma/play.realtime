@@ -1,5 +1,6 @@
 "use client";
 
+import { Dot } from "../dot";
 import { Countdown } from "./countdown";
 import { INVITATION_TTL_MS } from "./ttl";
 
@@ -41,10 +42,7 @@ export const Invitation = ({ fromName, expiresAt, onAccept, onDecline }: Invitat
         />
         <div className="flex flex-col gap-3">
           <span className="inline-flex items-center gap-2 self-start rounded-pill bg-lamp-soft/60 px-2.5 py-0.5 font-medium font-sans text-[11px] text-lamp">
-            <span
-              aria-hidden
-              className="inline-flex size-1 animate-pulse-dot rounded-full bg-lamp"
-            />
+            <Dot className="inline-flex size-1" />
             話したいって
           </span>
           <p className="font-display text-[20px] text-ink leading-snug">

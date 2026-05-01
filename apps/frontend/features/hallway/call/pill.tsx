@@ -2,6 +2,7 @@
 
 import { ChevronUp, PhoneOff } from "lucide-react";
 import { Monogram } from "@/components/monogram";
+import { Dot } from "../dot";
 
 type Pill = {
   /** 通話相手の表示名、アバターと名前ラベルに使う */
@@ -28,7 +29,7 @@ export const Pill = ({ peerName, onExpand, onLeave }: Pill) => (
         {peerName}
       </span>
       <span className="mt-0.5 flex items-center gap-1 font-sans text-[10px] text-ink-mute leading-none">
-        <span aria-hidden className="size-1 animate-pulse-dot rounded-full bg-lamp" />
+        <Dot className="size-1" />
         話してる
       </span>
     </div>

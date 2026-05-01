@@ -2,6 +2,7 @@
 
 import { ChevronDown, PhoneOff } from "lucide-react";
 import { Monogram } from "@/components/monogram";
+import { Dot } from "../dot";
 
 type Head = {
   /** 通話相手の表示名、頭文字アバターと名前ラベルに使う */
@@ -28,7 +29,7 @@ export const Head = ({ peerName, onLeave, onMinimize }: Head) => (
         {peerName}
       </span>
       <span className="flex items-center gap-1.5 font-sans text-[11px] text-ink-mute">
-        <span aria-hidden className="inline-flex size-1.5 animate-pulse-dot rounded-full bg-lamp" />
+        <Dot className="inline-flex size-1.5" />
         話してる
       </span>
     </div>
