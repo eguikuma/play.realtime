@@ -1,0 +1,43 @@
+{
+  "name": "@play.realtime/backend",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/main.js",
+  "engines": {
+    "node": ">=22.11.0"
+  },
+  "scripts": {
+    "dev": "pnpm -F @play.realtime/contracts -F @play.realtime/transport-protocol run build && nest start --watch",
+    "build": "pnpm -F @play.realtime/contracts -F @play.realtime/transport-protocol run build && nest build",
+    "start": "node dist/main.js",
+    "verify": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:list": "vitest run --reporter=verbose"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/platform-express": "^11.0.0",
+    "@play.realtime/contracts": "workspace:*",
+    "@play.realtime/transport-protocol": "workspace:*",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.0",
+    "ws": "^8.20.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/schematics": "^11.0.0",
+    "@play.realtime/tsconfig": "workspace:*",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/express-serve-static-core": "^5.1.1",
+    "@types/node": "^25.6.0",
+    "@types/ws": "^8.18.1",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.4"
+  }
+}

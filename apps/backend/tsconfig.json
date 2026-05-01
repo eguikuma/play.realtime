@@ -1,0 +1,11 @@
+{
+  "extends": "../../packages/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist",
+    "incremental": false,
+    "types": ["node", "express", "cookie-parser"]
+  },
+  "include": ["**/*"],
+  "exclude": ["node_modules", "dist"]
+}
