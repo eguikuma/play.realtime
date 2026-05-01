@@ -1,6 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { Topic } from "@play.realtime/contracts";
-import type { z } from "zod";
 import { PubSub } from "../../../application/ports/pubsub";
 import type { SseConnection } from "./connection";
 import { SseHeartbeat } from "./heartbeat";
@@ -16,14 +15,9 @@ type Envelope = {
 };
 
 /**
- * SSE `broadcast` の引数を contracts 由来のイベント辞書で束縛するための型
- * キー側は辞書キーの文字列リテラルに、値側は対応する Zod schema から推論された payload 型に狭まる
- */
-type EventMap = Record<string, z.ZodType>;
-
-/**
  * SSE 接続を PubSub トピックへ紐付け、クライアントへの emit を集約するサービス
- * usecase 層は `broadcast(topic, name, data, id?)` を呼ぶだけでよく、接続単位の購読管理と heartbeat は hub 側に閉じ込めている
+ * usecase 層は feature 別の broadcaster (`VibeBroadcaster` 等) 経由でこの hub を呼び、`name` と `data` を contracts のイベント辞書で型束縛してから配信する
+ * 接続単位の購読管理と heartbeat は hub 側に閉じ込めている
  */
 @Injectable()
 export class SseHub {
@@ -61,15 +55,9 @@ export class SseHub {
 
   /**
    * 指定トピックへ `Envelope` を配信する、`id` は省略時 undefined を保持しない形でシリアライズする
-   * `events` は contracts 由来のイベント辞書で、`name` が辞書キーに、`data` が対応 schema の推論型に縛られる
+   * 直接呼ぶことは想定しておらず、feature 別 broadcaster が contracts のイベント辞書で型束縛した上で呼び出す
    */
-  async broadcast<E extends EventMap, K extends Extract<keyof E, string>>(
-    _events: E,
-    topic: Topic,
-    name: K,
-    data: z.infer<E[K]>,
-    id?: string,
-  ): Promise<void> {
+  async broadcast<T>(topic: Topic, name: string, data: T, id?: string): Promise<void> {
     const envelope: Envelope = { name, data, ...(id !== undefined ? { id } : {}) };
     await this.pubsub.publish(topic, envelope);
   }

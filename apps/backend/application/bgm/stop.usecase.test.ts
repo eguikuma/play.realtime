@@ -1,5 +1,4 @@
 import {
-  BgmEvents,
   type BgmState,
   type MemberId,
   Room,
@@ -9,7 +8,7 @@ import {
 import { describe, expect, it, vi } from "vitest";
 import type { BgmRepository } from "../../domain/bgm";
 import { RoomNotFound, type RoomRepository } from "../../domain/room";
-import type { SseHub } from "../../infrastructure/transport/sse";
+import type { BgmBroadcaster } from "./broadcaster";
 import { StopBgm } from "./stop.usecase";
 
 const roomId = "room-abc-1234" as RoomId;
@@ -30,8 +29,8 @@ const buildBgms = (initial: BgmState | null = null): BgmRepository => ({
   remove: vi.fn(),
 });
 
-const buildHub = (broadcast = vi.fn()): SseHub =>
-  ({ broadcast, attach: vi.fn() }) as unknown as SseHub;
+const buildBroadcaster = (broadcast = vi.fn()): BgmBroadcaster =>
+  ({ broadcast }) as unknown as BgmBroadcaster;
 
 const existing: BgmState = {
   current: {
@@ -49,7 +48,7 @@ describe("StopBgm", () => {
       save: vi.fn(),
       remove: vi.fn(),
     } as RoomRepository;
-    const usecase = new StopBgm(rooms, buildBgms(existing), buildHub());
+    const usecase = new StopBgm(rooms, buildBgms(existing), buildBroadcaster());
 
     await expect(usecase.execute({ roomId, memberId, now })).rejects.toBeInstanceOf(RoomNotFound);
   });
@@ -62,7 +61,7 @@ describe("StopBgm", () => {
     } as RoomRepository;
     const bgms = buildBgms(existing);
     const broadcast = vi.fn();
-    const usecase = new StopBgm(rooms, bgms, buildHub(broadcast));
+    const usecase = new StopBgm(rooms, bgms, buildBroadcaster(broadcast));
 
     const result = await usecase.execute({ roomId, memberId, now });
 
@@ -70,7 +69,7 @@ describe("StopBgm", () => {
     expect(result.undoable?.previous).toEqual(existing.current);
     expect(result.undoable?.byMemberId).toBe(memberId);
     expect(bgms.save).toHaveBeenCalledWith(roomId, result);
-    expect(broadcast).toHaveBeenCalledWith(BgmEvents, `room:${roomId}:bgm`, "Changed", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:bgm`, "Changed", {
       state: result,
     });
   });

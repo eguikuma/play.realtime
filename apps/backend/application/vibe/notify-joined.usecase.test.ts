@@ -1,14 +1,7 @@
-import {
-  type ConnectionId,
-  type Member,
-  type MemberId,
-  type RoomId,
-  VibeEvents,
-  type VibeStatus,
-} from "@play.realtime/contracts";
+import type { ConnectionId, Member, MemberId, RoomId, VibeStatus } from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
 import type { VibeRepository } from "../../domain/vibe";
-import type { SseHub } from "../../infrastructure/transport/sse";
+import type { VibeBroadcaster } from "./broadcaster";
 import { NotifyVibeJoined } from "./notify-joined.usecase";
 import { VibePresenceGrace } from "./presence-grace";
 
@@ -30,8 +23,8 @@ const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => 
   ...overrides,
 });
 
-const buildHub = (broadcast = vi.fn()): SseHub =>
-  ({ broadcast, attach: vi.fn() }) as unknown as SseHub;
+const buildBroadcaster = (broadcast = vi.fn()): VibeBroadcaster =>
+  ({ broadcast }) as unknown as VibeBroadcaster;
 
 const buildGrace = (cancel: () => boolean = () => false): VibePresenceGrace =>
   ({ cancel: vi.fn(cancel), schedule: vi.fn() }) as unknown as VibePresenceGrace;
@@ -40,12 +33,12 @@ describe("NotifyVibeJoined", () => {
   it("初回接続では present として保存し Joined を購読者全員に配信する", async () => {
     const vibes = buildVibes();
     const broadcast = vi.fn();
-    const usecase = new NotifyVibeJoined(vibes, buildHub(broadcast), buildGrace());
+    const usecase = new NotifyVibeJoined(vibes, buildBroadcaster(broadcast), buildGrace());
 
     await usecase.execute({ roomId, member, connectionId });
 
     expect(vibes.save).toHaveBeenCalledWith(roomId, member.id, connectionId, "present");
-    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Joined", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Joined", {
       member,
       status: "present",
     });
@@ -56,40 +49,30 @@ describe("NotifyVibeJoined", () => {
       save: vi.fn(async () => ({ isFirst: false, aggregated: "focused" as VibeStatus })),
     });
     const broadcast = vi.fn();
-    const usecase = new NotifyVibeJoined(vibes, buildHub(broadcast), buildGrace());
+    const usecase = new NotifyVibeJoined(vibes, buildBroadcaster(broadcast), buildGrace());
 
     await usecase.execute({ roomId, member, connectionId });
 
-    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
       memberId: member.id,
       status: "focused",
     });
-    expect(broadcast).not.toHaveBeenCalledWith(
-      VibeEvents,
-      `room:${roomId}:vibe`,
-      "Joined",
-      expect.anything(),
-    );
+    expect(broadcast).not.toHaveBeenCalledWith(`room:${roomId}:vibe`, "Joined", expect.anything());
   });
 
   it("grace 期間中に再接続した場合は Left 予約を cancel し Joined ではなく Update を配信する", async () => {
     const vibes = buildVibes();
     const broadcast = vi.fn();
     const grace = buildGrace(() => true);
-    const usecase = new NotifyVibeJoined(vibes, buildHub(broadcast), grace);
+    const usecase = new NotifyVibeJoined(vibes, buildBroadcaster(broadcast), grace);
 
     await usecase.execute({ roomId, member, connectionId });
 
     expect(grace.cancel).toHaveBeenCalledWith(roomId, member.id);
-    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
       memberId: member.id,
       status: "present",
     });
-    expect(broadcast).not.toHaveBeenCalledWith(
-      VibeEvents,
-      `room:${roomId}:vibe`,
-      "Joined",
-      expect.anything(),
-    );
+    expect(broadcast).not.toHaveBeenCalledWith(`room:${roomId}:vibe`, "Joined", expect.anything());
   });
 });

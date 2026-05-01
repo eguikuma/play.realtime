@@ -1,6 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { Topic } from "@play.realtime/contracts";
-import type { z } from "zod";
 import { PubSub } from "../../../application/ports/pubsub";
 import type { WsConnection } from "./connection";
 import { WsHeartbeat } from "./heartbeat";
@@ -14,14 +13,9 @@ type Envelope = {
 };
 
 /**
- * WebSocket `broadcast` の引数を contracts 由来のメッセージ辞書で束縛するための型
- * キー側は辞書キーの文字列リテラルに、値側は対応する Zod schema から推論された payload 型に狭まる
- */
-type EventMap = Record<string, z.ZodType>;
-
-/**
  * WebSocket 接続を PubSub トピックへ紐付け、双方向メッセージングを集約するサービス
- * usecase 層は `broadcast(topic, name, data)` の片方向だけ知ればよく、Ping と Pong、受信パースは hub 側に閉じ込めている
+ * usecase 層は `HallwayBroadcaster` 経由でこの hub を呼び、`name` と `data` を contracts のメッセージ辞書で型束縛してから配信する
+ * Ping と Pong、受信パースは hub 側に閉じ込めている
  */
 @Injectable()
 export class WsHub {
@@ -71,14 +65,9 @@ export class WsHub {
 
   /**
    * 指定トピックへ `Envelope` を配信する
-   * `events` は contracts 由来のメッセージ辞書で、`name` が辞書キーに、`data` が対応 schema の推論型に縛られる
+   * 直接呼ぶことは想定しておらず、`HallwayBroadcaster` が contracts のメッセージ辞書で型束縛した上で呼び出す
    */
-  async broadcast<E extends EventMap, K extends Extract<keyof E, string>>(
-    _events: E,
-    topic: Topic,
-    name: K,
-    data: z.infer<E[K]>,
-  ): Promise<void> {
+  async broadcast<T>(topic: Topic, name: string, data: T): Promise<void> {
     const envelope: Envelope = { name, data };
     await this.pubsub.publish(topic, envelope);
   }

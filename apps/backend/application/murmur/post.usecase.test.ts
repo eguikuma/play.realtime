@@ -1,16 +1,9 @@
-import {
-  type MemberId,
-  Murmur,
-  MurmurEvents,
-  type MurmurId,
-  Room,
-  type RoomId,
-} from "@play.realtime/contracts";
+import { type MemberId, Murmur, type MurmurId, Room, type RoomId } from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
 import type { MurmurRepository } from "../../domain/murmur";
 import { RoomNotFound, type RoomRepository } from "../../domain/room";
 import type { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
-import type { SseHub } from "../../infrastructure/transport/sse";
+import type { MurmurBroadcaster } from "./broadcaster";
 import { PostMurmur } from "./post.usecase";
 
 const roomId = "room-abc-1234" as RoomId;
@@ -33,11 +26,8 @@ const buildIds = (): NanoidIdGenerator =>
     connection: vi.fn(),
   }) as unknown as NanoidIdGenerator;
 
-const buildHub = (broadcast = vi.fn()): SseHub =>
-  ({
-    broadcast,
-    attach: vi.fn(),
-  }) as unknown as SseHub;
+const buildBroadcaster = (broadcast = vi.fn()): MurmurBroadcaster =>
+  ({ broadcast }) as unknown as MurmurBroadcaster;
 
 describe("PostMurmur", () => {
   it("存在しないルームへの投稿は RoomNotFound を投げる", async () => {
@@ -47,7 +37,7 @@ describe("PostMurmur", () => {
       remove: vi.fn(),
     } as RoomRepository;
     const murmurs = { save: vi.fn(), latest: vi.fn(), remove: vi.fn() } as MurmurRepository;
-    const usecase = new PostMurmur(rooms, murmurs, buildIds(), buildHub());
+    const usecase = new PostMurmur(rooms, murmurs, buildIds(), buildBroadcaster());
 
     await expect(usecase.execute({ roomId, memberId, text: "hi" })).rejects.toBeInstanceOf(
       RoomNotFound,
@@ -62,7 +52,7 @@ describe("PostMurmur", () => {
     } as RoomRepository;
     const save = vi.fn();
     const murmurs = { save, latest: vi.fn(), remove: vi.fn() } as MurmurRepository;
-    const usecase = new PostMurmur(rooms, murmurs, buildIds(), buildHub());
+    const usecase = new PostMurmur(rooms, murmurs, buildIds(), buildBroadcaster());
 
     const result = await usecase.execute({ roomId, memberId, text: "good morning" });
 
@@ -78,16 +68,10 @@ describe("PostMurmur", () => {
     } as RoomRepository;
     const murmurs = { save: vi.fn(), latest: vi.fn(), remove: vi.fn() } as MurmurRepository;
     const broadcast = vi.fn();
-    const usecase = new PostMurmur(rooms, murmurs, buildIds(), buildHub(broadcast));
+    const usecase = new PostMurmur(rooms, murmurs, buildIds(), buildBroadcaster(broadcast));
 
     const result = await usecase.execute({ roomId, memberId, text: "good morning" });
 
-    expect(broadcast).toHaveBeenCalledWith(
-      MurmurEvents,
-      `room:${roomId}:murmur`,
-      "Posted",
-      result,
-      result.id,
-    );
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:murmur`, "Posted", result, result.id);
   });
 });

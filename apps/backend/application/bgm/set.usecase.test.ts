@@ -1,5 +1,4 @@
 import {
-  BgmEvents,
   type BgmState,
   type MemberId,
   Room,
@@ -9,7 +8,7 @@ import {
 import { describe, expect, it, vi } from "vitest";
 import type { BgmRepository } from "../../domain/bgm";
 import { RoomNotFound, type RoomRepository } from "../../domain/room";
-import type { SseHub } from "../../infrastructure/transport/sse";
+import type { BgmBroadcaster } from "./broadcaster";
 import { SetBgm } from "./set.usecase";
 
 const roomId = "room-abc-1234" as RoomId;
@@ -31,8 +30,8 @@ const buildBgms = (initial: BgmState | null = null): BgmRepository => ({
   remove: vi.fn(),
 });
 
-const buildHub = (broadcast = vi.fn()): SseHub =>
-  ({ broadcast, attach: vi.fn() }) as unknown as SseHub;
+const buildBroadcaster = (broadcast = vi.fn()): BgmBroadcaster =>
+  ({ broadcast }) as unknown as BgmBroadcaster;
 
 describe("SetBgm", () => {
   it("存在しないルームに対する set は RoomNotFound を投げる", async () => {
@@ -41,7 +40,7 @@ describe("SetBgm", () => {
       save: vi.fn(),
       remove: vi.fn(),
     } as RoomRepository;
-    const usecase = new SetBgm(rooms, buildBgms(), buildHub());
+    const usecase = new SetBgm(rooms, buildBgms(), buildBroadcaster());
 
     await expect(usecase.execute({ roomId, memberId, trackId, now })).rejects.toBeInstanceOf(
       RoomNotFound,
@@ -56,14 +55,14 @@ describe("SetBgm", () => {
     } as RoomRepository;
     const bgms = buildBgms();
     const broadcast = vi.fn();
-    const usecase = new SetBgm(rooms, bgms, buildHub(broadcast));
+    const usecase = new SetBgm(rooms, bgms, buildBroadcaster(broadcast));
 
     const result = await usecase.execute({ roomId, memberId, trackId, now });
 
     expect(result.current?.trackId).toBe(trackId);
     expect(result.undoable?.byMemberId).toBe(memberId);
     expect(bgms.save).toHaveBeenCalledWith(roomId, result);
-    expect(broadcast).toHaveBeenCalledWith(BgmEvents, `room:${roomId}:bgm`, "Changed", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:bgm`, "Changed", {
       state: result,
     });
   });

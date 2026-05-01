@@ -1,15 +1,9 @@
 import type { HallwayTopic } from "@play.realtime/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as z from "zod";
 import type { PubSub, Subscription } from "../../../application/ports/pubsub";
 import type { WsConnection } from "./connection";
 import { WsHeartbeat } from "./heartbeat";
 import { WsHub } from "./hub";
-
-const TestMessages = {
-  Invited: z.object({ invitationId: z.string() }),
-  Message: z.object({ text: z.string() }),
-} as const;
 
 const testTopic = "room:abc:hallway" as HallwayTopic;
 
@@ -109,7 +103,7 @@ describe("WsHub", () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
 
-    await hub.broadcast(TestMessages, testTopic, "Invited", { invitationId: "i1" });
+    await hub.broadcast(testTopic, "Invited", { invitationId: "i1" });
 
     expect(pubsub.publish).toHaveBeenCalledWith(testTopic, {
       name: "Invited",
@@ -123,7 +117,7 @@ describe("WsHub", () => {
     const { connection } = buildConnection();
 
     hub.attach(connection, { topic: testTopic });
-    await hub.broadcast(TestMessages, testTopic, "Message", { text: "hi" });
+    await hub.broadcast(testTopic, "Message", { text: "hi" });
 
     expect(connection.send).toHaveBeenCalledWith("Message", { text: "hi" });
   });

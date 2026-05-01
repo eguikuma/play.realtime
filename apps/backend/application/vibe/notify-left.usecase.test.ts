@@ -1,13 +1,7 @@
-import {
-  type ConnectionId,
-  type MemberId,
-  type RoomId,
-  VibeEvents,
-  type VibeStatus,
-} from "@play.realtime/contracts";
+import type { ConnectionId, MemberId, RoomId, VibeStatus } from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
 import type { VibeRepository } from "../../domain/vibe";
-import type { SseHub } from "../../infrastructure/transport/sse";
+import type { VibeBroadcaster } from "./broadcaster";
 import { NotifyVibeLeft } from "./notify-left.usecase";
 import { VibePresenceGrace } from "./presence-grace";
 
@@ -25,8 +19,8 @@ const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => 
   ...overrides,
 });
 
-const buildHub = (broadcast = vi.fn()): SseHub =>
-  ({ broadcast, attach: vi.fn() }) as unknown as SseHub;
+const buildBroadcaster = (broadcast = vi.fn()): VibeBroadcaster =>
+  ({ broadcast }) as unknown as VibeBroadcaster;
 
 const buildGrace = (): VibePresenceGrace =>
   ({ cancel: vi.fn(), schedule: vi.fn() }) as unknown as VibePresenceGrace;
@@ -36,7 +30,7 @@ describe("NotifyVibeLeft", () => {
     const vibes = buildVibes();
     const broadcast = vi.fn();
     const grace = buildGrace();
-    const usecase = new NotifyVibeLeft(vibes, buildHub(broadcast), grace);
+    const usecase = new NotifyVibeLeft(vibes, buildBroadcaster(broadcast), grace);
 
     await usecase.execute({ roomId, memberId, connectionId });
 
@@ -48,7 +42,7 @@ describe("NotifyVibeLeft", () => {
     const fire = call?.[2] as (() => Promise<void>) | undefined;
     await fire?.();
 
-    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Left", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Left", {
       memberId,
     });
   });
@@ -59,20 +53,15 @@ describe("NotifyVibeLeft", () => {
     });
     const broadcast = vi.fn();
     const grace = buildGrace();
-    const usecase = new NotifyVibeLeft(vibes, buildHub(broadcast), grace);
+    const usecase = new NotifyVibeLeft(vibes, buildBroadcaster(broadcast), grace);
 
     await usecase.execute({ roomId, memberId, connectionId });
 
-    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
       memberId,
       status: "focused",
     });
-    expect(broadcast).not.toHaveBeenCalledWith(
-      VibeEvents,
-      `room:${roomId}:vibe`,
-      "Left",
-      expect.anything(),
-    );
+    expect(broadcast).not.toHaveBeenCalledWith(`room:${roomId}:vibe`, "Left", expect.anything());
     expect(grace.schedule).not.toHaveBeenCalled();
   });
 });

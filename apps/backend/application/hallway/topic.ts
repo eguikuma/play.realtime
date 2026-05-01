@@ -30,8 +30,6 @@ export const broadcastToMembers = async <
   data: z.infer<(typeof HallwayServerMessages)[K]>,
 ): Promise<void> => {
   await Promise.all(
-    memberIds.map((memberId) =>
-      hub.broadcast(HallwayServerMessages, topic(roomId, memberId), name, data),
-    ),
+    memberIds.map((memberId) => hub.broadcast(topic(roomId, memberId), name, data)),
   );
 };

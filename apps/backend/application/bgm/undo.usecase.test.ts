@@ -1,5 +1,4 @@
 import {
-  BgmEvents,
   type BgmState,
   type MemberId,
   Room,
@@ -10,7 +9,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { BgmRepository } from "../../domain/bgm";
 import { UndoUnavailable } from "../../domain/bgm";
 import { RoomNotFound, type RoomRepository } from "../../domain/room";
-import type { SseHub } from "../../infrastructure/transport/sse";
+import type { BgmBroadcaster } from "./broadcaster";
 import { UndoBgm } from "./undo.usecase";
 
 const roomId = "room-abc-1234" as RoomId;
@@ -35,8 +34,8 @@ const buildBgms = (initial: BgmState | null): BgmRepository => ({
   remove: vi.fn(),
 });
 
-const buildHub = (broadcast = vi.fn()): SseHub =>
-  ({ broadcast, attach: vi.fn() }) as unknown as SseHub;
+const buildBroadcaster = (broadcast = vi.fn()): BgmBroadcaster =>
+  ({ broadcast }) as unknown as BgmBroadcaster;
 
 const blues = "Blues" as TrackId;
 const danceNight = "DanceNight" as TrackId;
@@ -64,7 +63,7 @@ describe("UndoBgm", () => {
       save: vi.fn(),
       remove: vi.fn(),
     } as RoomRepository;
-    const usecase = new UndoBgm(rooms, buildBgms(existing), buildHub());
+    const usecase = new UndoBgm(rooms, buildBgms(existing), buildBroadcaster());
 
     await expect(usecase.execute({ roomId, memberId: alice, now })).rejects.toBeInstanceOf(
       RoomNotFound,
@@ -79,14 +78,14 @@ describe("UndoBgm", () => {
     } as RoomRepository;
     const bgms = buildBgms(existing);
     const broadcast = vi.fn();
-    const usecase = new UndoBgm(rooms, bgms, buildHub(broadcast));
+    const usecase = new UndoBgm(rooms, bgms, buildBroadcaster(broadcast));
 
     const result = await usecase.execute({ roomId, memberId: alice, now });
 
     expect(result.current).toEqual(existing.undoable?.previous);
     expect(result.undoable).toBeNull();
     expect(bgms.save).toHaveBeenCalledWith(roomId, result);
-    expect(broadcast).toHaveBeenCalledWith(BgmEvents, `room:${roomId}:bgm`, "Changed", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:bgm`, "Changed", {
       state: result,
     });
   });
@@ -98,7 +97,7 @@ describe("UndoBgm", () => {
       remove: vi.fn(),
     } as RoomRepository;
     const empty: BgmState = { current: null, undoable: null };
-    const usecase = new UndoBgm(rooms, buildBgms(empty), buildHub());
+    const usecase = new UndoBgm(rooms, buildBgms(empty), buildBroadcaster());
 
     await expect(usecase.execute({ roomId, memberId: alice, now })).rejects.toBeInstanceOf(
       UndoUnavailable,

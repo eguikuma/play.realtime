@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { BgmEvents, type BgmState, type MemberId, type RoomId } from "@play.realtime/contracts";
+import type { BgmState, MemberId, RoomId } from "@play.realtime/contracts";
 import { BgmRepository, empty, undo } from "../../domain/bgm";
 import { RoomNotFound, RoomRepository } from "../../domain/room";
-import { SseHub } from "../../infrastructure/transport/sse";
+import { BgmBroadcaster } from "./broadcaster";
 import { topic } from "./topic";
 
 /**
@@ -14,7 +14,7 @@ export class UndoBgm {
   constructor(
     @Inject(RoomRepository) private readonly rooms: RoomRepository,
     @Inject(BgmRepository) private readonly bgms: BgmRepository,
-    private readonly hub: SseHub,
+    private readonly broadcaster: BgmBroadcaster,
   ) {}
 
   async execute(input: { roomId: RoomId; memberId: MemberId; now: Date }): Promise<BgmState> {
@@ -25,7 +25,7 @@ export class UndoBgm {
     const current = (await this.bgms.get(input.roomId)) ?? empty();
     const next = undo(current, { memberId: input.memberId, now: input.now });
     await this.bgms.save(input.roomId, next);
-    await this.hub.broadcast(BgmEvents, topic(input.roomId), "Changed", { state: next });
+    await this.broadcaster.broadcast(topic(input.roomId), "Changed", { state: next });
     return next;
   }
 }

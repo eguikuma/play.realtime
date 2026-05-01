@@ -1,14 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
-import {
-  BgmEvents,
-  type BgmState,
-  type MemberId,
-  type RoomId,
-  type TrackId,
-} from "@play.realtime/contracts";
+import type { BgmState, MemberId, RoomId, TrackId } from "@play.realtime/contracts";
 import { BgmRepository, empty, set } from "../../domain/bgm";
 import { RoomNotFound, RoomRepository } from "../../domain/room";
-import { SseHub } from "../../infrastructure/transport/sse";
+import { BgmBroadcaster } from "./broadcaster";
 import { topic } from "./topic";
 
 /**
@@ -20,7 +14,7 @@ export class SetBgm {
   constructor(
     @Inject(RoomRepository) private readonly rooms: RoomRepository,
     @Inject(BgmRepository) private readonly bgms: BgmRepository,
-    private readonly hub: SseHub,
+    private readonly broadcaster: BgmBroadcaster,
   ) {}
 
   /**
@@ -44,7 +38,7 @@ export class SetBgm {
       now: input.now,
     });
     await this.bgms.save(input.roomId, next);
-    await this.hub.broadcast(BgmEvents, topic(input.roomId), "Changed", { state: next });
+    await this.broadcaster.broadcast(topic(input.roomId), "Changed", { state: next });
     return next;
   }
 }

@@ -1,14 +1,9 @@
 import type { MurmurTopic } from "@play.realtime/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as z from "zod";
 import type { PubSub, Subscription } from "../../../application/ports/pubsub";
 import type { SseConnection } from "./connection";
 import { SseHeartbeat } from "./heartbeat";
 import { SseHub } from "./hub";
-
-const TestEvents = {
-  posted: z.object({ text: z.string() }),
-} as const;
 
 const testTopic = "room:abc:murmur" as MurmurTopic;
 
@@ -101,7 +96,7 @@ describe("SseHub", () => {
     const { pubsub } = buildPubSub();
     const hub = new SseHub(pubsub, buildHeartbeat());
 
-    await hub.broadcast(TestEvents, testTopic, "posted", { text: "hi" }, "murmur-1");
+    await hub.broadcast(testTopic, "posted", { text: "hi" }, "murmur-1");
 
     expect(pubsub.publish).toHaveBeenCalledWith(testTopic, {
       name: "posted",

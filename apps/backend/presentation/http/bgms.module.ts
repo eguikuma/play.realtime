@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { APP_FILTER } from "@nestjs/core";
+import { BgmBroadcaster } from "../../application/bgm/broadcaster";
 import { GetBgmSnapshot } from "../../application/bgm/get-snapshot.usecase";
 import { SetBgm } from "../../application/bgm/set.usecase";
 import { StopBgm } from "../../application/bgm/stop.usecase";
@@ -26,6 +27,7 @@ import { RoomsModule } from "./rooms.module";
     StopBgm,
     UndoBgm,
     GetBgmSnapshot,
+    BgmBroadcaster,
     {
       provide: BgmRepository,
       useClass: InMemoryBgmRepository,

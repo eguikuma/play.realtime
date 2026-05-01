@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { VibeBroadcaster } from "../../application/vibe/broadcaster";
 import { ChangeVibeStatus } from "../../application/vibe/change-status.usecase";
 import { GetVibeSnapshot } from "../../application/vibe/get-snapshot.usecase";
 import { NotifyVibeJoined } from "../../application/vibe/notify-joined.usecase";
@@ -23,6 +24,7 @@ import { VibesController } from "./vibes.controller";
     VibePresenceGrace,
     ChangeVibeStatus,
     GetVibeSnapshot,
+    VibeBroadcaster,
     {
       provide: VibeRepository,
       useClass: InMemoryVibeRepository,

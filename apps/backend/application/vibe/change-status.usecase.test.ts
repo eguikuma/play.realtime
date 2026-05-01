@@ -3,13 +3,12 @@ import {
   type MemberId,
   Room,
   type RoomId,
-  VibeEvents,
   type VibeStatus,
 } from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
 import { RoomNotFound, type RoomRepository } from "../../domain/room";
 import type { VibeRepository } from "../../domain/vibe";
-import type { SseHub } from "../../infrastructure/transport/sse";
+import type { VibeBroadcaster } from "./broadcaster";
 import { ChangeVibeStatus } from "./change-status.usecase";
 
 const roomId = "room-abc-1234" as RoomId;
@@ -34,8 +33,8 @@ const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => 
   ...overrides,
 });
 
-const buildHub = (broadcast = vi.fn()): SseHub =>
-  ({ broadcast, attach: vi.fn() }) as unknown as SseHub;
+const buildBroadcaster = (broadcast = vi.fn()): VibeBroadcaster =>
+  ({ broadcast }) as unknown as VibeBroadcaster;
 
 describe("ChangeVibeStatus", () => {
   it("存在しないルームへの変更は RoomNotFound を投げる", async () => {
@@ -44,7 +43,7 @@ describe("ChangeVibeStatus", () => {
       save: vi.fn(),
       remove: vi.fn(),
     } as RoomRepository;
-    const usecase = new ChangeVibeStatus(rooms, buildVibes(), buildHub());
+    const usecase = new ChangeVibeStatus(rooms, buildVibes(), buildBroadcaster());
 
     await expect(
       usecase.execute({ roomId, memberId, connectionId, status: "focused" }),
@@ -61,13 +60,13 @@ describe("ChangeVibeStatus", () => {
       update: vi.fn(async () => ({ updated: true, aggregated: "present" as VibeStatus })),
     });
     const broadcast = vi.fn();
-    const usecase = new ChangeVibeStatus(rooms, vibes, buildHub(broadcast));
+    const usecase = new ChangeVibeStatus(rooms, vibes, buildBroadcaster(broadcast));
 
     await usecase.execute({ roomId, memberId, connectionId, status: "focused" });
 
     expect(vibes.update).toHaveBeenCalledWith(roomId, memberId, connectionId, "focused");
     expect(vibes.save).not.toHaveBeenCalled();
-    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
       memberId,
       status: "present",
     });
@@ -83,7 +82,7 @@ describe("ChangeVibeStatus", () => {
       update: vi.fn(async () => ({ updated: false, aggregated: null })),
     });
     const broadcast = vi.fn();
-    const usecase = new ChangeVibeStatus(rooms, vibes, buildHub(broadcast));
+    const usecase = new ChangeVibeStatus(rooms, vibes, buildBroadcaster(broadcast));
 
     await usecase.execute({ roomId, memberId, connectionId, status: "focused" });
 

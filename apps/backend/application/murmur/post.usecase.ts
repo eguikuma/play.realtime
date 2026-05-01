@@ -1,9 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { type MemberId, type Murmur, MurmurEvents, type RoomId } from "@play.realtime/contracts";
+import type { MemberId, Murmur, RoomId } from "@play.realtime/contracts";
 import { MurmurRepository, post } from "../../domain/murmur";
 import { RoomNotFound, RoomRepository } from "../../domain/room";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
-import { SseHub } from "../../infrastructure/transport/sse";
+import { MurmurBroadcaster } from "./broadcaster";
 import { topic } from "./topic";
 
 /**
@@ -15,7 +15,7 @@ export class PostMurmur {
     @Inject(RoomRepository) private readonly rooms: RoomRepository,
     @Inject(MurmurRepository) private readonly murmurs: MurmurRepository,
     private readonly ids: NanoidIdGenerator,
-    private readonly hub: SseHub,
+    private readonly broadcaster: MurmurBroadcaster,
   ) {}
 
   /**
@@ -36,7 +36,7 @@ export class PostMurmur {
       postedAt: new Date().toISOString(),
     });
     await this.murmurs.save(murmur);
-    await this.hub.broadcast(MurmurEvents, topic(input.roomId), "Posted", murmur, murmur.id);
+    await this.broadcaster.broadcast(topic(input.roomId), "Posted", murmur, murmur.id);
     return murmur;
   }
 }

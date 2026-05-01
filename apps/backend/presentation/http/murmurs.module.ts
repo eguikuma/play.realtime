@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { MurmurBroadcaster } from "../../application/murmur/broadcaster";
 import { GetMurmurSnapshot } from "../../application/murmur/get-snapshot.usecase";
 import { PostMurmur } from "../../application/murmur/post.usecase";
 import { MurmurRepository } from "../../domain/murmur";
@@ -17,6 +18,7 @@ import { RoomsModule } from "./rooms.module";
   providers: [
     PostMurmur,
     GetMurmurSnapshot,
+    MurmurBroadcaster,
     {
       provide: MurmurRepository,
       useClass: InMemoryMurmurRepository,
