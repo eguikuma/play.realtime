@@ -2,15 +2,17 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Browser, BrowserContext } from "@playwright/test";
 import { Bot } from "../bots/bot.js";
+import { totalScheduleMs, type VisibilityWindow } from "./clock.js";
 import { type CommandTally, RedisMonitor } from "./monitor.js";
 
 /**
  * 1 サイクル分の調整つまみ
- * `visibilityHz` は各メンバーの visibility 切替頻度 (Hz)、`murmurRounds` は全メンバーが順に投稿する周回数
- * `hallwayMessageRounds` は通話中の往復回数、`graceMs` は退室後の grace 30s 経過待ち時間
+ * `visibilitySchedule` は各メンバーの集中・離席パターンを区間配列で表す、bot ごとに開始位相をずらして使う
+ * `murmurRounds` は全メンバーが順に投稿する周回数、`hallwayMessageRounds` は通話中の往復回数
+ * `graceMs` は退室後に room close grace の経過を待つ余白、ライフサイクル後始末の Redis コマンドまで MONITOR で拾う目的
  */
 export type CycleKnobs = {
-  visibilityHz: number;
+  visibilitySchedule: VisibilityWindow[];
   murmurRounds: number;
   hallwayMessageRounds: number;
   graceMs: number;
@@ -23,8 +25,64 @@ export type CycleSnapshot = {
   tally: CommandTally;
 };
 
+/**
+ * 既定の visibility schedule、合計 90s 1 周
+ * debounce window 想定 5〜10s に対して短い hidden (2s / 4s) で吸収を、長い hidden (6s / 12s) で確実な拾い上げを 1 周に同居させる
+ * Phase B の A/B 評価が「同値抑止だけで何 % 削減」と「debounce で何 % 削減」を切り分けられる前提
+ */
+const defaultSchedule: VisibilityWindow[] = [
+  { state: "visible", durationMs: 14_000 },
+  { state: "hidden", durationMs: 2_000 },
+  { state: "visible", durationMs: 8_000 },
+  { state: "hidden", durationMs: 6_000 },
+  { state: "visible", durationMs: 18_000 },
+  { state: "hidden", durationMs: 4_000 },
+  { state: "visible", durationMs: 22_000 },
+  { state: "hidden", durationMs: 12_000 },
+  { state: "visible", durationMs: 4_000 },
+];
+
+/**
+ * `BENCH_VISIBILITY_SCHEDULE` を JSON として解釈する、未指定または不正な内容なら既定 schedule を返す
+ * 形式は `[{"state":"visible","durationMs":14000}, ...]`
+ */
+const readScheduleFromEnv = (raw: string | undefined): VisibilityWindow[] => {
+  if (!raw) {
+    return defaultSchedule;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return defaultSchedule;
+    }
+
+    const windows: VisibilityWindow[] = [];
+    for (const entry of parsed) {
+      if (entry === null || typeof entry !== "object") {
+        return defaultSchedule;
+      }
+
+      const candidate = entry as { state?: unknown; durationMs?: unknown };
+      if (
+        (candidate.state !== "visible" && candidate.state !== "hidden") ||
+        typeof candidate.durationMs !== "number" ||
+        candidate.durationMs <= 0
+      ) {
+        return defaultSchedule;
+      }
+
+      windows.push({ state: candidate.state, durationMs: candidate.durationMs });
+    }
+
+    return windows;
+  } catch {
+    return defaultSchedule;
+  }
+};
+
 export const defaultKnobs: CycleKnobs = {
-  visibilityHz: Number(process.env.BENCH_VISIBILITY_HZ ?? 0.8),
+  visibilitySchedule: readScheduleFromEnv(process.env.BENCH_VISIBILITY_SCHEDULE),
   murmurRounds: Number(process.env.BENCH_MURMUR_ROUNDS ?? 5),
   hallwayMessageRounds: Number(process.env.BENCH_HALLWAY_MSG_ROUNDS ?? 5),
   graceMs: Number(process.env.BENCH_GRACE_MS ?? 32_000),
@@ -36,6 +94,7 @@ const reportDirectory = resolve(import.meta.dirname, "../report");
 /**
  * 指定人数で 1 サイクル走らせて MONITOR 集計を JSON に書き出すドライバ
  * Host が `createAsHost` でルームを作り、残りメンバーが `joinAsMember` で合流、Vibe / Murmur / Hallway 一連を回す
+ * visibility schedule は bot 間で同一だが開始位相を `(scheduleTotalMs / memberCount) * index` ms ずつずらして全員同期 toggle を防ぐ
  * 結果は `report/{scenario}.json` に書き出して `report.ts` が後段で md にまとめる
  */
 export const runCycle = async (
@@ -76,9 +135,11 @@ export const runCycle = async (
       await member.joinAsMember(roomId);
     }
 
-    for (const bot of bots) {
-      bot.startVisibility(knobs.visibilityHz);
-    }
+    const scheduleTotalMs = totalScheduleMs(knobs.visibilitySchedule);
+    const offsetStep = Math.floor(scheduleTotalMs / bots.length);
+    bots.forEach((bot, index) => {
+      bot.startVisibility(knobs.visibilitySchedule, offsetStep * index);
+    });
 
     for (let round = 0; round < knobs.murmurRounds; round += 1) {
       for (const bot of bots) {

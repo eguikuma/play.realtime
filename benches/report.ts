@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { totalScheduleMs } from "./helpers/clock.js";
 import type { CycleSnapshot } from "./helpers/cycle.js";
 
 /**
@@ -78,12 +79,14 @@ const formatBreakdown = (record: Record<string, number>): string => {
 
 const formatSnapshot = (snapshot: CycleSnapshot): string => {
   const seconds = (snapshot.tally.durationMs / 1000).toFixed(1);
+  const scheduleSeconds = (totalScheduleMs(snapshot.knobs.visibilitySchedule) / 1000).toFixed(0);
+  const scheduleWindows = snapshot.knobs.visibilitySchedule.length;
   return [
     `### ${snapshot.scenario} (${snapshot.memberCount} 人)`,
     "",
     `- 計測時間: ${seconds} 秒`,
     `- Redis コマンド合計: ${formatNumber(snapshot.tally.total)}`,
-    `- knobs: visibilityHz=${snapshot.knobs.visibilityHz} murmurRounds=${snapshot.knobs.murmurRounds} hallwayMessageRounds=${snapshot.knobs.hallwayMessageRounds} graceMs=${snapshot.knobs.graceMs}`,
+    `- knobs: visibilitySchedule=${scheduleWindows}区間/${scheduleSeconds}s murmurRounds=${snapshot.knobs.murmurRounds} hallwayMessageRounds=${snapshot.knobs.hallwayMessageRounds} graceMs=${snapshot.knobs.graceMs}`,
     "",
     "#### コマンド種別",
     "",

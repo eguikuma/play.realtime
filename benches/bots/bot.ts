@@ -1,5 +1,5 @@
 import type { BrowserContext, Page } from "@playwright/test";
-import { VisibilityCadence } from "../helpers/clock.js";
+import { VisibilityCadence, type VisibilityWindow } from "../helpers/clock.js";
 
 /**
  * 1 メンバー分のシナリオ実行を担う bot
@@ -42,8 +42,8 @@ export class Bot {
     await this.waitStage();
   }
 
-  startVisibility(rateHz: number): void {
-    this.cadence = new VisibilityCadence(this.page, rateHz);
+  startVisibility(schedule: VisibilityWindow[], offsetMs: number): void {
+    this.cadence = new VisibilityCadence(this.page, schedule, offsetMs);
     this.cadence.start();
   }
 

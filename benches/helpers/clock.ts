@@ -16,20 +16,33 @@ export const setVisibility = async (page: Page, state: "visible" | "hidden"): Pr
 };
 
 /**
- * 指定 hz で `visibilityState` を `visible` `hidden` に交互に切り替えるクロック
- * `rateHz` は 1 秒あたりの切替回数、`0.1` なら 10 秒に 1 回切り替わり (= 1 分で 6 回 = 1 時間で 360 回相当の負荷)
- * シナリオは時間圧縮で動かすため、リアル想定 (8h で Vibe 30 churn / h × 8 = 240 churn) を 5 分に詰めるなら `rateHz = 0.8` 程度
- * `start` は背景実行で Promise を返さず、`stop` で内部ループを終わらせる
+ * 1 区間分の visibility 状態と滞在時間
+ * `state` の状態に切り替えてから `durationMs` 待機し、次の区間に進む
+ */
+export type VisibilityWindow = {
+  state: "visible" | "hidden";
+  durationMs: number;
+};
+
+/**
+ * `schedule` 配列で滞在時間を明示する visibility クロック
+ * 配列を先頭から順に適用してループし、各区間ごとに `setVisibility` で状態を切り替えてから `durationMs` 待機する
+ * `offsetMs` は bot 間の位相をずらすための初期待機、bot N 番目に `(scheduleTotalMs / botCount) * N` を渡すと全員同期 toggle を避けられる
+ * Phase B のデバウンス評価では window 未満の短い hidden で吸収シーンを、window 以上の長い hidden で確実に拾われるシーンを 1 周に共存させる
  */
 export class VisibilityCadence {
   private running = false;
-  private current: "visible" | "hidden" = "visible";
   private loop: Promise<void> | null = null;
 
   constructor(
     private readonly page: Page,
-    private readonly rateHz: number,
-  ) {}
+    private readonly schedule: VisibilityWindow[],
+    private readonly offsetMs: number,
+  ) {
+    if (schedule.length === 0) {
+      throw new Error("schedule に最低 1 区間必要");
+    }
+  }
 
   start(): void {
     if (this.running) {
@@ -37,12 +50,22 @@ export class VisibilityCadence {
     }
 
     this.running = true;
-    const intervalMs = Math.max(50, Math.floor(1000 / this.rateHz));
     this.loop = (async () => {
+      if (this.offsetMs > 0) {
+        await this.page.waitForTimeout(this.offsetMs).catch(() => undefined);
+      }
+
+      let cursor = 0;
       while (this.running) {
-        this.current = this.current === "visible" ? "hidden" : "visible";
-        await setVisibility(this.page, this.current).catch(() => undefined);
-        await this.page.waitForTimeout(intervalMs).catch(() => undefined);
+        const window = this.schedule[cursor];
+        if (!window) {
+          cursor = 0;
+          continue;
+        }
+
+        await setVisibility(this.page, window.state).catch(() => undefined);
+        await this.page.waitForTimeout(window.durationMs).catch(() => undefined);
+        cursor = (cursor + 1) % this.schedule.length;
       }
     })();
   }
@@ -57,3 +80,9 @@ export class VisibilityCadence {
     await setVisibility(this.page, "visible").catch(() => undefined);
   }
 }
+
+/**
+ * 1 周分の合計時間を算出するヘルパー、cycle.ts で bot 間の位相オフセットを計算するのに使う
+ */
+export const totalScheduleMs = (schedule: VisibilityWindow[]): number =>
+  schedule.reduce((sum, window) => sum + window.durationMs, 0);
