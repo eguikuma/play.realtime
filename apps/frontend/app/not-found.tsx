@@ -2,6 +2,10 @@ import Link from "next/link";
 
 import { Backdrop, Notice } from "@/features/room/layout";
 
+/**
+ * どのルートにも一致しないアクセスを受けたときに表示する 404 画面
+ * トップへの動線だけを残し、URL のミスタイプや古いリンクからの訪問者を新しい部屋作成経路へ誘導する
+ */
 export default function NotFound() {
   return (
     <Backdrop>

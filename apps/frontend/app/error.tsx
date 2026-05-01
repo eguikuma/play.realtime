@@ -5,6 +5,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Backdrop, Notice } from "@/features/room/layout";
 
+/**
+ * Next.js App Router の既定エラーバウンダリ
+ * 任意ルート配下で発生したキャッチされない例外を受け取り、再試行ボタンとトップ戻りのリンクを提示する
+ */
 export default function RouteError({ reset }: { reset: () => void }) {
   return (
     <Backdrop>

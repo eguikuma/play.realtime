@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * `RootLayout` のレンダリング自体が失敗したときに Next.js が表示する最終フォールバック
+ * 通常の `error.tsx` とは異なり `ThemeProvider` やグローバル CSS も読まれていないため、HTML / スタイルをインラインで完結させる必要がある
+ */
 export default function GlobalError({ reset }: { reset: () => void }) {
   return (
     <html lang="ja">

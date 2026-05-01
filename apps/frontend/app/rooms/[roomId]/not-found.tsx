@@ -2,6 +2,10 @@ import Link from "next/link";
 
 import { Backdrop, Notice } from "@/features/room/layout";
 
+/**
+ * ルームが存在しない (`useLoad` 経由の 404 / 400) ときに表示する専用 404 画面
+ * 「部屋が閉じた可能性」と「URL の誤り」の両方を想起させる文言で、トップからの部屋再作成導線に誘導する
+ */
 export default function RoomNotFound() {
   return (
     <Backdrop>

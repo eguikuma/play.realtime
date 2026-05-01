@@ -51,6 +51,11 @@ export const metadata: Metadata = {
   description: "リモートだけどリモートじゃない — ブラウザだけで空気を共有する",
 };
 
+/**
+ * Next.js App Router のルートレイアウト
+ * 全画面共通のフォント変数 / テーマプロバイダ / グローバル接続バナー / トースターを一度だけ束ねて、各ルートは `children` だけに集中できるようにする
+ * `suppressHydrationWarning` は next-themes による class 切替の SSR / CSR 差分を握るための印、独自 hydration ロジックを入れているわけではない
+ */
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html
