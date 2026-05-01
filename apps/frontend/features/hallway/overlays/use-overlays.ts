@@ -9,6 +9,11 @@ import { useHallway } from "../store";
 import { useActions } from "../use-actions";
 import { useStream } from "../use-stream";
 
+/**
+ * ルーム画面で重ねて描画する廊下トーク UI (着信 / 発信中 / 通話中) に必要なデータを組み立てるフック
+ * `me` が未入室の間は `null` を返して UI を一切描画しない、入室後のみ招待と通話を自分視点で分類する
+ * 通話相手の名前は 2 人の `memberIds` から自分以外を選び、見つからないときは先頭メンバーへフォールバックする
+ */
 export const useOverlays = (roomId: RoomId) => {
   const me = useRoom((state) => state.me);
   const members = useRoom((state) => state.room?.members ?? []);

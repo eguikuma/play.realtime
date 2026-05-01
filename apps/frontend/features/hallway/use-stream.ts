@@ -12,6 +12,11 @@ import { ws } from "@/libraries/ws-client";
 import { hallwayErrorMessages } from "./errors";
 import { useHallway } from "./store";
 
+/**
+ * 廊下トークの WebSocket 購読を張り、受信イベントをストアへ転写するフック
+ * `CommandFailed` は自分宛の rejected 通知として扱い、`hallwayErrorMessages` 経由で Sonner トーストに中継する
+ * 切断時クリーンアップで `send` を `null` に戻し、`connectionId` もリセットして「接続なし」の状態を明示する
+ */
 export const useStream = (roomId: RoomId | null) => {
   const setConnectionId = useHallway((state) => state.setConnectionId);
   const setSend = useHallway((state) => state.setSend);

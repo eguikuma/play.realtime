@@ -14,6 +14,11 @@ type Call = {
   callId: CallId;
 };
 
+/**
+ * 通話画面の全データと送信ハンドラを組み立てるフック
+ * メッセージ配列を描画用に整形 (時刻 / 自分判定 / 連投時のメタ省略) して、コンポーネント側はそのまま並べるだけにする
+ * `hasMeta` は「同じ発言者の連投」でヘッダ情報を抑制するフラグ、吹き出しの連続をまとまりとして見せるために使う
+ */
 export const useCall = ({ callId }: Call) => {
   const me = useRoom((state) => state.me);
   const members = useRoom((state) => state.room?.members ?? []);
