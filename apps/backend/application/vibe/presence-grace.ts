@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 
 /**
@@ -29,11 +29,6 @@ export class VibePresenceGrace {
   private readonly timers = new Map<string, NodeJS.Timeout>();
 
   /**
-   * 調査用 偶発 Left 未配信の切り分けで一時的に差し込むロガー
-   */
-  private readonly probe = new Logger("VibeLeftProbe");
-
-  /**
    * `Left` 通知の遅延発火を登録する
    * 既存のタイマーがある場合は上書きして 最新の要求だけを生かす
    */
@@ -42,13 +37,9 @@ export class VibePresenceGrace {
     const existing = this.timers.get(key);
     if (existing !== undefined) {
       clearTimeout(existing);
-      this.probe.log(`grace:reschedule memberId=${memberId}`);
-    } else {
-      this.probe.log(`grace:schedule memberId=${memberId}`);
     }
     const timeout = setTimeout(() => {
       this.timers.delete(key);
-      this.probe.log(`grace:timeout memberId=${memberId}`);
       void fire();
     }, GRACE_MS);
     this.timers.set(key, timeout);
@@ -66,7 +57,6 @@ export class VibePresenceGrace {
     }
     clearTimeout(timeout);
     this.timers.delete(key);
-    this.probe.log(`grace:cancel memberId=${memberId}`);
     return true;
   }
 }
