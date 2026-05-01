@@ -25,7 +25,11 @@ const buildIds = (memberId = "member-bob"): NanoidIdGenerator =>
 
 describe("JoinRoom", () => {
   it("存在しないルームでは RoomNotFound を投げる", async () => {
-    const rooms = { find: vi.fn(async () => null), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => null),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new JoinRoom(rooms, buildIds());
 
     await expect(usecase.execute({ roomId, name: "bob" })).rejects.toBeInstanceOf(RoomNotFound);
@@ -33,7 +37,11 @@ describe("JoinRoom", () => {
 
   it("新しいメンバーをルームに追加する", async () => {
     const room = buildRoom();
-    const rooms = { find: vi.fn(async () => room), save: vi.fn() } as RoomRepository;
+    const rooms = {
+      find: vi.fn(async () => room),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
     const usecase = new JoinRoom(rooms, buildIds());
 
     const result = await usecase.execute({ roomId, name: "bob" });
@@ -46,11 +54,44 @@ describe("JoinRoom", () => {
   it("入室後のルーム状態を保存する", async () => {
     const room = buildRoom();
     const save = vi.fn();
-    const rooms = { find: vi.fn(async () => room), save } as RoomRepository;
+    const rooms = { find: vi.fn(async () => room), save, remove: vi.fn() } as RoomRepository;
     const usecase = new JoinRoom(rooms, buildIds());
 
     const { room: updated } = await usecase.execute({ roomId, name: "bob" });
 
     expect(save).toHaveBeenCalledWith(updated);
+  });
+
+  it("既参加メンバー ID を渡されたら新規作成せず既存メンバーを返す", async () => {
+    const room = buildRoom();
+    const save = vi.fn();
+    const rooms = { find: vi.fn(async () => room), save, remove: vi.fn() } as RoomRepository;
+    const usecase = new JoinRoom(rooms, buildIds());
+
+    const { member } = await usecase.execute({
+      roomId,
+      name: "別名でリクエストされても",
+      existingMemberId: hostId,
+    });
+
+    expect(member.id).toBe(hostId);
+    expect(member.name).toBe("alice");
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it("既参加メンバー ID がルームに残っていなければ通常どおり新規作成する", async () => {
+    const room = buildRoom();
+    const save = vi.fn();
+    const rooms = { find: vi.fn(async () => room), save, remove: vi.fn() } as RoomRepository;
+    const usecase = new JoinRoom(rooms, buildIds("member-new"));
+
+    const { member } = await usecase.execute({
+      roomId,
+      name: "bob",
+      existingMemberId: "member-already-gone" as MemberId,
+    });
+
+    expect(member.id).toBe("member-new");
+    expect(save).toHaveBeenCalled();
   });
 });

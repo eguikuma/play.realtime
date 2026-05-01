@@ -1,13 +1,13 @@
-import { Body, Controller, Get, Param, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
 import {
   CreateRoomRequest,
   JoinRoomRequest,
-  type MemberId,
+  MemberId,
   type Room,
   RoomId,
   type RoomMembership,
 } from "@play.realtime/contracts";
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import { CreateRoom } from "../../application/room/create.usecase";
 import { GetRoom } from "../../application/room/get.usecase";
 import { GetRoomMembership } from "../../application/room/get-membership.usecase";
@@ -49,15 +49,22 @@ export class RoomsController {
 
   /**
    * 既存ルームに参加し 新規メンバーとして cookie セッションを立てる
-   * 返り値は新しいメンバーを自分自身として含む参加情報となる
+   * 既に当ルームの有効なメンバー cookie があれば新規作成せず既存メンバーを返す冪等動作を取る
+   * 返り値は自分自身のメンバーを含む参加情報となる
    */
   @Post(":roomId/members")
   async join(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
     @Body(new ZodValidationPipe(JoinRoomRequest)) body: JoinRoomRequest,
+    @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ): Promise<RoomMembership> {
-    const { room, member } = await this.joinRoom.execute({ roomId, name: body.name });
+    const existing = MemberId.safeParse(request.cookies?.[MEMBER_COOKIE]);
+    const { room, member } = await this.joinRoom.execute({
+      roomId,
+      name: body.name,
+      ...(existing.success ? { existingMemberId: existing.data } : {}),
+    });
     response.cookie(MEMBER_COOKIE, member.id, MEMBER_COOKIE_OPTIONS);
     return { room, me: member };
   }
