@@ -62,7 +62,7 @@ const existing: BgmState = {
 };
 
 describe("UndoBgm", () => {
-  it("存在しないルームに対する undo は RoomNotFound を投げる", async () => {
+  it("存在しないルームに undo を行うと RoomNotFound を投げる", async () => {
     const rooms = {
       find: vi.fn(async () => null),
       save: vi.fn(),
@@ -75,7 +75,7 @@ describe("UndoBgm", () => {
     );
   });
 
-  it("他 member の undo は previous に戻した state を Changed で配信する", async () => {
+  it("他メンバーによる undo は直前の曲に戻したステートを Changed として配信する", async () => {
     const rooms = {
       find: vi.fn(async () => buildRoom()),
       save: vi.fn(),
@@ -93,7 +93,7 @@ describe("UndoBgm", () => {
     expect(broadcaster.changed).toHaveBeenCalledWith(roomId, { state: result });
   });
 
-  it("domain.undo が投げた Error はそのまま呼び出し側に伝わる", async () => {
+  it("`domain.undo` が投げた例外はそのまま呼び出し側に伝わる", async () => {
     const rooms = {
       find: vi.fn(async () => buildRoom()),
       save: vi.fn(),

@@ -39,7 +39,7 @@ const buildBroadcaster = (
   }) as unknown as BgmBroadcaster;
 
 describe("SetBgm", () => {
-  it("存在しないルームに対する set は RoomNotFound を投げる", async () => {
+  it("存在しないルームへの設定は RoomNotFound を投げる", async () => {
     const rooms = {
       find: vi.fn(async () => null),
       save: vi.fn(),
@@ -52,7 +52,7 @@ describe("SetBgm", () => {
     );
   });
 
-  it("新 state を save し Changed event で購読者全員に配信する", async () => {
+  it("新しいステートを保存し Changed を購読者全員に配信する", async () => {
     const rooms = {
       find: vi.fn(async () => buildRoom()),
       save: vi.fn(),

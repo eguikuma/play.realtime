@@ -39,7 +39,7 @@ describe("GetBgmSnapshot", () => {
     await expect(usecase.execute({ roomId })).rejects.toBeInstanceOf(RoomNotFound);
   });
 
-  it("repository に entry が無い room では empty state を返す", async () => {
+  it("リポジトリにエントリが無いルームでは未設定のステートを返す", async () => {
     const rooms = {
       find: vi.fn(async () => buildRoom()),
       save: vi.fn(),
@@ -52,7 +52,7 @@ describe("GetBgmSnapshot", () => {
     expect(result.state).toEqual({ current: null, undoable: null });
   });
 
-  it("保存済み state はそのまま snapshot として返す", async () => {
+  it("保存済みのステートをそのままスナップショットとして返す", async () => {
     const existing: BgmState = {
       current: {
         trackId: "Blues" as TrackId,

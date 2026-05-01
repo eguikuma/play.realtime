@@ -47,7 +47,7 @@ const existing: BgmState = {
 };
 
 describe("StopBgm", () => {
-  it("存在しないルームに対する stop は RoomNotFound を投げる", async () => {
+  it("存在しないルームへの停止は RoomNotFound を投げる", async () => {
     const rooms = {
       find: vi.fn(async () => null),
       save: vi.fn(),
@@ -58,7 +58,7 @@ describe("StopBgm", () => {
     await expect(usecase.execute({ roomId, memberId, now })).rejects.toBeInstanceOf(RoomNotFound);
   });
 
-  it("鳴っている曲を無音化し previous に退避した state を Changed で配信する", async () => {
+  it("鳴っている曲を無音化し直前の曲へ退避したステートを Changed として配信する", async () => {
     const rooms = {
       find: vi.fn(async () => buildRoom()),
       save: vi.fn(),
