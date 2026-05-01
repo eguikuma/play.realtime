@@ -5,7 +5,7 @@ import {
   type RoomId,
 } from "@play.realtime/contracts";
 import type { z } from "zod";
-import type { WsConnection } from "../../infrastructure/transport/ws";
+import type { WsConnection, WsEnvelope } from "../../infrastructure/transport/ws";
 import { hallwayErrorCodeOf } from "./hallway-errors";
 
 /**
@@ -45,7 +45,7 @@ export type HallwayDispatchLogger = {
  */
 export const dispatchHallwayCommand = async (params: {
   connection: WsConnection;
-  envelope: { name: string; data: unknown };
+  envelope: WsEnvelope;
   context: HallwayHandlerContext;
   handlers: HallwayCommandHandlers;
   logger: HallwayDispatchLogger;

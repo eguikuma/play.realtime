@@ -8,16 +8,8 @@ import {
 import { WsCloseCode } from "@play.realtime/transport-protocol";
 import { PubSub } from "../../../application/shared/ports/pubsub";
 import { GlobalTopic } from "../../../application/shared/topic";
-import type { WsConnection } from "./connection";
+import type { WsConnection, WsEnvelope } from "./connection";
 import { WsHeartbeat } from "./heartbeat";
-
-/**
- * サーバとクライアントの双方向で使う共通封筒、`name` でメッセージ種別、`data` は種別別の Zod schema で後段 parse する
- */
-type Envelope = {
-  name: string;
-  data: unknown;
-};
 
 /**
  * WebSocket 接続を PubSub トピックへ紐付け、双方向メッセージングを集約するサービス
@@ -58,13 +50,13 @@ export class WsHub implements OnModuleInit {
     options: {
       topic: Topic;
       onAttach?: (connection: WsConnection) => void | Promise<void>;
-      onMessage?: (connection: WsConnection, envelope: Envelope) => void | Promise<void>;
+      onMessage?: (connection: WsConnection, envelope: WsEnvelope) => void | Promise<void>;
     },
   ): void {
     this.connections.add(connection);
     const { stop: stopHeartbeat, onPong } = this.heartbeat.start(connection);
 
-    const subscription = this.pubsub.subscribe<Envelope>(options.topic, (envelope) => {
+    const subscription = this.pubsub.subscribe<WsEnvelope>(options.topic, (envelope) => {
       connection.send(envelope.name, envelope.data);
     });
 
@@ -91,11 +83,11 @@ export class WsHub implements OnModuleInit {
   }
 
   /**
-   * 指定トピックへ `Envelope` を配信する
+   * 指定トピックへ `WsEnvelope` を配信する
    * 直接呼ぶことは想定しておらず、`HallwayBroadcaster` が contracts のメッセージ辞書で型束縛した上で呼び出す
    */
   async broadcast<T>(topic: Topic, name: string, data: T): Promise<void> {
-    const envelope: Envelope = { name, data };
+    const envelope: WsEnvelope = { name, data };
     await this.pubsub.publish(topic, envelope);
   }
 
@@ -113,10 +105,10 @@ export class WsHub implements OnModuleInit {
 }
 
 /**
- * 受信文字列を `Envelope` 形状に緩くパースする
+ * 受信文字列を `WsEnvelope` 形状に緩くパースする
  * JSON パース失敗、オブジェクトでない、`name` が `string` でないいずれかで `null` を返し、不正フレームを usecase に届けない
  */
-const parse = (raw: string): Envelope | null => {
+const parse = (raw: string): WsEnvelope | null => {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (

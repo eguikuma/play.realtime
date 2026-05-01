@@ -18,7 +18,7 @@ import { GetRoomMembership } from "../../application/room/get-membership.usecase
 import { RoomPresence } from "../../application/room/presence";
 import { load } from "../../environment";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
-import { WsConnection, WsHub } from "../../infrastructure/transport/ws";
+import { WsConnection, type WsEnvelope, WsHub } from "../../infrastructure/transport/ws";
 import { MEMBER_COOKIE } from "../http/cookies";
 import { dispatchHallwayCommand, type HallwayCommandHandlers } from "./hallway-dispatch";
 
@@ -190,7 +190,7 @@ export class HallwayGateway implements OnModuleInit {
 
   private dispatch(
     connection: WsConnection,
-    envelope: { name: string; data: unknown },
+    envelope: WsEnvelope,
     roomId: RoomId,
     memberId: MemberId,
   ): Promise<void> {

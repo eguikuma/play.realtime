@@ -2,9 +2,10 @@ import type { ConnectionId, MemberId, RoomId } from "@play.realtime/contracts";
 import type { RawData, WebSocket } from "ws";
 
 /**
- * 送受信フレーム 1 通分の共通封筒、クライアント側 `HallwayEnvelope` と同形状を意図的に保つ
+ * WebSocket 送受信フレーム 1 通分の共通封筒、クライアント側 `HallwayEnvelope` と同形状を意図的に保つ
+ * `WsHub` と presentation 層の dispatch / gateway も同型を参照することで、`name` と `data` の 2 段構造を transport 内で 1 本化する
  */
-type Envelope = {
+export type WsEnvelope = {
   name: string;
   data: unknown;
 };
@@ -29,14 +30,14 @@ export class WsConnection {
   }
 
   /**
-   * 1 通分の `Envelope` を JSON にして送る、送信時の例外は内部フラグを閉状態に倒すだけで再送しない
+   * 1 通分の `WsEnvelope` を JSON にして送る、送信時の例外は内部フラグを閉状態に倒すだけで再送しない
    */
   send<T>(name: string, data: T): void {
     if (this.closed) {
       return;
     }
 
-    const envelope: Envelope = { name, data };
+    const envelope: WsEnvelope = { name, data };
     try {
       this.socket.send(JSON.stringify(envelope));
     } catch {
