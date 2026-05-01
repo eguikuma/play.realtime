@@ -12,7 +12,7 @@ const newInvitationId = () => `inv-${randomUUID().replace(/-/g, "")}` as Invitat
 
 /**
  * 実 Redis に接続して `RedisHallwayInvitationTimers` の挙動を検証する
- * `REDIS_URL` 未設定なら丸ごと skip し、`SET PX delayMs NX` と expired notification + SETNX done lock の往復が in-memory と等価な callback 呼出を生むことを確認する
+ * `REDIS_URL` 未設定なら丸ごと skip し、`SET PX delayMs NX` と expired notification + オーナー印 GET の往復が in-memory と等価な callback 呼出を生むことを確認する
  * `delayMs` は in-memory test の 1000ms と異なり 500ms 程度に縮めて、テスト時間を抑える
  */
 describe.skipIf(!REDIS_URL)("RedisHallwayInvitationTimers", () => {
@@ -70,6 +70,26 @@ describe.skipIf(!REDIS_URL)("RedisHallwayInvitationTimers", () => {
       await sleep(1200);
 
       expect(callbackA.mock.calls.length + callbackB.mock.calls.length).toBe(1);
+    } finally {
+      await otherTimers.onModuleDestroy();
+      await otherListener.onModuleDestroy();
+    }
+  });
+
+  it("片側だけ登録しても両 instance のリスナーが受信し登録した側が必ず発火する", async () => {
+    const otherListener = new RedisExpiredListener(REDIS_URL as string);
+    await otherListener.onModuleInit();
+    const otherTimers = new RedisHallwayInvitationTimers(REDIS_URL as string, otherListener);
+
+    try {
+      const id = newInvitationId();
+      const callback = vi.fn();
+
+      timers.register(id, 500, callback);
+
+      await sleep(1200);
+
+      expect(callback).toHaveBeenCalledTimes(1);
     } finally {
       await otherTimers.onModuleDestroy();
       await otherListener.onModuleDestroy();
