@@ -7,10 +7,16 @@ import { NowPlaying } from "./now-playing";
 import { usePanel } from "./use-panel";
 
 type Panel = {
+  /** パネルが対象とするルーム ID、選曲操作の送信先になる */
   roomId: RoomId;
+  /** 選曲 / 停止が確定したときにパネルを閉じるためのコールバック */
   onClose: () => void;
 };
 
+/**
+ * ストリップから開く選曲パネル
+ * 上段に再生中の情報、下段にライブラリの曲一覧を置き、選曲か停止が確定すると `onClose` で自身を閉じる
+ */
 export const Panel = ({ roomId, onClose }: Panel) => {
   const panel = usePanel({ roomId, onClose });
 

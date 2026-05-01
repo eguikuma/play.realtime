@@ -3,13 +3,19 @@
 import { useUndoWindow } from "../use-undo-window";
 
 type UndoBanner = {
+  /** undo を受け付ける猶予が切れる時刻、ISO 8601 文字列、カウントダウンの基準にする */
   until: string;
-
+  /** 直前の選曲 / 停止を行ったメンバー名、バナーの主語として表示する */
   byName: string;
-
+  /** 元に戻すボタンを押したときに親へ通知するコールバック */
   onUndo: () => void;
 };
 
+/**
+ * 直前の選曲 / 停止操作を取り消すための undo バナー
+ * `useUndoWindow` で残り秒を計算し、猶予を過ぎたら自身で null を返して消える
+ * 親側は常に JSX を描き続け、このコンポーネント自身が表示 / 非表示を決めるので親に `setTimeout` 管理は要らない
+ */
 export const UndoBanner = ({ until, byName, onUndo }: UndoBanner) => {
   const { seconds, expired } = useUndoWindow(until);
 

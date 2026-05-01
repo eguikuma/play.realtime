@@ -7,15 +7,23 @@ import type { Track } from "../tracks";
 import { Entry } from "./entry";
 
 type Library = {
+  /** パネルに並べる全ての選曲候補、契約の `TrackIds` 全件に対応する 1 件ずつで構成する */
   entries: {
+    /** 各エントリを識別するキー、`key` 属性にも使う */
     trackId: TrackId;
+    /** 表示に使うフロントエンドのメタデータ */
     track: Track;
-
+    /** この曲が現在鳴っているかどうか */
     tuned: boolean;
+    /** この曲を選んだときに親へ通知するコールバック */
     onSelect: () => void;
   }[];
 };
 
+/**
+ * 選曲パネル下段のライブラリ一覧
+ * `entries` を縦に並べてスクロールできるようにし、1 件ずつ `Entry` に委ねる
+ */
 export const Library = ({ entries }: Library) => (
   <section className="flex flex-col gap-2">
     <header className="flex items-center gap-2 text-ink-mute">

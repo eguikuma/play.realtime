@@ -7,11 +7,18 @@ import { cn } from "@/libraries/classname";
 import type { Track } from "../tracks";
 
 type Entry = {
+  /** ライブラリに並ぶ 1 曲分のメタデータ */
   track: Track;
+  /** この曲が現在鳴っているかどうか、true のときはボタンを無効化して選曲中を示す */
   tuned: boolean;
+  /** この曲を選んだときに親へ通知するコールバック */
   onSelect: () => void;
 };
 
+/**
+ * 選曲パネルのライブラリに並ぶ 1 件の曲エントリ
+ * 再生中の曲は操作できないように `disabled` を付け、アイコンを波形に変えて他の曲と区別する
+ */
 export const Entry = ({ track, tuned, onSelect }: Entry) => (
   <button
     type="button"

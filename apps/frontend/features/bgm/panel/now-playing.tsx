@@ -6,15 +6,20 @@ import { AudioLines, Power, Radio } from "lucide-react";
 import type { Track } from "../tracks";
 
 type NowPlaying = {
+  /** 配信されている再生中の曲情報、無音のときは null */
   current: BgmCurrent | null;
-
+  /** `current.trackId` に対応するフロントエンドのメタデータ、未解決のときは null */
   track: Track | null;
-
+  /** 現在の曲を選んだメンバー名、メンバー情報が解決できないときは null */
   byName: string | null;
-
+  /** 停止ボタンを押したときに親へ通知するコールバック */
   onStop: () => void;
 };
 
+/**
+ * 選曲パネル上段の再生中情報
+ * 曲が鳴っていれば曲名 / アーティスト / 選曲者名と停止ボタンを見せ、無音のときは無音である旨のテキストだけ置く
+ */
 export const NowPlaying = ({ current, track, byName, onStop }: NowPlaying) => (
   <section className="flex flex-col gap-3">
     <header className="flex items-center gap-2 text-ink-mute">

@@ -12,7 +12,18 @@ import { Trigger } from "./trigger";
 import { UndoBanner } from "./undo-banner";
 import { useStrip } from "./use-strip";
 
-export const BgmStrip = ({ roomId }: { roomId: RoomId }) => {
+type BgmStrip = {
+  /** 接続先のルーム ID、SSE 購読と選曲 API の宛先に使う */
+  roomId: RoomId;
+};
+
+/**
+ * ルーム画面下部に常駐する BGM ストリップ
+ * 再生状態のアイコン、いま鳴っている曲、再生 / 一時停止と音量、選曲パネルの開閉トリガーを 1 本のバーに並べる
+ * 同時に `<audio>` 要素も非表示で同じコンポーネント内に持ち、再生制御の副作用を可視 UI と同じ場所で扱う
+ * 選曲パネルは開いたときだけ absolute で浮かせて表示し、undo バナーも同じ基点から重ねる
+ */
+export const BgmStrip = ({ roomId }: BgmStrip) => {
   const strip = useStrip(roomId);
 
   return (

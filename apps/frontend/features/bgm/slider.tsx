@@ -4,11 +4,18 @@ import { Volume2 } from "lucide-react";
 import type { ChangeEvent } from "react";
 
 type Slider = {
+  /** 現在の音量、0 から 100 の整数で受け取る */
   value: number;
+  /** つまみを動かしたときに新しい音量を通知するコールバック */
   onValue: (value: number) => void;
+  /** 入力を無効化するかどうか、BGM が停止中のときは true を渡す */
   disabled?: boolean;
 };
 
+/**
+ * BGM の音量調節用スライダー
+ * ネイティブの `input[type=range]` を使いつつ、トラックと塗りつぶしを独自の span で重ねてデザインを揃える
+ */
 export const Slider = ({ value, onValue, disabled }: Slider) => {
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     onValue(Number(event.target.value));

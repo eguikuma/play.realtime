@@ -5,10 +5,16 @@ import { Plus } from "lucide-react";
 import { cn } from "@/libraries/classname";
 
 type Trigger = {
+  /** 選曲パネルが開いているかどうか、アイコンの回転とスタイルに反映する */
   open: boolean;
+  /** パネルの開閉を親に伝えるコールバック */
   onToggle: () => void;
 };
 
+/**
+ * 選曲パネルを開閉するための丸ボタン
+ * プラスアイコンを 45 度回転させて閉じる動作を表現する
+ */
 export const Trigger = ({ open, onToggle }: Trigger) => (
   <button
     type="button"
