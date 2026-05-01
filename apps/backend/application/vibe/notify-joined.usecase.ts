@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import type { ConnectionId, Member, RoomId } from "@play.realtime/contracts";
 import { VibeRepository } from "../../domain/vibe";
 import { SseHub } from "../../infrastructure/transport/sse";
@@ -11,6 +11,11 @@ import { topic } from "./topic";
  */
 @Injectable()
 export class NotifyVibeJoined {
+  /**
+   * 調査用 偶発 Left 未配信の切り分けで一時的に差し込むロガー
+   */
+  private readonly probe = new Logger("VibeLeftProbe");
+
   /**
    * 空気のポートと SSE ハブ そして在室猶予サービスを依存性注入で受け取る
    */
@@ -36,6 +41,9 @@ export class NotifyVibeJoined {
       "present",
     );
     const rejoined = this.grace.cancel(input.roomId, input.member.id);
+    this.probe.log(
+      `joined:save memberId=${input.member.id} connectionId=${input.connectionId} isFirst=${isFirst} rejoined=${rejoined} aggregated=${aggregated}`,
+    );
     if (isFirst && !rejoined) {
       await this.hub.broadcast(topic(input.roomId), "Joined", {
         member: input.member,

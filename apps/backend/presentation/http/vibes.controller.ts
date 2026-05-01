@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Logger, Param, Post, Res, UseGuards } from "@nestjs/common";
 import {
   ChangeVibeStatusRequest,
   type ConnectionId,
@@ -27,6 +27,11 @@ import { ZodValidationPipe } from "../../shared/pipes/zod-validation.pipe";
 @UseGuards(RequireMember)
 export class VibesController {
   /**
+   * 調査用 偶発 Left 未配信の切り分けで一時的に差し込むロガー
+   */
+  private readonly probe = new Logger("VibeLeftProbe");
+
+  /**
    * 空気の 4 つのユースケースと 参加情報の取得 SSE ハブ ID 生成器を依存性注入で受け取る
    */
   constructor(
@@ -51,6 +56,9 @@ export class VibesController {
     @Res() response: Response,
   ): void {
     const connectionId = this.ids.connection() as ConnectionId;
+    this.probe.log(
+      `stream:open roomId=${roomId} memberId=${member.id} connectionId=${connectionId}`,
+    );
     const connection = new SseConnection(connectionId, member.id, roomId, response);
     this.presence.register(roomId);
     this.hub.attach(connection, {
@@ -67,6 +75,9 @@ export class VibesController {
       },
     });
     connection.onClose(() => {
+      this.probe.log(
+        `stream:close roomId=${roomId} memberId=${member.id} connectionId=${connectionId}`,
+      );
       this.presence.deregister(roomId);
       void this.notifyLeft.execute({ roomId, memberId: member.id, connectionId });
     });
