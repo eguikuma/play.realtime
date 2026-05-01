@@ -49,7 +49,7 @@ describe("createNativeSseClient", () => {
     vi.stubGlobal("EventSource", MockEventSource);
   });
 
-  it("接続時に Connecting を通知する", () => {
+  it("接続時に `Connecting` を通知する", () => {
     const onStateChange = vi.fn();
     const sse = createNativeSseClient();
     sse.connect({
@@ -62,7 +62,7 @@ describe("createNativeSseClient", () => {
     expect(onStateChange).toHaveBeenCalledWith(SseState.Connecting);
   });
 
-  it("onopen が発火すると Open を通知する", () => {
+  it("`onopen` が発火すると `Open` を通知する", () => {
     const onStateChange = vi.fn();
     const sse = createNativeSseClient();
     sse.connect({
@@ -77,7 +77,7 @@ describe("createNativeSseClient", () => {
     expect(onStateChange).toHaveBeenCalledWith(SseState.Open);
   });
 
-  it("登録したイベントを Zod で検証して onEvent に渡す", () => {
+  it("登録したイベントを `Zod` で検証して `onEvent` に渡す", () => {
     const onEvent = vi.fn();
     const sse = createNativeSseClient();
     sse.connect({
@@ -91,7 +91,7 @@ describe("createNativeSseClient", () => {
     expect(onEvent).toHaveBeenCalledWith("hello", { message: "hi" });
   });
 
-  it("JSON parse に失敗すると onEvent を呼ばず warn ログを出す", () => {
+  it("JSON 解析に失敗すると `onEvent` を呼ばず `warn` ログに記録する", () => {
     const onEvent = vi.fn();
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const sse = createNativeSseClient();
@@ -107,7 +107,7 @@ describe("createNativeSseClient", () => {
     expect(warn).toHaveBeenCalled();
   });
 
-  it("Zod 検証に失敗すると onEvent を呼ばず warn ログを出す", () => {
+  it("`Zod` 検証に失敗すると `onEvent` を呼ばず `warn` ログに記録する", () => {
     const onEvent = vi.fn();
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const sse = createNativeSseClient();
@@ -123,7 +123,7 @@ describe("createNativeSseClient", () => {
     expect(warn).toHaveBeenCalled();
   });
 
-  it("close() では EventSource を閉じて Closed を通知する", () => {
+  it("`close` で `EventSource` を閉じて `Closed` を通知する", () => {
     const onStateChange = vi.fn();
     const sse = createNativeSseClient();
     const connection = sse.connect({

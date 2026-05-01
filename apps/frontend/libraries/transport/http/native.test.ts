@@ -9,7 +9,7 @@ describe("createNativeHttpClient", () => {
     vi.restoreAllMocks();
   });
 
-  it("GET 成功時にレスポンスを Zod で検証して返す", async () => {
+  it("`GET` 成功時にレスポンスを `Zod` で検証して返す", async () => {
     const shape = z.object({ name: z.string() });
     vi.stubGlobal(
       "fetch",
@@ -22,7 +22,7 @@ describe("createNativeHttpClient", () => {
     expect(result).toEqual({ name: "alice" });
   });
 
-  it("レスポンスが Zod 検証に失敗すると HttpFailure を投げる", async () => {
+  it("レスポンスが `Zod` 検証に失敗すると HttpFailure を投げる", async () => {
     const shape = z.object({ name: z.string() });
     vi.stubGlobal(
       "fetch",
@@ -36,7 +36,7 @@ describe("createNativeHttpClient", () => {
     );
   });
 
-  it("HTTP ステータスが非 2xx のとき HttpFailure を投げる", async () => {
+  it("HTTP ステータスが `2xx` 以外のとき HttpFailure を投げる", async () => {
     const shape = z.object({});
     vi.stubGlobal(
       "fetch",
@@ -50,7 +50,7 @@ describe("createNativeHttpClient", () => {
     );
   });
 
-  it("POST では body を JSON 化して送信する", async () => {
+  it("`POST` では `body` を JSON 化して送信する", async () => {
     const requestShape = z.object({ title: z.string() });
     const responseShape = z.object({ id: z.number() });
     const mock = vi.fn(async () => new Response(JSON.stringify({ id: 1 }), { status: 201 }));
@@ -74,7 +74,7 @@ describe("createNativeHttpClient", () => {
     );
   });
 
-  it("cookie 送信のため credentials include を常時付与する", async () => {
+  it("cookie 送信のため `credentials` を `include` で常時付与する", async () => {
     const mock = vi.fn(async () => new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", mock);
 
@@ -87,7 +87,7 @@ describe("createNativeHttpClient", () => {
     );
   });
 
-  it("DELETE は 204 でも例外にせず完了する", async () => {
+  it("`DELETE` は `204` でも例外にせず完了する", async () => {
     const mock = vi.fn(async () => new Response(null, { status: 204 }));
     vi.stubGlobal("fetch", mock);
 
@@ -99,7 +99,7 @@ describe("createNativeHttpClient", () => {
     );
   });
 
-  it("DELETE で非 2xx なら HttpFailure を投げる", async () => {
+  it("`DELETE` で `2xx` 以外なら HttpFailure を投げる", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async () => new Response("not found", { status: 404 })),

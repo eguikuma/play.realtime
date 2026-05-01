@@ -45,7 +45,7 @@ describe("createNativeWsClient", () => {
     vi.stubGlobal("WebSocket", MockWebSocket);
   });
 
-  it("接続時に Connecting を通知する", () => {
+  it("接続時に `Connecting` を通知する", () => {
     const onStateChange = vi.fn();
     const ws = createNativeWsClient();
     ws.connect({
@@ -58,7 +58,7 @@ describe("createNativeWsClient", () => {
     expect(onStateChange).toHaveBeenCalledWith(WsState.Connecting);
   });
 
-  it("onopen が発火すると Open を通知する", () => {
+  it("`onopen` が発火すると `Open` を通知する", () => {
     const onStateChange = vi.fn();
     const ws = createNativeWsClient();
     ws.connect({
@@ -73,7 +73,7 @@ describe("createNativeWsClient", () => {
     expect(onStateChange).toHaveBeenCalledWith(WsState.Open);
   });
 
-  it("受信した封筒を Zod で検証して onEvent に渡す", () => {
+  it("受信した封筒を `Zod` で検証して `onEvent` に渡す", () => {
     const onEvent = vi.fn();
     const ws = createNativeWsClient();
     ws.connect({
@@ -87,7 +87,7 @@ describe("createNativeWsClient", () => {
     expect(onEvent).toHaveBeenCalledWith("Hello", { message: "hi" });
   });
 
-  it("Ping 受信時に自動で Pong を送り onEvent は呼ばない", () => {
+  it("`Ping` 受信時に自動で `Pong` を送り `onEvent` は呼ばない", () => {
     const onEvent = vi.fn();
     const ws = createNativeWsClient();
     ws.connect({
@@ -105,7 +105,7 @@ describe("createNativeWsClient", () => {
     expect(onEvent).not.toHaveBeenCalled();
   });
 
-  it("Zod 検証に失敗すると onEvent を呼ばず warn ログを出す", () => {
+  it("`Zod` 検証に失敗すると `onEvent` を呼ばず `warn` ログに記録する", () => {
     const onEvent = vi.fn();
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const ws = createNativeWsClient();
@@ -121,7 +121,7 @@ describe("createNativeWsClient", () => {
     expect(warn).toHaveBeenCalled();
   });
 
-  it("events map に無い name の封筒は無視する", () => {
+  it("`events` に無い `name` の封筒は無視する", () => {
     const onEvent = vi.fn();
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const ws = createNativeWsClient();
@@ -137,7 +137,7 @@ describe("createNativeWsClient", () => {
     expect(warn).not.toHaveBeenCalled();
   });
 
-  it("送信は OPEN 状態で封筒をソケットに流す", () => {
+  it("`OPEN` 状態の送信で封筒をソケットへ送る", () => {
     const ws = createNativeWsClient();
     const connection = ws.connect({
       url: "ws://api.test/rooms/r1/hallway",
@@ -153,7 +153,7 @@ describe("createNativeWsClient", () => {
     expect(socket.sent).toContain(`{"name":"Invite","data":{"inviteeId":"m2"}}`);
   });
 
-  it("CONNECTING 状態での送信は無視する", () => {
+  it("`CONNECTING` 状態での送信は無視する", () => {
     const ws = createNativeWsClient();
     const connection = ws.connect({
       url: "ws://api.test/rooms/r1/hallway",
@@ -168,7 +168,7 @@ describe("createNativeWsClient", () => {
     expect(socket.sent).toHaveLength(0);
   });
 
-  it("close() では WebSocket を閉じて Closed を通知する", () => {
+  it("`close` で `WebSocket` を閉じて `Closed` を通知する", () => {
     const onStateChange = vi.fn();
     const ws = createNativeWsClient();
     const connection = ws.connect({

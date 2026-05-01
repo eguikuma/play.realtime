@@ -12,7 +12,7 @@ describe("useSse", () => {
     vi.restoreAllMocks();
   });
 
-  it("url が null なら client.connect を呼ばない", () => {
+  it("`url` が `null` なら `client.connect` を呼ばない", () => {
     const client = buildClient();
     renderHook(() =>
       useSse({
@@ -26,7 +26,7 @@ describe("useSse", () => {
     expect(client.connect).not.toHaveBeenCalled();
   });
 
-  it("url が与えられると client.connect を呼ぶ", () => {
+  it("`url` が与えられると `client.connect` を呼ぶ", () => {
     const client = buildClient();
     const { result } = renderHook(() =>
       useSse({
@@ -41,7 +41,7 @@ describe("useSse", () => {
     expect(result.current.state).toBe(SseState.Closed);
   });
 
-  it("url 変更時は前の接続を閉じて再接続する", () => {
+  it("`url` 変更時は前の接続を閉じて再接続する", () => {
     const firstClose = vi.fn();
     const secondClose = vi.fn();
     let calls = 0;
@@ -68,7 +68,7 @@ describe("useSse", () => {
     expect(firstClose).toHaveBeenCalledOnce();
   });
 
-  it("unmount 時に接続を閉じる", () => {
+  it("アンマウント時に接続を閉じる", () => {
     const close = vi.fn();
     const client = buildClient(close);
     const { unmount } = renderHook(() =>
