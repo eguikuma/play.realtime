@@ -12,7 +12,7 @@ const newRoomId = () => `room-${randomUUID().replace(/-/g, "")}` as RoomId;
 
 /**
  * 実 Redis に接続して `RedisRoomLifecycleGrace` の挙動を検証する
- * `REDIS_URL` 未設定なら丸ごと skip し、`SET PX graceMs` と expired notification + SETNX done lock の往復が in-memory と等価な fire 配信を生むことを確認する
+ * `REDIS_URL` 未設定なら丸ごと skip し、`SET PX graceMs` と expired notification + オーナー印 GET の往復が in-memory と等価な fire 配信を生むことを確認する
  * テスト時間短縮のため `override(500)` で猶予を 500ms に縮める
  */
 describe.skipIf(!REDIS_URL)("RedisRoomLifecycleGrace", () => {
@@ -72,6 +72,27 @@ describe.skipIf(!REDIS_URL)("RedisRoomLifecycleGrace", () => {
       await sleep(1200);
 
       expect(fireA.mock.calls.length + fireB.mock.calls.length).toBe(1);
+    } finally {
+      await otherGrace.onModuleDestroy();
+      await otherListener.onModuleDestroy();
+    }
+  });
+
+  it("片側だけ予約しても両 instance のリスナーが受信し予約した側が必ず発火する", async () => {
+    const otherListener = new RedisExpiredListener(REDIS_URL as string);
+    await otherListener.onModuleInit();
+    const otherGrace = new RedisRoomLifecycleGrace(REDIS_URL as string, otherListener);
+    otherGrace.override(500);
+
+    try {
+      const roomId = newRoomId();
+      const fire = vi.fn(async () => undefined);
+
+      grace.schedule(roomId, fire);
+
+      await sleep(1200);
+
+      expect(fire).toHaveBeenCalledTimes(1);
     } finally {
       await otherGrace.onModuleDestroy();
       await otherListener.onModuleDestroy();
