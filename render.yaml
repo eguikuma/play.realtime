@@ -19,5 +19,7 @@ services:
         value: none
       - key: COOKIE_SECURE
         value: "true"
+      - key: COOKIE_PARTITIONED
+        value: "true"
       - key: ROOM_GRACE_MS
         value: 30000

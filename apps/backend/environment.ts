@@ -24,6 +24,14 @@ export const Environment = z.object({
     .enum(["true", "false"])
     .default("false")
     .transform((value) => value === "true"),
+  /**
+   * メンバー Cookie の Partitioned 属性、CHIPS で third-party cookie ブロック下でも保存可能にする
+   * フロントエンドの top-level site で分離保存され、本サービス以外からは参照されない
+   */
+  COOKIE_PARTITIONED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
 });
 export type Environment = z.infer<typeof Environment>;
 
