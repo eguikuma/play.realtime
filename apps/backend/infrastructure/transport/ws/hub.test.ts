@@ -87,7 +87,7 @@ describe("WsHub", () => {
     const hub = new WsHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection();
 
-    hub.attach(connection, { topic: testTopic });
+    hub.attach(connection, { topics: [testTopic] });
 
     expect(subscribers.get(testTopic)?.length).toBe(1);
   });
@@ -98,7 +98,7 @@ describe("WsHub", () => {
     const hub = new WsHub(pubsub, buildHeartbeat(stop));
     const { connection, fireClose } = buildConnection();
 
-    hub.attach(connection, { topic: testTopic });
+    hub.attach(connection, { topics: [testTopic] });
     fireClose();
 
     expect(subscribers.get(testTopic)?.length).toBe(0);
@@ -122,7 +122,7 @@ describe("WsHub", () => {
     const hub = new WsHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection();
 
-    hub.attach(connection, { topic: testTopic });
+    hub.attach(connection, { topics: [testTopic] });
     await hub.broadcast(testTopic, "Message", { text: "hi" });
 
     expect(connection.send).toHaveBeenCalledWith("Message", { text: "hi" });
@@ -138,7 +138,7 @@ describe("WsHub", () => {
     const { connection, fireMessage } = buildConnection();
     const onMessage = vi.fn();
 
-    hub.attach(connection, { topic: testTopic, onMessage });
+    hub.attach(connection, { topics: [testTopic], onMessage });
     fireMessage(`{"name":"Pong","data":{}}`);
 
     expect(onPong).toHaveBeenCalledOnce();
@@ -151,7 +151,7 @@ describe("WsHub", () => {
     const { connection, fireMessage } = buildConnection();
     const onMessage = vi.fn();
 
-    hub.attach(connection, { topic: testTopic, onMessage });
+    hub.attach(connection, { topics: [testTopic], onMessage });
     fireMessage(`{"name":"Invite","data":{"inviteeId":"invitee"}}`);
 
     expect(onMessage).toHaveBeenCalledWith(connection, {
@@ -166,12 +166,53 @@ describe("WsHub", () => {
     const { connection, fireMessage } = buildConnection();
     const onMessage = vi.fn();
 
-    hub.attach(connection, { topic: testTopic, onMessage });
+    hub.attach(connection, { topics: [testTopic], onMessage });
     fireMessage("not-json");
     fireMessage(`{"data":"missing-name"}`);
     fireMessage(`{"name":123}`);
 
     expect(onMessage).not.toHaveBeenCalled();
+  });
+
+  it("`topics` に複数件渡すと各トピックを別々に購読する", () => {
+    const { pubsub, subscribers } = buildPubSub();
+    const hub = new WsHub(pubsub, buildHeartbeat());
+    const { connection } = buildConnection();
+    const otherTopic = "room:abc:hallway:message:m1" as HallwayTopic;
+
+    hub.attach(connection, { topics: [testTopic, otherTopic] });
+
+    expect(subscribers.get(testTopic)?.length).toBe(1);
+    expect(subscribers.get(otherTopic)?.length).toBe(1);
+  });
+
+  it("複数トピックを購読しているとき切断時に全 subscription を解除する", () => {
+    const { pubsub, subscribers } = buildPubSub();
+    const hub = new WsHub(pubsub, buildHeartbeat());
+    const { connection, fireClose } = buildConnection();
+    const otherTopic = "room:abc:hallway:message:m1" as HallwayTopic;
+
+    hub.attach(connection, { topics: [testTopic, otherTopic] });
+    fireClose();
+
+    expect(subscribers.get(testTopic)?.length).toBe(0);
+    expect(subscribers.get(otherTopic)?.length).toBe(0);
+  });
+
+  it("片方のトピックへの配信は他方の購読側に転送しない", async () => {
+    const { pubsub } = buildPubSub();
+    const hub = new WsHub(pubsub, buildHeartbeat());
+    const memberA = buildConnection(testRoomId, "member-a" as MemberId);
+    const memberB = buildConnection(testRoomId, "member-b" as MemberId);
+    const messageA = "room:abc:hallway:message:member-a" as HallwayTopic;
+    const messageB = "room:abc:hallway:message:member-b" as HallwayTopic;
+
+    hub.attach(memberA.connection, { topics: [testTopic, messageA] });
+    hub.attach(memberB.connection, { topics: [testTopic, messageB] });
+    await hub.broadcast(messageA, "Message", { text: "secret" });
+
+    expect(memberA.connection.send).toHaveBeenCalledWith("Message", { text: "secret" });
+    expect(memberB.connection.send).not.toHaveBeenCalled();
   });
 
   it("接続時の初期処理コールバックを実行する", async () => {
@@ -180,7 +221,7 @@ describe("WsHub", () => {
     const { connection } = buildConnection();
     const onAttach = vi.fn();
 
-    hub.attach(connection, { topic: testTopic, onAttach });
+    hub.attach(connection, { topics: [testTopic], onAttach });
     await new Promise((resolve) => setImmediate(resolve));
 
     expect(onAttach).toHaveBeenCalledWith(connection);
@@ -202,9 +243,9 @@ describe("WsHub", () => {
     const otherMember = buildConnection(testRoomId, "another-member" as MemberId);
     const otherRoom = buildConnection("another-room" as RoomId, testMemberId);
 
-    hub.attach(member.connection, { topic: testTopic });
-    hub.attach(otherMember.connection, { topic: testTopic });
-    hub.attach(otherRoom.connection, { topic: testTopic });
+    hub.attach(member.connection, { topics: [testTopic] });
+    hub.attach(otherMember.connection, { topics: [testTopic] });
+    hub.attach(otherRoom.connection, { topics: [testTopic] });
 
     hub.closeByMember(testRoomId, testMemberId);
 
@@ -219,7 +260,7 @@ describe("WsHub", () => {
     const { connection } = buildConnection(testRoomId, testMemberId);
 
     hub.onModuleInit();
-    hub.attach(connection, { topic: testTopic });
+    hub.attach(connection, { topics: [testTopic] });
     void pubsub.publish(GlobalTopic.MemberLeft, { roomId: testRoomId, memberId: testMemberId });
 
     expect(connection.close).toHaveBeenCalledWith(WsCloseCode.GoingAway);
@@ -231,7 +272,7 @@ describe("WsHub", () => {
     const { connection } = buildConnection(testRoomId, testMemberId);
 
     hub.onModuleInit();
-    hub.attach(connection, { topic: testTopic });
+    hub.attach(connection, { topics: [testTopic] });
     void pubsub.publish(GlobalTopic.MemberLeft, { broken: "payload" });
 
     expect(connection.close).not.toHaveBeenCalled();
