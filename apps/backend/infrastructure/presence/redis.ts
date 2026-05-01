@@ -22,7 +22,7 @@ type PresencePayload = {
  * `RoomPresence` port の Redis 実装、`presence:room:{roomId}:connections` の counter を `INCR`/`DECR` で原子的に増減し、0→1 と 1→0 の遷移を `presence:transition` トピックへ配信する
  * `INCR` の戻り値が 1 なら 0→1、`DECR` の戻り値が 0 なら 1→0 と判定する単発コマンド方式で、Lua / WATCH/MULTI を使わずに原子性を保つ
  * 配信は `PubSub` port 越しに行い、Redis 直叩きを避けて in-memory pubsub への差し替えに将来対応できる構造にする
- * Lifecycle 用の grace timer は本クラスでは持たず、`RoomLifecycle` 側で in-memory タイマーとして管理する
+ * Lifecycle 用の grace timer は本クラスでは持たず、`RoomLifecycleGrace` port 側で driver ごとに管理する
  */
 @Injectable()
 export class RedisRoomPresence implements RoomPresence, OnModuleDestroy {
