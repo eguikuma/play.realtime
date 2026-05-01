@@ -11,19 +11,17 @@ import { HallwayInvitationTimers } from "../../application/hallway/invitation-ti
 import { InviteHallway } from "../../application/hallway/invite.usecase";
 import { LeaveHallwayCall } from "../../application/hallway/leave-call.usecase";
 import { SendHallwayMessage } from "../../application/hallway/send-message.usecase";
-import { HallwayRepository } from "../../domain/hallway";
-import { InMemoryHallwayRepository } from "../../infrastructure/repository/in-memory/hallway";
 import { WsModule } from "../../infrastructure/transport/ws";
-import { VibesModule } from "../../presentation/http/vibes.module";
 import { RoomsModule } from "../http/rooms.module";
 import { HallwayGateway } from "./hallway.gateway";
 
 /**
  * 廊下トーク機能を組み立てる Module
- * Hallway 固有の usecase、broadcaster、counter、timers に加えて、`VibesModule` から `VibeRepository` を取り込んで招待発行時の在室判定に使う
+ * Hallway 固有の usecase、broadcaster、counter、timers を束ね、`RoomsModule` から `GetRoomMembership` を取り込む
+ * `RoomRepository`、`VibeRepository`、`HallwayRepository` 実装は Global の `RepositoryModule` から注入される
  */
 @Module({
-  imports: [RoomsModule, VibesModule, WsModule],
+  imports: [RoomsModule, WsModule],
   providers: [
     HallwayGateway,
     HallwayBroadcaster,
@@ -38,11 +36,6 @@ import { HallwayGateway } from "./hallway.gateway";
     LeaveHallwayCall,
     CleanupHallwayOnDisconnect,
     GetHallwaySnapshot,
-    {
-      provide: HallwayRepository,
-      useClass: InMemoryHallwayRepository,
-    },
   ],
-  exports: [HallwayRepository],
 })
 export class HallwayModule {}

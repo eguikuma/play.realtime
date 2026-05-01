@@ -5,8 +5,6 @@ import { GetBgmSnapshot } from "../../application/bgm/get-snapshot.usecase";
 import { SetBgm } from "../../application/bgm/set.usecase";
 import { StopBgm } from "../../application/bgm/stop.usecase";
 import { UndoBgm } from "../../application/bgm/undo.usecase";
-import { BgmRepository } from "../../domain/bgm";
-import { InMemoryBgmRepository } from "../../infrastructure/repository/in-memory/bgm";
 import { SseModule } from "../../infrastructure/transport/sse";
 import { BgmsController } from "./bgms.controller";
 import { UndoBySelfFilter } from "./filters/undo-by-self.filter";
@@ -18,6 +16,7 @@ import { RoomsModule } from "./rooms.module";
 /**
  * BGM 機能を組み立てる Module
  * undo 関連の Domain Error を HTTP へ変換する 4 つの ExceptionFilter を `APP_FILTER` として登録し、Controller 側に try catch を書かずに済ませる
+ * `BgmRepository` 実装は Global の `RepositoryModule` から注入される
  */
 @Module({
   imports: [RoomsModule, SseModule],
@@ -28,10 +27,6 @@ import { RoomsModule } from "./rooms.module";
     UndoBgm,
     GetBgmSnapshot,
     BgmBroadcaster,
-    {
-      provide: BgmRepository,
-      useClass: InMemoryBgmRepository,
-    },
     {
       provide: APP_FILTER,
       useClass: UnknownTrackFilter,
@@ -49,6 +44,5 @@ import { RoomsModule } from "./rooms.module";
       useClass: UndoBySelfFilter,
     },
   ],
-  exports: [BgmRepository],
 })
 export class BgmsModule {}

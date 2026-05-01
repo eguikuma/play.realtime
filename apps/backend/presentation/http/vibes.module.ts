@@ -5,8 +5,6 @@ import { GetVibeSnapshot } from "../../application/vibe/get-snapshot.usecase";
 import { NotifyVibeJoined } from "../../application/vibe/notify-joined.usecase";
 import { NotifyVibeLeft } from "../../application/vibe/notify-left.usecase";
 import { VibePresenceGrace } from "../../application/vibe/presence-grace";
-import { VibeRepository } from "../../domain/vibe";
-import { InMemoryVibeRepository } from "../../infrastructure/repository/in-memory/vibe";
 import { SseModule } from "../../infrastructure/transport/sse";
 import { RoomsModule } from "./rooms.module";
 import { VibesController } from "./vibes.controller";
@@ -14,6 +12,7 @@ import { VibesController } from "./vibes.controller";
 /**
  * Vibe 機能を組み立てる Module
  * 4 つの usecase と `VibePresenceGrace` をまとめ、`RoomsModule` からルーム情報を、`SseModule` から配信経路を注入する
+ * `VibeRepository` 実装は Global の `RepositoryModule` から注入される
  */
 @Module({
   imports: [RoomsModule, SseModule],
@@ -25,11 +24,6 @@ import { VibesController } from "./vibes.controller";
     ChangeVibeStatus,
     GetVibeSnapshot,
     VibeBroadcaster,
-    {
-      provide: VibeRepository,
-      useClass: InMemoryVibeRepository,
-    },
   ],
-  exports: [VibeRepository],
 })
 export class VibesModule {}
