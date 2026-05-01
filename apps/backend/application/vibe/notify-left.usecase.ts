@@ -13,7 +13,7 @@ export class NotifyVibeLeft {
   constructor(
     @Inject(VibeRepository) private readonly vibes: VibeRepository,
     private readonly broadcaster: VibeBroadcaster,
-    private readonly grace: VibePresenceGrace,
+    @Inject(VibePresenceGrace) private readonly grace: VibePresenceGrace,
   ) {}
 
   /**

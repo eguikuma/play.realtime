@@ -1,11 +1,11 @@
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { VibePresenceGrace } from "./presence-grace";
+import { InMemoryVibePresenceGrace } from "./vibe-presence-grace";
 
 const roomId = "room-abc-1234" as RoomId;
 const memberId = "member-alice" as MemberId;
 
-describe("VibePresenceGrace", () => {
+describe("InMemoryVibePresenceGrace", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -15,7 +15,7 @@ describe("VibePresenceGrace", () => {
   });
 
   it("予約は 1500ms 後に発火を実行する", async () => {
-    const grace = new VibePresenceGrace();
+    const grace = new InMemoryVibePresenceGrace();
     const fire = vi.fn();
 
     grace.schedule(roomId, memberId, fire);
@@ -26,7 +26,7 @@ describe("VibePresenceGrace", () => {
   });
 
   it("取り消しは保留中の予約を取り消し true を返し発火しない", async () => {
-    const grace = new VibePresenceGrace();
+    const grace = new InMemoryVibePresenceGrace();
     const fire = vi.fn();
 
     grace.schedule(roomId, memberId, fire);
@@ -38,12 +38,12 @@ describe("VibePresenceGrace", () => {
   });
 
   it("予約が無ければ取り消しは false を返す", () => {
-    const grace = new VibePresenceGrace();
+    const grace = new InMemoryVibePresenceGrace();
     expect(grace.cancel(roomId, memberId)).toBe(false);
   });
 
   it("別のルームまたはメンバーでは干渉しない", async () => {
-    const grace = new VibePresenceGrace();
+    const grace = new InMemoryVibePresenceGrace();
     const fireA = vi.fn();
     const fireB = vi.fn();
     const otherMemberId = "member-bob" as MemberId;
@@ -59,7 +59,7 @@ describe("VibePresenceGrace", () => {
   });
 
   it("同キーで再予約すると前のタイマーは上書きされる", async () => {
-    const grace = new VibePresenceGrace();
+    const grace = new InMemoryVibePresenceGrace();
     const first = vi.fn();
     const second = vi.fn();
 

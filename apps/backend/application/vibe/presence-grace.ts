@@ -1,55 +1,28 @@
-import { Injectable } from "@nestjs/common";
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 
 /**
- * Vibe 退室通知の猶予期間、このミリ秒内に同じメンバーの再入室が来れば `Left` を送らずに済ませる
- */
-const GRACE_MS = 1500;
-
-const keyOf = (roomId: RoomId, memberId: MemberId) => `${roomId}:${memberId}`;
-
-/**
- * Vibe 退室通知の猶予タイマーを保持するサービス
+ * Vibe 退室通知の猶予タイマーを保持するサービスの port 型
  * ブラウザリロードや瞬間的な通信途絶では SSE 接続の切断と再接続がほぼ同時に起きるため、即 `Left` 配信すると他メンバーの画面が点滅する
- * そこで退室検知時は 1500ms のタイマーを張り、同メンバーの再入室で `cancel` されれば `Left` を送らないようにする
+ * そこで退室検知時は猶予タイマーを張り、同メンバーの再入室で `cancel` されれば `Left` を送らないようにする
+ * 具体実装はインフラ層の `infrastructure/timer/` に置き、in-memory と Redis のどちらに倒すかは `STORAGE_DRIVER` 環境変数で切り替える
  */
-@Injectable()
-export class VibePresenceGrace {
-  private readonly timers = new Map<string, NodeJS.Timeout>();
-
+export type VibePresenceGrace = {
   /**
    * 指定メンバー宛の猶予タイマーを張る
    * 同メンバーの既存タイマーがあれば差し替える
    * 時間経過で `fire` が呼ばれ、呼ばれた側で `Left` 配信などの確定処理を行う
    */
-  schedule(roomId: RoomId, memberId: MemberId, fire: () => void | Promise<void>): void {
-    const key = keyOf(roomId, memberId);
-    const existing = this.timers.get(key);
-    if (existing !== undefined) {
-      clearTimeout(existing);
-    }
-
-    const timeout = setTimeout(() => {
-      this.timers.delete(key);
-      void fire();
-    }, GRACE_MS);
-    this.timers.set(key, timeout);
-  }
-
+  schedule: (roomId: RoomId, memberId: MemberId, fire: () => void | Promise<void>) => void;
   /**
    * 指定メンバーの稼働中タイマーを取り消す
    * 取り消せたかどうかを `boolean` で返す
    * 戻り値が `true` のとき、呼び出し側は「再入室だったので `Joined` ではなく `Updated` を配信する」判断に使える
    */
-  cancel(roomId: RoomId, memberId: MemberId): boolean {
-    const key = keyOf(roomId, memberId);
-    const timeout = this.timers.get(key);
-    if (timeout === undefined) {
-      return false;
-    }
+  cancel: (roomId: RoomId, memberId: MemberId) => boolean;
+};
 
-    clearTimeout(timeout);
-    this.timers.delete(key);
-    return true;
-  }
-}
+/**
+ * `VibePresenceGrace` 型と同名の DI トークン
+ * NestJS の `@Inject(VibePresenceGrace)` で `infrastructure/timer/module.ts` が振り分けた driver 別実装を注入するために値空間にも識別子を用意している
+ */
+export const VibePresenceGrace = "VibePresenceGrace" as const;

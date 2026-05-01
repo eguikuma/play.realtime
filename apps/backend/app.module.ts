@@ -6,6 +6,7 @@ import { IdModule } from "./infrastructure/id";
 import { PresenceModule } from "./infrastructure/presence";
 import { PubSubModule } from "./infrastructure/pubsub";
 import { RepositoryModule } from "./infrastructure/repository";
+import { TimerModule } from "./infrastructure/timer";
 import { BgmsModule } from "./presentation/http/bgms.module";
 import { HealthModule } from "./presentation/http/health.module";
 import { MurmursModule } from "./presentation/http/murmurs.module";
@@ -25,6 +26,7 @@ import { HallwayModule } from "./presentation/ws/hallway.module";
     PubSubModule,
     RepositoryModule,
     PresenceModule,
+    TimerModule,
     RoomLifecycleModule,
     HealthModule,
     RoomsModule,
