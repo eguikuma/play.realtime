@@ -24,9 +24,9 @@ export const Slider = ({ value, onValue, disabled }: Slider) => {
   const fill = `${value}%`;
 
   return (
-    <label className="flex items-center gap-2">
-      <Volume2 aria-hidden className="size-3.5 text-ink-mute" />
-      <span className="relative flex h-5 w-24 items-center sm:w-32">
+    <label className="flex min-w-0 items-center gap-2">
+      <Volume2 aria-hidden className="size-3.5 shrink-0 text-ink-mute" />
+      <span className="relative flex h-5 w-16 min-w-0 shrink items-center sm:w-32">
         <span aria-hidden className="absolute inset-y-[9px] right-0 left-0 rounded-pill bg-rule" />
         <span
           aria-hidden
@@ -42,10 +42,10 @@ export const Slider = ({ value, onValue, disabled }: Slider) => {
           onChange={onChange}
           disabled={disabled}
           aria-label="音量"
-          className="relative z-10 h-5 w-full cursor-pointer appearance-none bg-transparent outline-none [&::-moz-range-thumb]:size-3.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-lamp [&::-webkit-slider-thumb]:size-3.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-lamp [&::-webkit-slider-thumb]:shadow-[0_0_0_3px_oklch(from_var(--lamp)_l_c_h/0.22)] focus-visible:[&::-webkit-slider-thumb]:shadow-[0_0_0_4px_oklch(from_var(--lamp)_l_c_h/0.4)]"
+          className="relative z-10 h-5 w-full cursor-pointer touch-manipulation appearance-none bg-transparent outline-none [&::-moz-range-thumb]:size-3.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-lamp [&::-webkit-slider-thumb]:size-3.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-lamp [&::-webkit-slider-thumb]:shadow-[0_0_0_3px_oklch(from_var(--lamp)_l_c_h/0.22)] focus-visible:[&::-webkit-slider-thumb]:shadow-[0_0_0_4px_oklch(from_var(--lamp)_l_c_h/0.4)]"
         />
       </span>
-      <span className="w-[2.4ch] text-right font-mono text-[10px] text-ink-mute tabular-nums">
+      <span className="w-[2.4ch] shrink-0 text-right font-mono text-[10px] text-ink-mute tabular-nums">
         {value}
       </span>
     </label>
