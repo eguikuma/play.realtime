@@ -131,18 +131,18 @@ describe("InMemoryVibeRepository", () => {
 
   it("ルーム単位の取り除きで配下の全接続データが破棄される", async () => {
     const repository = new InMemoryVibeRepository();
-    const target = "room-abc-aaaa" as RoomId;
+    const roomId = "room-abc-aaaa" as RoomId;
     const keep = "room-abc-bbbb" as RoomId;
     const memberId = "member-alice" as MemberId;
 
-    await repository.save(target, memberId, "conn-1" as ConnectionId, "present");
-    await repository.save(target, memberId, "conn-2" as ConnectionId, "focused");
+    await repository.save(roomId, memberId, "conn-1" as ConnectionId, "present");
+    await repository.save(roomId, memberId, "conn-2" as ConnectionId, "focused");
     await repository.save(keep, memberId, "conn-3" as ConnectionId, "present");
 
-    await repository.remove(target);
+    await repository.remove(roomId);
 
-    expect(await repository.snapshot(target)).toEqual([]);
-    expect(await repository.get(target, memberId)).toBeNull();
+    expect(await repository.snapshot(roomId)).toEqual([]);
+    expect(await repository.get(roomId, memberId)).toBeNull();
     expect(await repository.snapshot(keep)).toEqual([{ memberId, status: "present" }]);
   });
 

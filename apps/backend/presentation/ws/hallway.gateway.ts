@@ -101,23 +101,23 @@ export class HallwayGateway implements OnModuleInit {
       return;
     }
 
-    const roomIdResult = RoomId.safeParse(match[1]);
-    if (!roomIdResult.success) {
+    const roomId = RoomId.safeParse(match[1]);
+    if (!roomId.success) {
       socket.destroy();
       return;
     }
 
     const cookies = parseCookies(request.headers.cookie ?? "");
-    const memberIdResult = MemberId.safeParse(cookies[MEMBER_COOKIE]);
-    if (!memberIdResult.success) {
+    const memberId = MemberId.safeParse(cookies[MEMBER_COOKIE]);
+    if (!memberId.success) {
       socket.destroy();
       return;
     }
 
     try {
       await this.membership.execute({
-        roomId: roomIdResult.data,
-        memberId: memberIdResult.data,
+        roomId: roomId.data,
+        memberId: memberId.data,
       });
     } catch {
       socket.destroy();
@@ -125,7 +125,7 @@ export class HallwayGateway implements OnModuleInit {
     }
 
     this.wsServer.handleUpgrade(request, socket, head, (ws) => {
-      this.onConnected(ws, roomIdResult.data, memberIdResult.data);
+      this.onConnected(ws, roomId.data, memberId.data);
     });
   }
 
@@ -181,7 +181,7 @@ export class HallwayGateway implements OnModuleInit {
           await this.invite.execute({
             roomId,
             inviterId: memberId,
-            inviteeId: data.targetMemberId,
+            inviteeId: data.inviteeId,
           });
           return;
         }

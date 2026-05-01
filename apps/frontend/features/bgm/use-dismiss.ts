@@ -7,7 +7,7 @@ import { type RefObject, useEffect } from "react";
  * 無効にしている間は何も購読せず マウントや解除のコストを払わない
  */
 export const useDismiss = (
-  target: RefObject<HTMLElement | null>,
+  container: RefObject<HTMLElement | null>,
   enabled: boolean,
   onDismiss: () => void,
 ) => {
@@ -15,7 +15,7 @@ export const useDismiss = (
     if (!enabled) return;
 
     const onDown = (event: MouseEvent) => {
-      const node = target.current;
+      const node = container.current;
       if (!node) return;
       if (!node.contains(event.target as Node)) onDismiss();
     };
@@ -31,5 +31,5 @@ export const useDismiss = (
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [enabled, target, onDismiss]);
+  }, [enabled, container, onDismiss]);
 };

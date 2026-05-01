@@ -57,15 +57,15 @@ describe("InMemoryBgmRepository", () => {
 
   it("ルーム単位の取り除きで state が null に戻る", async () => {
     const repository = new InMemoryBgmRepository();
-    const target = "room-abc-aaaa" as RoomId;
+    const roomId = "room-abc-aaaa" as RoomId;
     const keep = "room-abc-bbbb" as RoomId;
 
-    await repository.save(target, buildState());
+    await repository.save(roomId, buildState());
     await repository.save(keep, buildState());
 
-    await repository.remove(target);
+    await repository.remove(roomId);
 
-    expect(await repository.get(target)).toBeNull();
+    expect(await repository.get(roomId)).toBeNull();
     expect(await repository.get(keep)).not.toBeNull();
   });
 

@@ -197,7 +197,7 @@ export const HallwayServerMessages = {
  * 対象メンバーが在室中でかつ他の通話に入っていないことをサーバー側で再検証する
  */
 export const HallwayInviteRequest = z.object({
-  targetMemberId: MemberId,
+  inviteeId: MemberId,
 });
 export type HallwayInviteRequest = z.infer<typeof HallwayInviteRequest>;
 

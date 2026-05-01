@@ -143,11 +143,11 @@ describe("WsHub", () => {
     const onMessage = vi.fn();
 
     hub.attach(connection, { topic: "room:abc:hallway", onMessage });
-    fireMessage(`{"name":"Invite","data":{"targetMemberId":"m2"}}`);
+    fireMessage(`{"name":"Invite","data":{"inviteeId":"m2"}}`);
 
     expect(onMessage).toHaveBeenCalledWith(connection, {
       name: "Invite",
-      data: { targetMemberId: "m2" },
+      data: { inviteeId: "m2" },
     });
   });
 

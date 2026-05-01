@@ -98,9 +98,7 @@ export const useRow = (roomId: RoomId) => {
           state,
           disabled: !canInvite,
           onInvite:
-            canInvite && send
-              ? () => send("Invite", { targetMemberId: memberId as MemberId })
-              : null,
+            canInvite && send ? () => send("Invite", { inviteeId: memberId as MemberId }) : null,
         };
       });
   }, [statuses, members, me, calling, busy, selfBusy, send]);

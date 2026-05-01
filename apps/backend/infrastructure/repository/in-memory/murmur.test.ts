@@ -54,16 +54,16 @@ describe("InMemoryMurmurRepository", () => {
 
   it("ルーム単位の取り除きで配下の投稿が破棄される", async () => {
     const repository = new InMemoryMurmurRepository();
-    const target = "room-abc-aaaa" as RoomId;
+    const roomId = "room-abc-aaaa" as RoomId;
     const keep = "room-abc-bbbb" as RoomId;
 
-    await repository.save(buildMurmur(target, "x", 1));
-    await repository.save(buildMurmur(target, "y", 2));
+    await repository.save(buildMurmur(roomId, "x", 1));
+    await repository.save(buildMurmur(roomId, "y", 2));
     await repository.save(buildMurmur(keep, "z", 3));
 
-    await repository.remove(target);
+    await repository.remove(roomId);
 
-    expect(await repository.latest(target, 10)).toEqual([]);
+    expect(await repository.latest(roomId, 10)).toEqual([]);
     expect((await repository.latest(keep, 10)).map((each) => each.text)).toEqual(["z"]);
   });
 

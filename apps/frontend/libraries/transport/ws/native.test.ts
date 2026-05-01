@@ -148,9 +148,9 @@ describe("createNativeWsClient", () => {
     if (!socket) throw new Error("socket not created");
     socket.readyState = MockWebSocket.OPEN;
 
-    connection.send("Invite", { targetMemberId: "m2" });
+    connection.send("Invite", { inviteeId: "m2" });
 
-    expect(socket.sent).toContain(`{"name":"Invite","data":{"targetMemberId":"m2"}}`);
+    expect(socket.sent).toContain(`{"name":"Invite","data":{"inviteeId":"m2"}}`);
   });
 
   it("CONNECTING 状態での送信は無視する", () => {
@@ -163,7 +163,7 @@ describe("createNativeWsClient", () => {
     const socket = MockWebSocket.last;
     if (!socket) throw new Error("socket not created");
 
-    connection.send("Invite", { targetMemberId: "m2" });
+    connection.send("Invite", { inviteeId: "m2" });
 
     expect(socket.sent).toHaveLength(0);
   });
