@@ -14,11 +14,12 @@ import { useVibe } from "./store";
  * クライアントの可視状態変化をサーバへ POST する送信関数を返すフック
  * `Welcome` 未着で `connectionId` が未確定の間は送信を抑止する
  * HTTP 失敗時は次回の可視状態変化でまた送るため無視する
+ * `keepalive` を渡したときはタブ非表示遷移直前の送信を想定し、`HttpClient` の `keepalive: true` でブラウザが JS 凍結後も飛ばし切る経路に切り替える
  */
 export const useChange = (roomId: RoomId) => {
   const connectionId = useVibe((state) => state.connectionId);
 
-  return async (status: VibeStatus) => {
+  return async (status: VibeStatus, options?: { keepalive?: boolean }) => {
     if (!connectionId) return;
     try {
       await http.post({
@@ -26,6 +27,7 @@ export const useChange = (roomId: RoomId) => {
         body: { connectionId, status },
         request: ChangeVibeStatusRequest,
         response: z.unknown(),
+        ...(options?.keepalive ? { keepalive: true } : {}),
       });
     } catch {
       /* 次の可視状態変化で再送されるため、ここでは無視する */
