@@ -77,6 +77,7 @@ export class WsHub implements OnModuleInit {
         onPong();
         return;
       }
+
       void options.onMessage?.(connection, envelope);
     });
 
@@ -126,6 +127,7 @@ const parse = (raw: string): Envelope | null => {
     ) {
       return null;
     }
+
     const value = parsed as { name: string; data?: unknown };
     return { name: value.name, data: value.data };
   } catch {

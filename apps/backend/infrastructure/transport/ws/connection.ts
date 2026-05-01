@@ -35,6 +35,7 @@ export class WsConnection {
     if (this.closed) {
       return;
     }
+
     const envelope: Envelope = { name, data };
     try {
       this.socket.send(JSON.stringify(envelope));
@@ -50,6 +51,7 @@ export class WsConnection {
     if (this.closed) {
       return;
     }
+
     this.closed = true;
     this.socket.close(code);
   }

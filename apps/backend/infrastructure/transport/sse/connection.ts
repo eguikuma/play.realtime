@@ -29,6 +29,7 @@ export class SseConnection {
     if (this.closed) {
       return;
     }
+
     this.response.setHeader("Content-Type", SSE_CONTENT_TYPE);
     this.response.setHeader("Cache-Control", "no-cache, no-transform");
     this.response.setHeader("Connection", "keep-alive");
@@ -73,6 +74,7 @@ export class SseConnection {
     if (this.closed) {
       return;
     }
+
     this.closed = true;
     this.response.end();
   }
