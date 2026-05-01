@@ -45,7 +45,7 @@ export class InMemoryVibeRepository implements VibeRepository {
     status: VibeStatus,
   ): Promise<{ updated: boolean; aggregated: VibeStatus | null }> {
     const connections = this.store.get(roomId)?.get(memberId);
-    if (!connections || !connections.has(connectionId)) {
+    if (!connections?.has(connectionId)) {
       return { updated: false, aggregated: null };
     }
     connections.set(connectionId, status);
