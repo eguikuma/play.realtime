@@ -28,8 +28,8 @@ const buildRoom = (): Room =>
     createdAt: "2026-04-22T10:00:00.000Z",
   });
 
-const buildBgms = (initial: BgmState | null): BgmRepository => ({
-  get: vi.fn(async () => initial),
+const buildBgms = (state: BgmState | null): BgmRepository => ({
+  get: vi.fn(async () => state),
   save: vi.fn(),
   remove: vi.fn(),
 });
