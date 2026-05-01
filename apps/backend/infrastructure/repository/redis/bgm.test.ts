@@ -30,7 +30,7 @@ describe.skipIf(!REDIS_URL)("RedisBgmRepository", () => {
     await repository.onModuleDestroy();
   });
 
-  it("保存した state がそのまま get で取り出せる", async () => {
+  it("保存した `state` がそのまま取り出せる", async () => {
     const roomId = "room-redis-bgm-1" as RoomId;
     const state = buildState();
 
@@ -39,11 +39,11 @@ describe.skipIf(!REDIS_URL)("RedisBgmRepository", () => {
     expect(await repository.get(roomId)).toEqual(state);
   });
 
-  it("entry が無い room の get は null を返す", async () => {
+  it("保存データが無いルームの取り出しは `null` を返す", async () => {
     expect(await repository.get("room-redis-bgm-empty" as RoomId)).toBeNull();
   });
 
-  it("save は同じ room の state を最新値で上書きする", async () => {
+  it("保存処理は同じルームの `state` を最新値で上書きする", async () => {
     const roomId = "room-redis-bgm-2" as RoomId;
     const second: BgmState = { current: null, undoable: null };
 
@@ -53,7 +53,7 @@ describe.skipIf(!REDIS_URL)("RedisBgmRepository", () => {
     expect(await repository.get(roomId)).toEqual(second);
   });
 
-  it("別の room の state は混ざらない", async () => {
+  it("別のルームの `state` は混ざらない", async () => {
     const roomA = "room-redis-bgm-a" as RoomId;
     const roomB = "room-redis-bgm-b" as RoomId;
     const stateA = buildState();
@@ -66,7 +66,7 @@ describe.skipIf(!REDIS_URL)("RedisBgmRepository", () => {
     expect(await repository.get(roomB)).toEqual(stateB);
   });
 
-  it("ルーム単位の取り除きで state が null に戻る", async () => {
+  it("ルーム単位の取り除きで `state` が `null` に戻る", async () => {
     const roomId = "room-redis-bgm-3" as RoomId;
 
     await repository.save(roomId, buildState());

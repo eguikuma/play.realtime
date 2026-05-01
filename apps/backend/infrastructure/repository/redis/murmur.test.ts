@@ -78,7 +78,7 @@ describe.skipIf(!REDIS_URL)("RedisMurmurRepository", () => {
     expect((await repository.latest(keep, 10)).map((each) => each.text)).toEqual(["z"]);
   });
 
-  it("limit が 0 以下なら空配列を返す", async () => {
+  it("`limit` が 0 以下なら空配列を返す", async () => {
     const roomId = "room-redis-murmur-4" as RoomId;
     await repository.save(buildMurmur(roomId, "x", 1));
 

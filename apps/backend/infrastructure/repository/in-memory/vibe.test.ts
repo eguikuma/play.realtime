@@ -14,7 +14,7 @@ describe("InMemoryVibeRepository", () => {
     expect(result).toEqual([{ memberId, status: "present" }]);
   });
 
-  it("初回接続の保存では isFirst を返し 2 本目以降は返さない", async () => {
+  it("初回接続の保存では `isFirst` を返し 2 本目以降は返さない", async () => {
     const repository = new InMemoryVibeRepository();
     const roomId = "room-abc-1234" as RoomId;
     const memberId = "member-alice" as MemberId;
@@ -38,7 +38,7 @@ describe("InMemoryVibeRepository", () => {
     expect(result).toEqual([{ memberId, status: "present" }]);
   });
 
-  it("既存接続の update は集約結果を書き換えて updated を返す", async () => {
+  it("既存接続を更新すると集約結果を書き換えて `updated` 真を返す", async () => {
     const repository = new InMemoryVibeRepository();
     const roomId = "room-abc-1234" as RoomId;
     const memberId = "member-alice" as MemberId;
@@ -50,7 +50,7 @@ describe("InMemoryVibeRepository", () => {
     expect(await repository.get(roomId, memberId)).toBe("focused");
   });
 
-  it("台帳に居ない接続への update は何もせず updated 偽を返す", async () => {
+  it("台帳に居ない接続への更新は何もせず `updated` 偽を返す", async () => {
     const repository = new InMemoryVibeRepository();
     const roomId = "room-abc-1234" as RoomId;
     const memberId = "member-alice" as MemberId;
@@ -66,7 +66,7 @@ describe("InMemoryVibeRepository", () => {
     expect(await repository.snapshot(roomId)).toEqual([]);
   });
 
-  it("削除済み接続への update は復活させずに updated 偽を返す", async () => {
+  it("削除済み接続への更新は復活させずに `updated` 偽を返す", async () => {
     const repository = new InMemoryVibeRepository();
     const roomId = "room-abc-1234" as RoomId;
     const memberId = "member-alice" as MemberId;
@@ -79,7 +79,7 @@ describe("InMemoryVibeRepository", () => {
     expect(await repository.snapshot(roomId)).toEqual([]);
   });
 
-  it("削除は最後の接続で isLast を返し集約結果は null になる", async () => {
+  it("削除は最後の接続で `isLast` を返し集約結果は `null` になる", async () => {
     const repository = new InMemoryVibeRepository();
     const roomId = "room-abc-1234" as RoomId;
     const memberId = "member-alice" as MemberId;
@@ -91,7 +91,7 @@ describe("InMemoryVibeRepository", () => {
     expect(await repository.snapshot(roomId)).toEqual([]);
   });
 
-  it("削除で接続が残っていれば isLast を返さず残りの集約結果を返す", async () => {
+  it("削除で接続が残っていれば `isLast` を返さず残りの集約結果を返す", async () => {
     const repository = new InMemoryVibeRepository();
     const roomId = "room-abc-1234" as RoomId;
     const memberId = "member-alice" as MemberId;
@@ -103,7 +103,7 @@ describe("InMemoryVibeRepository", () => {
     expect(result).toEqual({ isLast: false, aggregated: "focused" });
   });
 
-  it("取得はメンバーの全接続を集約して返し接続が無ければ null を返す", async () => {
+  it("取得はメンバーの全接続を集約して返し接続が無ければ `null` を返す", async () => {
     const repository = new InMemoryVibeRepository();
     const roomId = "room-abc-1234" as RoomId;
     const aliceId = "member-alice" as MemberId;
@@ -116,7 +116,7 @@ describe("InMemoryVibeRepository", () => {
     expect(await repository.get(roomId, bobId)).toBeNull();
   });
 
-  it("別のルームの vibe は混ざらない", async () => {
+  it("別のルームの集中度は混ざらない", async () => {
     const repository = new InMemoryVibeRepository();
     const roomA = "room-abc-aaaa" as RoomId;
     const roomB = "room-abc-bbbb" as RoomId;

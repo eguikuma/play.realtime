@@ -33,7 +33,7 @@ const call = (overrides: Partial<Call> = {}): Call => ({
 });
 
 describe("InMemoryHallwayRepository", () => {
-  it("招待を保存すると id / from / to いずれからも取得できる", async () => {
+  it("招待を保存すると `id` `from` `to` のいずれからも取得できる", async () => {
     const repository = new InMemoryHallwayRepository();
 
     await repository.saveInvitation(invitation());
@@ -71,7 +71,7 @@ describe("InMemoryHallwayRepository", () => {
     expect(await repository.findAllInvitationsInRoom(roomId)).toEqual([]);
   });
 
-  it("通話を保存すると id / 参加者いずれからも取得できる", async () => {
+  it("通話を保存すると `id` と参加者のいずれからも取得できる", async () => {
     const repository = new InMemoryHallwayRepository();
 
     await repository.saveCall(call());

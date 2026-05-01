@@ -26,7 +26,7 @@ describe("InMemoryRoomRepository", () => {
     expect(await repository.find(roomId)).toEqual(room);
   });
 
-  it("同じ id のルームを上書き保存できる", async () => {
+  it("同じ `id` のルームを上書き保存できる", async () => {
     const first = create({ id: roomId, host, createdAt });
     const second = create({ id: roomId, host, createdAt: "2026-04-18T01:00:00.000Z" });
 
@@ -45,7 +45,7 @@ describe("InMemoryRoomRepository", () => {
     expect(found).toEqual(room);
   });
 
-  it("存在しない id には null を返す", async () => {
+  it("存在しない `id` には `null` を返す", async () => {
     const unknown = RoomId.parse("unknown-room-9999");
 
     const found = await repository.find(unknown);
@@ -53,7 +53,7 @@ describe("InMemoryRoomRepository", () => {
     expect(found).toBeNull();
   });
 
-  it("保存済みのルームを取り除くと find は null を返す", async () => {
+  it("保存済みのルームを取り除くと検索は `null` を返す", async () => {
     const room = create({ id: roomId, host, createdAt });
     await repository.save(room);
 

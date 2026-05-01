@@ -30,7 +30,7 @@ describe.skipIf(!REDIS_URL)("RedisVibeRepository", () => {
     expect(await repository.snapshot(roomId)).toEqual([{ memberId, status: "present" }]);
   });
 
-  it("初回接続の保存では isFirst を返し 2 本目以降は返さない", async () => {
+  it("初回接続の保存では `isFirst` を返し 2 本目以降は返さない", async () => {
     const roomId = "room-redis-vibe-2" as RoomId;
     const memberId = "member-alice" as MemberId;
 
@@ -51,7 +51,7 @@ describe.skipIf(!REDIS_URL)("RedisVibeRepository", () => {
     expect(await repository.snapshot(roomId)).toEqual([{ memberId, status: "present" }]);
   });
 
-  it("既存接続の update は集約結果を書き換えて updated を返す", async () => {
+  it("既存接続を更新すると集約結果を書き換えて `updated` 真を返す", async () => {
     const roomId = "room-redis-vibe-4" as RoomId;
     const memberId = "member-alice" as MemberId;
 
@@ -62,7 +62,7 @@ describe.skipIf(!REDIS_URL)("RedisVibeRepository", () => {
     expect(await repository.get(roomId, memberId)).toBe("focused");
   });
 
-  it("台帳に居ない接続への update は何もせず updated 偽を返す", async () => {
+  it("台帳に居ない接続への更新は何もせず `updated` 偽を返す", async () => {
     const roomId = "room-redis-vibe-5" as RoomId;
     const memberId = "member-alice" as MemberId;
 
@@ -77,7 +77,7 @@ describe.skipIf(!REDIS_URL)("RedisVibeRepository", () => {
     expect(await repository.snapshot(roomId)).toEqual([]);
   });
 
-  it("削除済み接続への update は復活させずに updated 偽を返す", async () => {
+  it("削除済み接続への更新は復活させずに `updated` 偽を返す", async () => {
     const roomId = "room-redis-vibe-6" as RoomId;
     const memberId = "member-alice" as MemberId;
 
@@ -89,7 +89,7 @@ describe.skipIf(!REDIS_URL)("RedisVibeRepository", () => {
     expect(await repository.snapshot(roomId)).toEqual([]);
   });
 
-  it("削除は最後の接続で isLast を返し集約結果は null になる", async () => {
+  it("削除は最後の接続で `isLast` を返し集約結果は `null` になる", async () => {
     const roomId = "room-redis-vibe-7" as RoomId;
     const memberId = "member-alice" as MemberId;
 
@@ -100,7 +100,7 @@ describe.skipIf(!REDIS_URL)("RedisVibeRepository", () => {
     expect(await repository.snapshot(roomId)).toEqual([]);
   });
 
-  it("削除で接続が残っていれば isLast を返さず残りの集約結果を返す", async () => {
+  it("削除で接続が残っていれば `isLast` を返さず残りの集約結果を返す", async () => {
     const roomId = "room-redis-vibe-8" as RoomId;
     const memberId = "member-alice" as MemberId;
 
@@ -111,7 +111,7 @@ describe.skipIf(!REDIS_URL)("RedisVibeRepository", () => {
     expect(result).toEqual({ isLast: false, aggregated: "focused" });
   });
 
-  it("取得はメンバーの全接続を集約して返し接続が無ければ null を返す", async () => {
+  it("取得はメンバーの全接続を集約して返し接続が無ければ `null` を返す", async () => {
     const roomId = "room-redis-vibe-9" as RoomId;
     const aliceId = "member-alice" as MemberId;
     const bobId = "member-bob" as MemberId;

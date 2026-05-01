@@ -51,7 +51,7 @@ describe.skipIf(!REDIS_URL)("RedisHallwayRepository", () => {
     await repository.onModuleDestroy();
   });
 
-  it("招待を保存すると id / from / to いずれからも取得できる", async () => {
+  it("招待を保存すると `id` `from` `to` のいずれからも取得できる", async () => {
     await repository.saveInvitation(invitation());
 
     expect(await repository.findInvitation(invitationId)).toEqual(invitation());
@@ -86,7 +86,7 @@ describe.skipIf(!REDIS_URL)("RedisHallwayRepository", () => {
     expect(await repository.findAllInvitationsInRoom(roomId)).toEqual([]);
   });
 
-  it("通話を保存すると id / 参加者いずれからも取得できる", async () => {
+  it("通話を保存すると `id` と参加者のいずれからも取得できる", async () => {
     await repository.saveCall(call());
 
     expect(await repository.findCall(callId)).toEqual(call());
