@@ -30,6 +30,7 @@ export const useVisibility = ({
       if (lastSent.current === next) {
         return;
       }
+
       lastSent.current = next;
       latestOnChange.current(next);
     };

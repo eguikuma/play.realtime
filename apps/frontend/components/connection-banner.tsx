@@ -33,6 +33,7 @@ export const ConnectionBanner = () => {
     if (oldestError === null || visible) {
       return;
     }
+
     const wait = VISIBLE_MS - elapsed;
     const timer = setTimeout(
       () => {
