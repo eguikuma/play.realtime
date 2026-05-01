@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import type { Topic } from "@play.realtime/contracts";
 import type { z } from "zod";
 import { PubSub } from "../../../application/ports/pubsub";
 import type { WsConnection } from "./connection";
@@ -37,7 +38,7 @@ export class WsHub {
   attach(
     connection: WsConnection,
     options: {
-      topic: string;
+      topic: Topic;
       onAttach?: (connection: WsConnection) => void | Promise<void>;
       onMessage?: (connection: WsConnection, envelope: Envelope) => void | Promise<void>;
     },
@@ -74,7 +75,7 @@ export class WsHub {
    */
   async broadcast<E extends EventMap, K extends Extract<keyof E, string>>(
     _events: E,
-    topic: string,
+    topic: Topic,
     name: K,
     data: z.infer<E[K]>,
   ): Promise<void> {

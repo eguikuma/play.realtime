@@ -1,3 +1,4 @@
+import type { MurmurTopic } from "@play.realtime/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as z from "zod";
 import type { PubSub, Subscription } from "../../../application/ports/pubsub";
@@ -8,6 +9,8 @@ import { SseHub } from "./hub";
 const TestEvents = {
   posted: z.object({ text: z.string() }),
 } as const;
+
+const testTopic = "room:abc:murmur" as MurmurTopic;
 
 type Handler = (payload: unknown) => void;
 
@@ -75,10 +78,10 @@ describe("SseHub", () => {
     const hub = new SseHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection();
 
-    hub.attach(connection, { topic: "room:abc:murmur" });
+    hub.attach(connection, { topic: testTopic });
 
     expect(connection.open).toHaveBeenCalledOnce();
-    expect(subscribers.get("room:abc:murmur")?.length).toBe(1);
+    expect(subscribers.get(testTopic)?.length).toBe(1);
   });
 
   it("クライアントが切断すると購読とハートビートを自動で解除する", () => {
@@ -87,10 +90,10 @@ describe("SseHub", () => {
     const hub = new SseHub(pubsub, buildHeartbeat(stopHeartbeat));
     const { connection, fireClose } = buildConnection();
 
-    hub.attach(connection, { topic: "room:abc:murmur" });
+    hub.attach(connection, { topic: testTopic });
     fireClose();
 
-    expect(subscribers.get("room:abc:murmur")?.length).toBe(0);
+    expect(subscribers.get(testTopic)?.length).toBe(0);
     expect(stopHeartbeat).toHaveBeenCalledOnce();
   });
 
@@ -98,9 +101,9 @@ describe("SseHub", () => {
     const { pubsub } = buildPubSub();
     const hub = new SseHub(pubsub, buildHeartbeat());
 
-    await hub.broadcast(TestEvents, "room:abc:murmur", "posted", { text: "hi" }, "murmur-1");
+    await hub.broadcast(TestEvents, testTopic, "posted", { text: "hi" }, "murmur-1");
 
-    expect(pubsub.publish).toHaveBeenCalledWith("room:abc:murmur", {
+    expect(pubsub.publish).toHaveBeenCalledWith(testTopic, {
       name: "posted",
       data: { text: "hi" },
       id: "murmur-1",
@@ -113,7 +116,7 @@ describe("SseHub", () => {
     const { connection } = buildConnection();
     const onAttach = vi.fn();
 
-    hub.attach(connection, { topic: "room:abc:murmur", onAttach });
+    hub.attach(connection, { topic: testTopic, onAttach });
     await new Promise((resolve) => setImmediate(resolve));
 
     expect(onAttach).toHaveBeenCalledWith(connection);

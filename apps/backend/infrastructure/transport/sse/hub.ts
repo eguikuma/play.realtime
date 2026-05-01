@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import type { Topic } from "@play.realtime/contracts";
 import type { z } from "zod";
 import { PubSub } from "../../../application/ports/pubsub";
 import type { SseConnection } from "./connection";
@@ -39,7 +40,7 @@ export class SseHub {
   attach(
     connection: SseConnection,
     options: {
-      topic: string;
+      topic: Topic;
       onAttach?: (connection: SseConnection) => void | Promise<void>;
     },
   ): void {
@@ -64,7 +65,7 @@ export class SseHub {
    */
   async broadcast<E extends EventMap, K extends Extract<keyof E, string>>(
     _events: E,
-    topic: string,
+    topic: Topic,
     name: K,
     data: z.infer<E[K]>,
     id?: string,

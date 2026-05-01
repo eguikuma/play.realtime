@@ -1,3 +1,4 @@
+import type { HallwayTopic } from "@play.realtime/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as z from "zod";
 import type { PubSub, Subscription } from "../../../application/ports/pubsub";
@@ -9,6 +10,8 @@ const TestMessages = {
   Invited: z.object({ invitationId: z.string() }),
   Message: z.object({ text: z.string() }),
 } as const;
+
+const testTopic = "room:abc:hallway" as HallwayTopic;
 
 type Handler = (payload: unknown) => void;
 type MessageHandler = (raw: string) => void;
@@ -84,9 +87,9 @@ describe("WsHub", () => {
     const hub = new WsHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection();
 
-    hub.attach(connection, { topic: "room:abc:hallway" });
+    hub.attach(connection, { topic: testTopic });
 
-    expect(subscribers.get("room:abc:hallway")?.length).toBe(1);
+    expect(subscribers.get(testTopic)?.length).toBe(1);
   });
 
   it("クライアントが切断すると購読とハートビートを自動で解除する", () => {
@@ -95,10 +98,10 @@ describe("WsHub", () => {
     const hub = new WsHub(pubsub, buildHeartbeat(stop));
     const { connection, fireClose } = buildConnection();
 
-    hub.attach(connection, { topic: "room:abc:hallway" });
+    hub.attach(connection, { topic: testTopic });
     fireClose();
 
-    expect(subscribers.get("room:abc:hallway")?.length).toBe(0);
+    expect(subscribers.get(testTopic)?.length).toBe(0);
     expect(stop).toHaveBeenCalledOnce();
   });
 
@@ -106,9 +109,9 @@ describe("WsHub", () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
 
-    await hub.broadcast(TestMessages, "room:abc:hallway", "Invited", { invitationId: "i1" });
+    await hub.broadcast(TestMessages, testTopic, "Invited", { invitationId: "i1" });
 
-    expect(pubsub.publish).toHaveBeenCalledWith("room:abc:hallway", {
+    expect(pubsub.publish).toHaveBeenCalledWith(testTopic, {
       name: "Invited",
       data: { invitationId: "i1" },
     });
@@ -119,8 +122,8 @@ describe("WsHub", () => {
     const hub = new WsHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection();
 
-    hub.attach(connection, { topic: "room:abc:hallway" });
-    await hub.broadcast(TestMessages, "room:abc:hallway", "Message", { text: "hi" });
+    hub.attach(connection, { topic: testTopic });
+    await hub.broadcast(TestMessages, testTopic, "Message", { text: "hi" });
 
     expect(connection.send).toHaveBeenCalledWith("Message", { text: "hi" });
   });
@@ -135,7 +138,7 @@ describe("WsHub", () => {
     const { connection, fireMessage } = buildConnection();
     const onMessage = vi.fn();
 
-    hub.attach(connection, { topic: "room:abc:hallway", onMessage });
+    hub.attach(connection, { topic: testTopic, onMessage });
     fireMessage(`{"name":"Pong","data":{}}`);
 
     expect(onPong).toHaveBeenCalledOnce();
@@ -148,7 +151,7 @@ describe("WsHub", () => {
     const { connection, fireMessage } = buildConnection();
     const onMessage = vi.fn();
 
-    hub.attach(connection, { topic: "room:abc:hallway", onMessage });
+    hub.attach(connection, { topic: testTopic, onMessage });
     fireMessage(`{"name":"Invite","data":{"inviteeId":"m2"}}`);
 
     expect(onMessage).toHaveBeenCalledWith(connection, {
@@ -163,7 +166,7 @@ describe("WsHub", () => {
     const { connection, fireMessage } = buildConnection();
     const onMessage = vi.fn();
 
-    hub.attach(connection, { topic: "room:abc:hallway", onMessage });
+    hub.attach(connection, { topic: testTopic, onMessage });
     fireMessage("not-json");
     fireMessage(`{"data":"missing-name"}`);
     fireMessage(`{"name":123}`);
@@ -177,7 +180,7 @@ describe("WsHub", () => {
     const { connection } = buildConnection();
     const onAttach = vi.fn();
 
-    hub.attach(connection, { topic: "room:abc:hallway", onAttach });
+    hub.attach(connection, { topic: testTopic, onAttach });
     await new Promise((resolve) => setImmediate(resolve));
 
     expect(onAttach).toHaveBeenCalledWith(connection);
