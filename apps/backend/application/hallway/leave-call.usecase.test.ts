@@ -32,19 +32,28 @@ const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayReposi
   ...overrides,
 });
 
-const buildBroadcaster = (toRoom = vi.fn(), toMembers = vi.fn()): HallwayBroadcaster =>
-  ({ toRoom, toMembers }) as unknown as HallwayBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof HallwayBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): HallwayBroadcaster =>
+  ({
+    invited: vi.fn(),
+    invitationEnded: vi.fn(),
+    callStarted: vi.fn(),
+    callEnded: vi.fn(),
+    message: vi.fn(),
+    ...overrides,
+  }) as unknown as HallwayBroadcaster;
 
 describe("LeaveHallwayCall", () => {
   it("参加者が明示的に退出すると通話を削除し CallEnded explicit をルーム全員に配信する", async () => {
     const hallway = buildHallway();
-    const toRoom = vi.fn();
-    const usecase = new LeaveHallwayCall(hallway, buildBroadcaster(toRoom));
+    const broadcaster = buildBroadcaster();
+    const usecase = new LeaveHallwayCall(hallway, broadcaster);
 
     await usecase.execute({ roomId, callId, memberId: inviter });
 
     expect(hallway.deleteCall).toHaveBeenCalledWith(callId);
-    expect(toRoom).toHaveBeenCalledWith(roomId, "CallEnded", {
+    expect(broadcaster.callEnded).toHaveBeenCalledWith(roomId, {
       callId,
       reason: "explicit",
     });

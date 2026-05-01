@@ -33,7 +33,7 @@ export class DeclineHallwayInvitation {
     this.timers.cancel(input.invitationId);
     await this.hallway.deleteInvitation(input.invitationId);
 
-    await this.broadcaster.toRoom(input.roomId, "InvitationEnded", {
+    await this.broadcaster.invitationEnded(input.roomId, {
       invitationId: input.invitationId,
       reason: "declined" as const,
     });

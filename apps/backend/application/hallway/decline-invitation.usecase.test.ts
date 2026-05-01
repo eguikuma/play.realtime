@@ -34,8 +34,17 @@ const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayReposi
   ...overrides,
 });
 
-const buildBroadcaster = (toRoom = vi.fn(), toMembers = vi.fn()): HallwayBroadcaster =>
-  ({ toRoom, toMembers }) as unknown as HallwayBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof HallwayBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): HallwayBroadcaster =>
+  ({
+    invited: vi.fn(),
+    invitationEnded: vi.fn(),
+    callStarted: vi.fn(),
+    callEnded: vi.fn(),
+    message: vi.fn(),
+    ...overrides,
+  }) as unknown as HallwayBroadcaster;
 
 const buildTimers = (cancel = vi.fn()): HallwayInvitationTimers =>
   ({ cancel, register: vi.fn() }) as unknown as HallwayInvitationTimers;
@@ -43,19 +52,15 @@ const buildTimers = (cancel = vi.fn()): HallwayInvitationTimers =>
 describe("DeclineHallwayInvitation", () => {
   it("invitee が拒否すると招待を削除し InvitationEnded declined をルーム全員に配信する", async () => {
     const hallway = buildHallway();
-    const toRoom = vi.fn();
+    const broadcaster = buildBroadcaster();
     const cancel = vi.fn();
-    const usecase = new DeclineHallwayInvitation(
-      hallway,
-      buildBroadcaster(toRoom),
-      buildTimers(cancel),
-    );
+    const usecase = new DeclineHallwayInvitation(hallway, broadcaster, buildTimers(cancel));
 
     await usecase.execute({ roomId, memberId: inviteeId, invitationId });
 
     expect(cancel).toHaveBeenCalledWith(invitationId);
     expect(hallway.deleteInvitation).toHaveBeenCalledWith(invitationId);
-    expect(toRoom).toHaveBeenCalledWith(roomId, "InvitationEnded", {
+    expect(broadcaster.invitationEnded).toHaveBeenCalledWith(roomId, {
       invitationId,
       reason: "declined",
     });

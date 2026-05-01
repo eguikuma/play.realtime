@@ -30,19 +30,28 @@ const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayReposi
   ...overrides,
 });
 
-const buildBroadcaster = (toRoom = vi.fn(), toMembers = vi.fn()): HallwayBroadcaster =>
-  ({ toRoom, toMembers }) as unknown as HallwayBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof HallwayBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): HallwayBroadcaster =>
+  ({
+    invited: vi.fn(),
+    invitationEnded: vi.fn(),
+    callStarted: vi.fn(),
+    callEnded: vi.fn(),
+    message: vi.fn(),
+    ...overrides,
+  }) as unknown as HallwayBroadcaster;
 
 describe("ExpireHallwayInvitation", () => {
   it("招待を削除し InvitationEnded expired をルーム全員に配信する", async () => {
     const hallway = buildHallway();
-    const toRoom = vi.fn();
-    const usecase = new ExpireHallwayInvitation(hallway, buildBroadcaster(toRoom));
+    const broadcaster = buildBroadcaster();
+    const usecase = new ExpireHallwayInvitation(hallway, broadcaster);
 
     await usecase.execute({ roomId, invitationId });
 
     expect(hallway.deleteInvitation).toHaveBeenCalledWith(invitationId);
-    expect(toRoom).toHaveBeenCalledWith(roomId, "InvitationEnded", {
+    expect(broadcaster.invitationEnded).toHaveBeenCalledWith(roomId, {
       invitationId,
       reason: "expired",
     });
@@ -50,11 +59,11 @@ describe("ExpireHallwayInvitation", () => {
 
   it("招待が既に存在しないときは何もせず配信しない", async () => {
     const hallway = buildHallway({ findInvitation: vi.fn(async () => null) });
-    const toRoom = vi.fn();
-    const usecase = new ExpireHallwayInvitation(hallway, buildBroadcaster(toRoom));
+    const broadcaster = buildBroadcaster();
+    const usecase = new ExpireHallwayInvitation(hallway, broadcaster);
 
     await usecase.execute({ roomId, invitationId });
 
-    expect(toRoom).not.toHaveBeenCalled();
+    expect(broadcaster.invitationEnded).not.toHaveBeenCalled();
   });
 });

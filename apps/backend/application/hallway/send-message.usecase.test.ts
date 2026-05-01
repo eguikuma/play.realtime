@@ -33,8 +33,17 @@ const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayReposi
   ...overrides,
 });
 
-const buildBroadcaster = (toRoom = vi.fn(), toMembers = vi.fn()): HallwayBroadcaster =>
-  ({ toRoom, toMembers }) as unknown as HallwayBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof HallwayBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): HallwayBroadcaster =>
+  ({
+    invited: vi.fn(),
+    invitationEnded: vi.fn(),
+    callStarted: vi.fn(),
+    callEnded: vi.fn(),
+    message: vi.fn(),
+    ...overrides,
+  }) as unknown as HallwayBroadcaster;
 
 describe("SendHallwayMessage", () => {
   beforeEach(() => {
@@ -47,12 +56,12 @@ describe("SendHallwayMessage", () => {
   });
 
   it("通話参加者からの送信は Message として参加者 2 人にのみ配信する", async () => {
-    const toMembers = vi.fn();
-    const usecase = new SendHallwayMessage(buildHallway(), buildBroadcaster(vi.fn(), toMembers));
+    const broadcaster = buildBroadcaster();
+    const usecase = new SendHallwayMessage(buildHallway(), broadcaster);
 
     await usecase.execute({ roomId, callId, memberId: inviter, text: "hi" });
 
-    expect(toMembers).toHaveBeenCalledWith(roomId, [inviter, invitee], "Message", {
+    expect(broadcaster.message).toHaveBeenCalledWith(roomId, [inviter, invitee], {
       message: {
         callId,
         fromMemberId: inviter,

@@ -29,7 +29,7 @@ export class LeaveHallwayCall {
 
     await this.hallway.deleteCall(input.callId);
 
-    await this.broadcaster.toRoom(input.roomId, "CallEnded", {
+    await this.broadcaster.callEnded(input.roomId, {
       callId: input.callId,
       reason: "explicit" as const,
     });

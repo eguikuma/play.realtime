@@ -64,7 +64,7 @@ export class InviteHallway {
       void this.expirer.execute({ roomId: input.roomId, invitationId: invitation.id });
     });
 
-    await this.broadcaster.toRoom(input.roomId, "Invited", { invitation });
+    await this.broadcaster.invited(input.roomId, { invitation });
 
     return invitation;
   }

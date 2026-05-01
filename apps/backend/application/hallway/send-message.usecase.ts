@@ -39,6 +39,6 @@ export class SendHallwayMessage {
       sentAt: new Date().toISOString(),
     };
 
-    await this.broadcaster.toMembers(input.roomId, call.memberIds, "Message", { message });
+    await this.broadcaster.message(input.roomId, call.memberIds, { message });
   }
 }

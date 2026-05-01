@@ -37,8 +37,17 @@ const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayReposi
   ...overrides,
 });
 
-const buildBroadcaster = (toRoom = vi.fn(), toMembers = vi.fn()): HallwayBroadcaster =>
-  ({ toRoom, toMembers }) as unknown as HallwayBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof HallwayBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): HallwayBroadcaster =>
+  ({
+    invited: vi.fn(),
+    invitationEnded: vi.fn(),
+    callStarted: vi.fn(),
+    callEnded: vi.fn(),
+    message: vi.fn(),
+    ...overrides,
+  }) as unknown as HallwayBroadcaster;
 
 const buildIds = (): NanoidIdGenerator =>
   ({ call: vi.fn(() => callId) }) as unknown as NanoidIdGenerator;
@@ -58,11 +67,11 @@ describe("AcceptHallwayInvitation", () => {
 
   it("invitee が受諾すると InvitationEnded accepted → CallStarted の順でルーム全員に配信する", async () => {
     const hallway = buildHallway();
-    const toRoom = vi.fn();
+    const broadcaster = buildBroadcaster();
     const cancel = vi.fn();
     const usecase = new AcceptHallwayInvitation(
       hallway,
-      buildBroadcaster(toRoom),
+      broadcaster,
       buildIds(),
       buildTimers(cancel),
     );
@@ -79,11 +88,11 @@ describe("AcceptHallwayInvitation", () => {
     });
     expect(hallway.saveCall).toHaveBeenCalledWith(call);
 
-    expect(toRoom).toHaveBeenNthCalledWith(1, roomId, "InvitationEnded", {
+    expect(broadcaster.invitationEnded).toHaveBeenCalledWith(roomId, {
       invitationId,
       reason: "accepted",
     });
-    expect(toRoom).toHaveBeenNthCalledWith(2, roomId, "CallStarted", { call });
+    expect(broadcaster.callStarted).toHaveBeenCalledWith(roomId, { call });
   });
 
   it("invitee 以外が受諾しようとすると InvitationNotFound を投げる", async () => {

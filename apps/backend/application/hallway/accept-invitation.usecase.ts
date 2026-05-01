@@ -36,7 +36,7 @@ export class AcceptHallwayInvitation {
     this.timers.cancel(input.invitationId);
     await this.hallway.deleteInvitation(input.invitationId);
 
-    await this.broadcaster.toRoom(input.roomId, "InvitationEnded", {
+    await this.broadcaster.invitationEnded(input.roomId, {
       invitationId: input.invitationId,
       reason: "accepted" as const,
     });
@@ -49,7 +49,7 @@ export class AcceptHallwayInvitation {
     };
     await this.hallway.saveCall(call);
 
-    await this.broadcaster.toRoom(input.roomId, "CallStarted", { call });
+    await this.broadcaster.callStarted(input.roomId, { call });
 
     return call;
   }

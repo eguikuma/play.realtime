@@ -1,20 +1,21 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { HallwayServerMessages, type MemberId, type RoomId } from "@play.realtime/contracts";
-import type { z } from "zod";
+import type {
+  HallwayCallEnded,
+  HallwayCallStarted,
+  HallwayInvitationEnded,
+  HallwayInvited,
+  HallwayMessage,
+  MemberId,
+  RoomId,
+} from "@play.realtime/contracts";
 import { RoomRepository } from "../../domain/room";
 import { WsHub } from "../../infrastructure/transport/ws";
 import { broadcastToMembers } from "./topic";
 
 /**
- * `HallwayServerMessages` 辞書のキーに限定される配信メッセージ種別
- * `HallwayBroadcaster.toRoom` と `toMembers` の `name` 引数を型で束縛する
- */
-type ServerMessageName = Extract<keyof typeof HallwayServerMessages, string>;
-
-/**
- * 廊下トークの WebSocket 配信をルーム全体向けと特定メンバー向けに整理するサービス
- * メンバー単位のトピック構成上、配信範囲の選び分けが散らばりやすいため usecase 層の窓口としてここに集約する
- * `name` と `data` は `HallwayServerMessages` 辞書で型が束縛され、辞書にないキーや payload 不一致を呼び出し側で弾く
+ * 廊下トークの WebSocket 配信のメッセージ別ファサード
+ * usecase 層は `WsHub` を直接触らずこの broadcaster の各メソッド経由で配信し、辞書にないキーや payload 不一致をシグネチャ単位でコンパイル時に弾く
+ * メンバー単位トピック構成上散らばりやすい配信範囲の判定をここに集約し、ルーム全員向けと特定メンバー集合向けを別メソッドに分ける
  */
 @Injectable()
 export class HallwayBroadcaster {
@@ -24,31 +25,70 @@ export class HallwayBroadcaster {
   ) {}
 
   /**
-   * ルーム在室メンバー全員宛に配信する、`Invited`、`InvitationEnded`、`CallStarted`、`CallEnded` など全員の UI 整合が必要なメッセージで使う
+   * 招待発行をルーム在室メンバー全員に配信する
    * ルームが既に消えていれば静かに何もしない
    */
-  async toRoom<K extends ServerMessageName>(
-    roomId: RoomId,
-    name: K,
-    data: z.infer<(typeof HallwayServerMessages)[K]>,
-  ): Promise<void> {
-    const room = await this.rooms.find(roomId);
-    if (!room) {
+  async invited(roomId: RoomId, data: HallwayInvited): Promise<void> {
+    const memberIds = await this.allMemberIds(roomId);
+    if (!memberIds) {
       return;
     }
-    const memberIds = room.members.map((each) => each.id);
-    await broadcastToMembers(this.hub, roomId, memberIds, name, data);
+    await broadcastToMembers(this.hub, roomId, memberIds, "Invited", data);
   }
 
   /**
-   * 指定メンバー集合だけに配信する、通話参加者向けの `Message` 配信などで使う
+   * 招待終了をルーム在室メンバー全員に配信する
+   * ルームが既に消えていれば静かに何もしない
    */
-  async toMembers<K extends ServerMessageName>(
+  async invitationEnded(roomId: RoomId, data: HallwayInvitationEnded): Promise<void> {
+    const memberIds = await this.allMemberIds(roomId);
+    if (!memberIds) {
+      return;
+    }
+    await broadcastToMembers(this.hub, roomId, memberIds, "InvitationEnded", data);
+  }
+
+  /**
+   * 通話成立をルーム在室メンバー全員に配信する
+   * ルームが既に消えていれば静かに何もしない
+   */
+  async callStarted(roomId: RoomId, data: HallwayCallStarted): Promise<void> {
+    const memberIds = await this.allMemberIds(roomId);
+    if (!memberIds) {
+      return;
+    }
+    await broadcastToMembers(this.hub, roomId, memberIds, "CallStarted", data);
+  }
+
+  /**
+   * 通話終了をルーム在室メンバー全員に配信する
+   * ルームが既に消えていれば静かに何もしない
+   */
+  async callEnded(roomId: RoomId, data: HallwayCallEnded): Promise<void> {
+    const memberIds = await this.allMemberIds(roomId);
+    if (!memberIds) {
+      return;
+    }
+    await broadcastToMembers(this.hub, roomId, memberIds, "CallEnded", data);
+  }
+
+  /**
+   * 通話中メッセージを参加者集合だけに配信する
+   * 送信者本人にも同じ `memberIds` 経由で返すことで複数接続の表示を一致させる
+   */
+  async message(
     roomId: RoomId,
     memberIds: readonly MemberId[],
-    name: K,
-    data: z.infer<(typeof HallwayServerMessages)[K]>,
+    data: HallwayMessage,
   ): Promise<void> {
-    await broadcastToMembers(this.hub, roomId, memberIds, name, data);
+    await broadcastToMembers(this.hub, roomId, memberIds, "Message", data);
+  }
+
+  private async allMemberIds(roomId: RoomId): Promise<MemberId[] | null> {
+    const room = await this.rooms.find(roomId);
+    if (!room) {
+      return null;
+    }
+    return room.members.map((each) => each.id);
   }
 }

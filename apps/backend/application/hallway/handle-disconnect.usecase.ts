@@ -27,7 +27,7 @@ export class HandleHallwayDisconnect {
     if (outgoing) {
       this.timers.cancel(outgoing.id);
       await this.hallway.deleteInvitation(outgoing.id);
-      await this.broadcaster.toRoom(input.roomId, "InvitationEnded", {
+      await this.broadcaster.invitationEnded(input.roomId, {
         invitationId: outgoing.id,
         reason: "cancelled" as const,
       });
@@ -36,7 +36,7 @@ export class HandleHallwayDisconnect {
     if (incoming) {
       this.timers.cancel(incoming.id);
       await this.hallway.deleteInvitation(incoming.id);
-      await this.broadcaster.toRoom(input.roomId, "InvitationEnded", {
+      await this.broadcaster.invitationEnded(input.roomId, {
         invitationId: incoming.id,
         reason: "declined" as const,
       });
@@ -44,7 +44,7 @@ export class HandleHallwayDisconnect {
 
     if (call) {
       await this.hallway.deleteCall(call.id);
-      await this.broadcaster.toRoom(input.roomId, "CallEnded", {
+      await this.broadcaster.callEnded(input.roomId, {
         callId: call.id,
         reason: "disconnect" as const,
       });

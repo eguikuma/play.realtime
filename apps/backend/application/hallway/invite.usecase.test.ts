@@ -50,8 +50,17 @@ const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => 
   ...overrides,
 });
 
-const buildBroadcaster = (toRoom = vi.fn(), toMembers = vi.fn()): HallwayBroadcaster =>
-  ({ toRoom, toMembers }) as unknown as HallwayBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof HallwayBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): HallwayBroadcaster =>
+  ({
+    invited: vi.fn(),
+    invitationEnded: vi.fn(),
+    callStarted: vi.fn(),
+    callEnded: vi.fn(),
+    message: vi.fn(),
+    ...overrides,
+  }) as unknown as HallwayBroadcaster;
 
 const buildIds = (invitationId = "inv-1"): NanoidIdGenerator =>
   ({
@@ -76,11 +85,11 @@ describe("InviteHallway", () => {
 
   it("present かつ busy でない相手には招待を生成しルーム全員に Invited を配信する", async () => {
     const hallway = buildHallway();
-    const toRoom = vi.fn();
+    const broadcaster = buildBroadcaster();
     const usecase = new InviteHallway(
       hallway,
       buildVibes(),
-      buildBroadcaster(toRoom),
+      broadcaster,
       buildIds(),
       buildTimers(),
       buildExpirer(),
@@ -96,7 +105,7 @@ describe("InviteHallway", () => {
       expiresAt: new Date(now.getTime() + 10_000).toISOString(),
     });
     expect(hallway.saveInvitation).toHaveBeenCalledWith(invitation);
-    expect(toRoom).toHaveBeenCalledWith(roomId, "Invited", { invitation });
+    expect(broadcaster.invited).toHaveBeenCalledWith(roomId, { invitation });
   });
 
   it("10 秒後に期限切れが発火するよう HallwayInvitationTimers に登録する", async () => {
