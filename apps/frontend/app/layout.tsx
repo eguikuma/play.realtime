@@ -8,6 +8,7 @@ import {
 } from "next/font/google";
 
 import { ConnectionBanner } from "@/components/connection-banner";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/libraries/classname";
 
@@ -73,14 +74,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * OS 側の配色設定が暗色なら 初回描画前に html 要素へ反映するインラインスクリプト
- * React のハイドレーションを待つと一瞬明色が見える課題を避けるため head で同期実行する
- */
-const applyColorScheme = `(function(){try{if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.add('dark')}}catch(_){}})()`;
-
-/**
  * Next.js App Router のルートレイアウト
  * 複数のフォントの CSS 変数を html に束ね body 全体のスクロール挙動を抑える
+ * 配色テーマは `ThemeProvider` に委ね OS の設定に追従させつつ 将来の切り替え UI に繋げられる形にしておく
  */
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
@@ -95,14 +91,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       )}
       suppressHydrationWarning
     >
-      <head>
-        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: ダーク配色を初回描画前に決めて FOUC を避けるための inline script */}
-        <script dangerouslySetInnerHTML={{ __html: applyColorScheme }} />
-      </head>
       <body className="h-svh overflow-hidden font-sans text-ink antialiased">
-        {children}
-        <ConnectionBanner />
-        <Toaster />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+          <ConnectionBanner />
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
