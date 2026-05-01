@@ -40,7 +40,7 @@ describe("createResilientWsClient", () => {
     vi.useRealTimers();
   });
 
-  it("初回 connect で内側クライアントを 1 度だけ呼ぶ", () => {
+  it("初回の `connect` で内側クライアントを 1 度だけ呼ぶ", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
@@ -49,7 +49,7 @@ describe("createResilientWsClient", () => {
     expect(connections).toHaveLength(1);
   });
 
-  it("Open のあと想定外の Closed が来ると指数バックオフで再接続する", () => {
+  it("`Open` の後に想定外の `Closed` が来ると指数バックオフで再接続する", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
@@ -62,7 +62,7 @@ describe("createResilientWsClient", () => {
     expect(connections).toHaveLength(2);
   });
 
-  it("再接続前に Closed が連続しても 1 度しか張り直さない", () => {
+  it("再接続前に `Closed` が連続しても 1 度しか再接続しない", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
@@ -92,7 +92,7 @@ describe("createResilientWsClient", () => {
     expect(connections).toHaveLength(3);
   });
 
-  it("Open に戻るとバックオフがリセットされる", () => {
+  it("`Open` に戻るとバックオフがリセットされる", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
@@ -107,7 +107,7 @@ describe("createResilientWsClient", () => {
     expect(connections).toHaveLength(3);
   });
 
-  it("利用側が close() を呼んだ後は再接続しない", () => {
+  it("利用側が `close` を呼んだ後は再接続しない", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
@@ -124,7 +124,7 @@ describe("createResilientWsClient", () => {
     expect(connections).toHaveLength(1);
   });
 
-  it("visibilitychange で visible になるとバックオフを待たず再接続する", () => {
+  it("`visibilitychange` で `visible` になるとバックオフを待たず再接続する", () => {
     const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
@@ -138,7 +138,7 @@ describe("createResilientWsClient", () => {
     visibility.mockRestore();
   });
 
-  it("online イベントでバックオフを待たず再接続する", () => {
+  it("`online` イベントでバックオフを待たず再接続する", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
@@ -150,7 +150,7 @@ describe("createResilientWsClient", () => {
     expect(connections).toHaveLength(2);
   });
 
-  it("Open 中の visibilitychange では再接続しない", () => {
+  it("`Open` 中の `visibilitychange` では再接続しない", () => {
     const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
@@ -180,7 +180,7 @@ describe("createResilientWsClient", () => {
     expect(onStateChange).toHaveBeenCalledWith(WsState.Open);
   });
 
-  it("再接続後の send は新しい物理接続に転送する", () => {
+  it("再接続後の `send` は新しい物理接続に転送する", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
