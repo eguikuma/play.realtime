@@ -7,6 +7,7 @@ import {
   Zen_Maru_Gothic,
 } from "next/font/google";
 
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/libraries/classname";
 
 import "./globals.css";
@@ -97,7 +98,10 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: ダーク配色を初回描画前に決めて FOUC を避けるための inline script */}
         <script dangerouslySetInnerHTML={{ __html: applyColorScheme }} />
       </head>
-      <body className="h-svh overflow-hidden font-sans text-ink antialiased">{children}</body>
+      <body className="h-svh overflow-hidden font-sans text-ink antialiased">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }
