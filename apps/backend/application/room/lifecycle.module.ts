@@ -4,10 +4,6 @@ import { PubSub } from "../ports/pubsub";
 import { RoomLifecycle } from "./lifecycle";
 import { RoomPresence } from "./presence";
 
-/**
- * ルーム生命サイクルの土台を全機能で共有する グローバルな NestJS モジュール
- * 在室遷移と後片付けの中核 2 サービスを 機能モジュールの DI から自由に引けるようにする
- */
 @Global()
 @Module({
   providers: [

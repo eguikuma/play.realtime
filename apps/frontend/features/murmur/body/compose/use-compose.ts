@@ -5,24 +5,13 @@ import { type SyntheticEvent, useState } from "react";
 
 import { useMutations } from "../../use-mutations";
 
-/**
- * ひとこと 1 件の最大文字数
- * サーバー側の投稿リクエストの上限と揃え UI 側でも事前に切り詰める
- */
 const MAX_LENGTH = 140;
 
-/**
- * 投稿フックの入力
- */
 type Compose = {
   roomId: RoomId;
   disabled: boolean;
 };
 
-/**
- * 投稿欄のビューモデルを組み立てるフック
- * 入力値を上限で丸め 残り文字数や警告しきい値や送信状態をまとめて返す
- */
 export const useCompose = ({ roomId, disabled }: Compose) => {
   const mutations = useMutations(roomId);
 

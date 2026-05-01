@@ -9,19 +9,11 @@ import { Log } from "./log";
 import { Pill } from "./pill";
 import { useCall } from "./use-call";
 
-/**
- * 通話ウィンドウの最上位部品の入力
- */
 type Call = {
   callId: CallId;
   peerName: string;
 };
 
-/**
- * 画面下部に差し込む 1 対 1 の通話ウィンドウ
- * 広がっているときは 上部 中央のログ 入力欄 を縦に組み立て 小さくしまっているときは丸型バーだけを出す
- * ビューモデルの組み立てはフックに委ね しまう 広げる の切り替えだけを自前で持つ
- */
 export const Call = ({ callId, peerName }: Call) => {
   const call = useCall({ callId });
   const [minimized, setMinimized] = useState(false);

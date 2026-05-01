@@ -1,31 +1,14 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PubSub, type Subscription } from "../../application/ports/pubsub";
 
-/**
- * トピック購読者 1 件ぶんの非同期ハンドラ
- */
 type Handler = (payload: unknown) => void;
 
-/**
- * 単一プロセス内で動作する仮置きのパブリッシュ購読実装
- * トピックごとにハンドラの集合を持ち 配信はマイクロタスクで非同期化する
- * Redis のパブリッシュ購読などへ差し替える際は パブリッシュ購読ポートを再実装する
- */
 @Injectable()
 export class InMemoryPubSub implements PubSub {
-  /**
-   * トピック名から購読ハンドラ群へのマップを持つ
-   */
   private readonly subscribers = new Map<string, Set<Handler>>();
-  /**
-   * ハンドラから投げられた例外を記録する NestJS のロガー
-   */
+
   private readonly logger = new Logger(InMemoryPubSub.name);
 
-  /**
-   * 指定トピックにペイロードを配信する
-   * あるハンドラの例外が 他のハンドラの実行を止めないようマイクロタスクで隔離する
-   */
   async publish<T>(topic: string, payload: T): Promise<void> {
     const handlers = this.subscribers.get(topic);
     if (!handlers || handlers.size === 0) {
@@ -47,10 +30,6 @@ export class InMemoryPubSub implements PubSub {
     }
   }
 
-  /**
-   * 指定トピックに購読ハンドラを登録する
-   * 返す購読ハンドルの解除は冪等であり 空集合になったトピック行も後片付けする
-   */
   subscribe<T>(topic: string, handler: (payload: T) => void): Subscription {
     const handlers = this.subscribers.get(topic) ?? new Set<Handler>();
     const typed = handler as Handler;
@@ -71,11 +50,6 @@ export class InMemoryPubSub implements PubSub {
     };
   }
 
-  /**
-   * 指定プレフィックスに一致するトピック行を購読者ごと取り除く
-   * 通常は接続閉じの購読解除で自己整合するが 念のための最終防衛線として残留を掃除する
-   * 取り除かれたハンドラはそれ以降の配信で呼ばれなくなるが 配信中に掴んだスナップショットからは届くことがある
-   */
   closeByPrefix(prefix: string): void {
     for (const topic of [...this.subscribers.keys()]) {
       if (topic.startsWith(prefix)) {

@@ -1,9 +1,5 @@
 import type { TrackId } from "@play.realtime/contracts";
 
-/**
- * UI 表示と音声再生で使う 1 曲ぶんのメタ情報
- * 音量係数は曲ごとの元音源の音量差を吸収する倍率であり 利用者の音量値と合成する
- */
 export type Track = {
   title: string;
   artist: string;
@@ -11,10 +7,6 @@ export type Track = {
   gain: number;
 };
 
-/**
- * 楽曲識別子に対応する楽曲メタ情報の完全表
- * `satisfies Record` でキー集合と 1 対 1 で一致していることを型で強制する
- */
 export const Tracks = {
   Blues: {
     title: "ブルースバラード",

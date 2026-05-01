@@ -7,10 +7,6 @@ import { Invitation } from "../invitation";
 import { Outgoing } from "../outgoing";
 import { useOverlays } from "./use-overlays";
 
-/**
- * 廊下トークに関わる浮遊要素をまとめて配置する最上位部品
- * 受信中は右上 送信中は左下 通話は画面下部の 3 つの区画だけに絞って配置する
- */
 export const HallwayOverlays = ({ roomId }: { roomId: RoomId }) => {
   const overlays = useOverlays(roomId);
 

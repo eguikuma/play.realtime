@@ -10,17 +10,10 @@ import { useHallway } from "../store";
 import { useActions } from "../use-actions";
 import { useAutoscroll } from "../use-autoscroll";
 
-/**
- * 通話フックの入力
- */
 type Call = {
   callId: CallId;
 };
 
-/**
- * 通話ウィンドウのビューモデルを組み立てるフック
- * メッセージ一覧の 自分のものか 送信者情報の表示要否 時刻文字列を 事前に計算して子部品に渡す
- */
 export const useCall = ({ callId }: Call) => {
   const me = useRoom((state) => state.me);
   const members = useRoom((state) => state.room?.members ?? []);

@@ -12,11 +12,6 @@ import { Trigger } from "./trigger";
 import { UndoBanner } from "./undo-banner";
 import { useStrip } from "./use-strip";
 
-/**
- * ルーム上部に常駐する BGM の帯表示
- * 常時表示の現在曲 再生操作 ポップオーバー開閉のきっかけを 1 つに束ねる
- * 音声要素は隠し iframe を使わず 素の audio 要素を駆動する
- */
 export const BgmStrip = ({ roomId }: { roomId: RoomId }) => {
   const strip = useStrip(roomId);
 

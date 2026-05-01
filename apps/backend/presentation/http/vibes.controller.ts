@@ -19,16 +19,9 @@ import { CurrentMember } from "../../shared/decorators/current-member.decorator"
 import { RequireMember } from "../../shared/guards/require-member.guard";
 import { ZodValidationPipe } from "../../shared/pipes/zod-validation.pipe";
 
-/**
- * 空気の SSE 配信と状態変更を担う HTTP コントローラ
- * 全エンドポイントで `RequireMember` ガードを通し 部外者からの観測と変更を拒絶する
- */
 @Controller("rooms/:roomId/vibe")
 @UseGuards(RequireMember)
 export class VibesController {
-  /**
-   * 空気の 4 つのユースケースと 参加情報の取得 SSE ハブ ID 生成器を依存性注入で受け取る
-   */
   constructor(
     private readonly snapshot: GetVibeSnapshot,
     private readonly notifyJoined: NotifyVibeJoined,
@@ -40,10 +33,6 @@ export class VibesController {
     private readonly ids: NanoidIdGenerator,
   ) {}
 
-  /**
-   * SSE ストリームを開始し 接続直後に `Welcome` `Snapshot` `Joined` の順で送る
-   * 切断時は離脱通知のユースケースを起動し 猶予越しに `Left` または `Update` を配信する
-   */
   @Get("stream")
   stream(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
@@ -72,9 +61,6 @@ export class VibesController {
     });
   }
 
-  /**
-   * 指定接続の空気を変更し ルーム全員へ集約後の `Update` を配信する
-   */
   @Post()
   async change(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,

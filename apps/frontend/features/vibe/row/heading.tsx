@@ -1,9 +1,5 @@
 "use client";
 
-/**
- * 空気の並びの上に置く小見出し
- * 「いま、この部屋に」の静かな本題と「タップで話しかけられます」の案内を並置する
- */
 export const Heading = () => (
   <div className="flex items-center justify-between gap-3">
     <div className="flex items-center gap-2">

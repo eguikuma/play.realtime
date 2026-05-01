@@ -2,10 +2,6 @@
 
 import { type RefObject, useEffect } from "react";
 
-/**
- * 外側クリックと Escape キーでポップオーバーを閉じるフック
- * 無効にしている間は何も購読せず マウントや解除のコストを払わない
- */
 export const useDismiss = (
   container: RefObject<HTMLElement | null>,
   enabled: boolean,

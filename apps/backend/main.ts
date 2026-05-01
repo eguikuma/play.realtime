@@ -10,11 +10,6 @@ if (existsSync(".env")) {
   process.loadEnvFile(".env");
 }
 
-/**
- * バックエンドのエントリーポイント
- * cookie パーサーと CORS を立てて待ち受けを開始する
- * CORS は WEB_ORIGIN からの資格情報付き送信のみを許可する
- */
 const main = async (): Promise<void> => {
   const environment = load();
   const application = await NestFactory.create(AppModule);

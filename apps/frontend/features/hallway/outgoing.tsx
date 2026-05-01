@@ -2,18 +2,11 @@
 
 import { X } from "lucide-react";
 
-/**
- * 自分が発信中の招待 1 件ぶんの入力
- */
 type Outgoing = {
   toName: string;
   onCancel: () => void;
 };
 
-/**
- * 自分が送信中の招待を左下に出す丸型の通知
- * 取り消しボタンですぐに取り消し送信を行い 相手側の招待も消える
- */
 export const Outgoing = ({ toName, onCancel }: Outgoing) => (
   <div
     role="status"

@@ -4,17 +4,8 @@ import { useEffect, useState } from "react";
 
 import { useConnectionStatus } from "@/libraries/connection-status/store";
 
-/**
- * エラー状態が 3 秒以上継続したときにだけ出すしきい値
- * 瞬断を即時に画面へ出すとノイズになるため わざと遅らせて腰を据えて現れるようにする
- */
 const VISIBLE_MS = 3_000;
 
-/**
- * 切断が続いているときに画面上端へ静かに現れる細い通知バー
- * 4 本ある輸送路のうち 最も古くエラーに入ったものを基準に継続時間を測り VISIBLE_MS を越えたら出す
- * 復帰すれば即時に引っ込める
- */
 export const ConnectionBanner = () => {
   const statuses = useConnectionStatus((store) => store.statuses);
   const [now, setNow] = useState(() => Date.now());

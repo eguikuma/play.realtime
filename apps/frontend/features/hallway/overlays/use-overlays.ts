@@ -9,11 +9,6 @@ import { useHallway } from "../store";
 import { useActions } from "../use-actions";
 import { useStream } from "../use-stream";
 
-/**
- * 浮遊要素の最上位部品のビューモデルを組み立てるフック
- * 自分自身を軸に 受信中 送信中 通話の 3 種類の表示データを絞り込む
- * 自分自身が未解決のあいだはなしを返し 浮遊要素の描画自体を抑える
- */
 export const useOverlays = (roomId: RoomId) => {
   const me = useRoom((state) => state.me);
   const members = useRoom((state) => state.room?.members ?? []);

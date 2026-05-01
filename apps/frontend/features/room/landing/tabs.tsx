@@ -2,24 +2,13 @@
 
 import { cn } from "@/libraries/classname";
 
-/**
- * ランディングで切り替える 2 タブの値域
- * 作成は新規発行を 参加は既存ルームへの合流を表す
- */
 export type TabValue = "create" | "join";
 
-/**
- * タブ切り替えの入力
- */
 type Tabs = {
   tab: TabValue;
   onTab: (value: TabValue) => void;
 };
 
-/**
- * ランディングの 2 タブ切り替え UI
- * 丸型の並び切り替えで 選択中のタブのみ背景色を反転する
- */
 export const Tabs = ({ tab, onTab }: Tabs) => (
   <div
     role="tablist"

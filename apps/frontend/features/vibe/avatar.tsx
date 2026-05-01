@@ -4,16 +4,8 @@ import { MessageCircleHeart } from "lucide-react";
 
 import { cn } from "@/libraries/classname";
 
-/**
- * 顔表示の 4 種類の状態
- * サーバー側の空気状態に 自分と通話中を加え UI 専用の状態としてまとめる
- */
 export type AvatarState = "present" | "focused" | "calling" | "self";
 
-/**
- * 顔表示の直下に置く状態文言
- * UI に寄せた短い日本語で 4 種類だけを使う
- */
 const statusLabel: Record<AvatarState, string> = {
   self: "じぶん",
   present: "います",
@@ -21,10 +13,6 @@ const statusLabel: Record<AvatarState, string> = {
   calling: "通話中",
 };
 
-/**
- * 読み上げ向けの説明文言
- * 視覚用の文言よりも正確で冗長な表現として分けて持つ
- */
 const statusSr: Record<AvatarState, string> = {
   self: "自分",
   present: "在席中",
@@ -32,10 +20,6 @@ const statusSr: Record<AvatarState, string> = {
   calling: "通話中",
 };
 
-/**
- * 顔表示の入力
- * 招待関数がなしのときは話しかけ不可として div 表示に切り替える
- */
 type Avatar = {
   name: string;
   state: AvatarState;
@@ -43,10 +27,6 @@ type Avatar = {
   onInvite: (() => void) | null;
 };
 
-/**
- * メンバー 1 名ぶんの円形の顔表示
- * 状態に応じて輪の色と呼吸演出を切り替え 招待可能なときだけボタンとして振る舞う
- */
 export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
   const label = `${name}、${statusSr[state]}`;
   const ring =

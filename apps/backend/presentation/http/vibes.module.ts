@@ -10,10 +10,6 @@ import { SseModule } from "../../infrastructure/transport/sse";
 import { RoomsModule } from "./rooms.module";
 import { VibesController } from "./vibes.controller";
 
-/**
- * 空気機能の組み立てを束ねる NestJS モジュール
- * 空気の永続化ポートは廊下トークからも参照されるため公開する
- */
 @Module({
   imports: [RoomsModule, SseModule],
   controllers: [VibesController],

@@ -7,18 +7,11 @@ import { cn } from "@/libraries/classname";
 
 import { useCompose } from "./use-compose";
 
-/**
- * 投稿欄の入力
- */
 type Compose = {
   roomId: RoomId;
   disabled: boolean;
 };
 
-/**
- * ひとこと投稿の入力欄
- * 残り文字数のバッジを右端に添え 残り 14 文字以下で警告色へ切り替える
- */
 export const Compose = ({ roomId, disabled }: Compose) => {
   const compose = useCompose({ roomId, disabled });
 

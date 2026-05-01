@@ -4,14 +4,7 @@ import { BgmState, type RoomId, SetBgmRequest, type TrackId } from "@play.realti
 
 import { http } from "@/libraries/http-client";
 
-/**
- * BGM 変更系の API を呼び出す変更用フック
- * 失敗は握りつぶし SSE で届く最終状態に UI を委ねる方針とする
- */
 export const useMutations = (roomId: RoomId) => {
-  /**
-   * 楽曲識別子を指定して BGM を切り替える
-   */
   const set = async (trackId: TrackId) => {
     try {
       await http.post({
@@ -25,9 +18,6 @@ export const useMutations = (roomId: RoomId) => {
     }
   };
 
-  /**
-   * BGM を無音に切り替える
-   */
   const stop = async () => {
     try {
       await http.post({
@@ -40,9 +30,6 @@ export const useMutations = (roomId: RoomId) => {
     }
   };
 
-  /**
-   * 直前の BGM 変更を取り消す
-   */
   const undo = async () => {
     try {
       await http.post({

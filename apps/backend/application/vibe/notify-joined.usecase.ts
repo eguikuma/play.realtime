@@ -5,25 +5,14 @@ import { SseHub } from "../../infrastructure/transport/sse";
 import { VibePresenceGrace } from "./presence-grace";
 import { topic } from "./topic";
 
-/**
- * 新規接続が発生したときに `Joined` または `Update` を配信するユースケース
- * 本当の初入室のみを `Joined` とし 直前の猶予期間中であれば再入室とみなして `Update` に振り替える
- */
 @Injectable()
 export class NotifyVibeJoined {
-  /**
-   * 空気のポートと SSE ハブ そして在室猶予サービスを依存性注入で受け取る
-   */
   constructor(
     @Inject(VibeRepository) private readonly vibes: VibeRepository,
     private readonly hub: SseHub,
     private readonly grace: VibePresenceGrace,
   ) {}
 
-  /**
-   * 接続保存 猶予の取り消し判定 そして初入室なら `Joined` そうでなければ `Update` を配信する
-   * リロードやタブ切り替えの瞬断を `Joined` の点滅として見せない振る舞いを実現する
-   */
   async execute(input: {
     roomId: RoomId;
     member: Member;

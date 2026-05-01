@@ -5,15 +5,8 @@ import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { HallwayBroadcaster } from "./broadcaster";
 import { HallwayInvitationTimers } from "./invitation-timers";
 
-/**
- * 自分宛の招待を承諾して通話へ昇格させるユースケース
- * 招待を削除し 招待終了 (承諾) と通話開始の 2 つのイベントを同じルームへ配信する
- */
 @Injectable()
 export class AcceptHallwayInvitation {
-  /**
-   * 必要な永続化ポートと補助サービスを依存性注入で受け取る
-   */
   constructor(
     @Inject(HallwayRepository) private readonly hallway: HallwayRepository,
     private readonly broadcaster: HallwayBroadcaster,
@@ -21,10 +14,6 @@ export class AcceptHallwayInvitation {
     private readonly timers: HallwayInvitationTimers,
   ) {}
 
-  /**
-   * 招待された側の検証から始まり タイマー取り消し 招待削除 終了配信 通話生成 開始配信の順に進む
-   * 対応する招待が無いか 招待された側が一致しない場合は `InvitationNotFound` を投げる
-   */
   async execute(input: {
     roomId: RoomId;
     memberId: MemberId;

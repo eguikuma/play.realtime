@@ -3,10 +3,6 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/libraries/classname";
 
-/**
- * ボタンの見た目とサイズを class-variance-authority で合成したクラス定義
- * shadcn 流の見栄え定義を採用し 機能側は見た目とサイズだけを指定する
- */
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap rounded-lg border border-transparent bg-clip-padding font-medium text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
@@ -44,10 +40,6 @@ const buttonVariants = cva(
   },
 );
 
-/**
- * 共通 UI のボタン
- * @base-ui/react/button の素の部品に buttonVariants のクラスを被せた shadcn 流のラッパーとなる
- */
 function Button({
   className,
   variant = "default",

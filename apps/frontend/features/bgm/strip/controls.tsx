@@ -6,10 +6,6 @@ import { cn } from "@/libraries/classname";
 
 import { Slider } from "../slider";
 
-/**
- * 帯表示の再生操作に渡す状態とコールバック
- * 有効でないときはクリック操作を切って誤操作を防ぐ
- */
 type Controls = {
   active: boolean;
   paused: boolean;
@@ -19,10 +15,6 @@ type Controls = {
   onVolume: (value: number) => void;
 };
 
-/**
- * 再生と一時停止の切り替えと 音量スライダーを 1 列に並べる操作群
- * 有効でないときは透明度を落として視覚的に非活性を示す
- */
 export const Controls = ({ active, paused, volume, onPlay, onPause, onVolume }: Controls) => (
   <div
     aria-hidden={!active}

@@ -6,10 +6,6 @@ import { Join } from "./join";
 import { Tabs } from "./tabs";
 import { useLanding } from "./use-landing";
 
-/**
- * ルートのランディング画面
- * 作成と参加の 2 タブを切り替え どちらか 1 つの入力欄だけを視覚的に目立たせる
- */
 export const Landing = () => {
   const landing = useLanding();
 

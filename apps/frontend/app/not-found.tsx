@@ -2,10 +2,6 @@ import Link from "next/link";
 
 import { Backdrop, Notice } from "@/features/room/layout";
 
-/**
- * 未知のパスを受けるグローバル 404 ページ
- * 中央 1 列のお知らせレイアウトで トップへ戻る導線だけを置く
- */
 export default function NotFound() {
   return (
     <Backdrop>

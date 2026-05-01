@@ -4,9 +4,6 @@ import type { RefObject } from "react";
 
 import { Message } from "./message";
 
-/**
- * 会話ログの 1 件ぶんの正規化された行
- */
 type Entry = {
   key: string;
   text: string;
@@ -17,22 +14,14 @@ type Entry = {
   hasMeta: boolean;
 };
 
-/**
- * ログ領域の入力を持つ
- */
 type Log = {
-  /** 自動スクロール用の参照 */
   ref: RefObject<HTMLDivElement | null>;
-  /** 1 件も無いときの案内文を出すかの判定 */
+
   empty: boolean;
-  /** 表示対象の行一覧 */
+
   entries: Entry[];
 };
 
-/**
- * 通話ウィンドウ中央の 縦方向にスクロールする会話ログ
- * 空のときは静かな文言だけを表示し 新着到着は自動スクロールフックが末尾まで追従させる
- */
 export const Log = ({ ref, empty, entries }: Log) => (
   <div
     ref={ref}

@@ -12,11 +12,6 @@ import { useSse } from "@/libraries/transport";
 
 import { useVibe } from "./store";
 
-/**
- * 空気の SSE 購読を張り `Welcome` `Snapshot` `Joined` `Left` `Update` をストアへ転写するフック
- * `Joined` とスナップショット経由でルーム側のメンバー一覧にも差分追加し UI の顔表示欠落を防ぐ
- * 接続状態の遷移は共通ストアへ流し 切断バーの判定素材に使う
- */
 export const useStream = (roomId: RoomId | null) => {
   const addMember = useRoom((state) => state.addMember);
   const setSnapshot = useVibe((state) => state.setSnapshot);

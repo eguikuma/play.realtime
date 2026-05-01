@@ -9,10 +9,6 @@ import { MurmurBody } from "@/features/murmur";
 import { Entrance, useLoad, useRoom } from "@/features/room";
 import { useVibe, VibeRow } from "@/features/vibe";
 
-/**
- * ルーム入室後のメインステージ
- * BGM 空気 ひとこと 廊下トークの 4 機能を縦並びに束ね ヘッダーに人数と自分の表示を載せる
- */
 const RoomStage = ({ roomId }: { roomId: RoomId }) => {
   const me = useRoom((state) => state.me);
   const presentCount = useVibe((state) => Object.keys(state.statuses).length);
@@ -68,10 +64,6 @@ const RoomStage = ({ roomId }: { roomId: RoomId }) => {
   );
 };
 
-/**
- * ルーム route の入口
- * 読み込み中はローディング演出 未参加なら玄関画面 参加済みならステージを出し分ける
- */
 export default function RoomEntry({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params);
   const branded = roomId as RoomId;

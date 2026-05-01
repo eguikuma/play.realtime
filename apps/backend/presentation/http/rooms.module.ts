@@ -10,10 +10,6 @@ import { MemberNotFoundFilter } from "./filters/member-not-found.filter";
 import { RoomNotFoundFilter } from "./filters/room-not-found.filter";
 import { RoomsController } from "./rooms.controller";
 
-/**
- * ルーム機能の組み立てを束ねる NestJS モジュール
- * ルームの永続化ポートと参加情報取得のユースケースを他の機能にも供給するため公開する
- */
 @Module({
   controllers: [RoomsController],
   providers: [

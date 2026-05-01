@@ -3,10 +3,6 @@
 import type { ConnectionId, MemberId, Vibe, VibeStatus } from "@play.realtime/contracts";
 import { create } from "zustand";
 
-/**
- * 空気のクライアント側ストアが持つ形
- * 状態はメンバーごとの集約後の空気 接続 ID は `Welcome` で受けた自分の接続識別子となる
- */
 type VibeState = {
   statuses: Record<string, VibeStatus>;
   connectionId: ConnectionId | null;
@@ -16,10 +12,6 @@ type VibeState = {
   setConnectionId: (connectionId: ConnectionId | null) => void;
 };
 
-/**
- * 空気のクライアント側ストア
- * 購読フックが受信した `Welcome` `Snapshot` `Joined` `Left` `Update` を対応する設定関数で反映する
- */
 export const useVibe = create<VibeState>()((set) => ({
   statuses: {},
   connectionId: null,

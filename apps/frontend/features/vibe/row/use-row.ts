@@ -12,9 +12,6 @@ import { useChange } from "../use-change";
 import { useStream } from "../use-stream";
 import { useVisibility } from "../use-visibility";
 
-/**
- * 顔表示 1 枚ぶんのビューモデル
- */
 type Avatar = {
   key: MemberId;
   name: string;
@@ -23,11 +20,6 @@ type Avatar = {
   onInvite: (() => void) | null;
 };
 
-/**
- * 空気の並びのビューモデルを組み立てるフック
- * 空気の SSE 購読と見え方の検知 そして廊下トークの取り込み状況から 招待可否を算出する
- * 並び順は参加時刻の早い順で固定し 入室直後の並び替えによるちらつきを避ける
- */
 export const useRow = (roomId: RoomId) => {
   const me = useRoom((state) => state.me);
   const members = useRoom((state) => state.room?.members ?? []);

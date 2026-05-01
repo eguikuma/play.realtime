@@ -4,11 +4,6 @@ import { useRouter } from "next/navigation";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
 
-/**
- * 既存ルームへの遷移を組み立てる簡易ビューモデル
- * 入力はルーム ID 単体と リンク全体のどちらでも受け取り 末尾セグメントを取り出してから形を検証する
- * 検証に外れた入力は Sonner のトーストで指摘し レイアウトを揺らさない
- */
 export const useJoin = () => {
   const router = useRouter();
 

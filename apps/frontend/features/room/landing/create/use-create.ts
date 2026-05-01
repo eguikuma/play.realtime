@@ -8,11 +8,6 @@ import { toast } from "sonner";
 import { useRoom } from "@/features/room/store";
 import { http } from "@/libraries/http-client";
 
-/**
- * ルーム新規発行のビューモデルを組み立てるフック
- * 発行に成功したらストアを埋めて ルームページへ遷移する
- * 失敗は Sonner のトーストで伝え レイアウトを揺らさない
- */
 export const useCreate = () => {
   const router = useRouter();
   const setRoom = useRoom((state) => state.setRoom);

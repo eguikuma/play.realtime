@@ -7,11 +7,6 @@ import { RoomRepository } from "../../domain/room";
 import { VibeRepository } from "../../domain/vibe";
 import { RoomLifecycle } from "./lifecycle";
 
-/**
- * ルーム配下の全 Repository を生命サイクルの後片付け関数として一括登録する起動時登録役
- * 登録順が Room 本体を最後にする意味を持つため ここで Vibe BGM ひとこと 廊下 ルーム の順に固定する
- * 各機能モジュールから分散して登録しても同じ結果になるが ひとつに束ねることで順序と意図が読み取りやすくなる
- */
 @Injectable()
 export class RoomCleanupRegistrar implements OnModuleInit {
   constructor(

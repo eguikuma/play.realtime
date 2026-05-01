@@ -5,10 +5,6 @@ import type { SyntheticEvent } from "react";
 
 import { Input } from "@/components/ui/input";
 
-/**
- * 入力欄に渡す入力を持つ
- * 送信可否は空白除去済みの文字列が空でないかを 親側で計算した結果を使う
- */
 type Composer = {
   text: string;
   canSubmit: boolean;
@@ -16,10 +12,6 @@ type Composer = {
   onSubmit: (event: SyntheticEvent<HTMLFormElement>) => void;
 };
 
-/**
- * 通話ウィンドウ下部のメッセージ入力行
- * Enter での送信はフォーム送信を通じて行い 空の送信は送信ボタンの無効化で抑える
- */
 export const Composer = ({ text, canSubmit, onChange, onSubmit }: Composer) => (
   <form
     onSubmit={onSubmit}

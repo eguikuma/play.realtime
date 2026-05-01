@@ -2,17 +2,10 @@
 
 import type { ReactNode } from "react";
 
-/**
- * 背景レイアウト部品の入力
- */
 type Backdrop = {
   children: ReactNode;
 };
 
-/**
- * ランディングと参加画面の全面背景を司るレイアウト部品
- * ランプ風の放射グラデーションを緩やかに漂わせて 画面全体の雰囲気を作る
- */
 export const Backdrop = ({ children }: Backdrop) => (
   <div className="scrollable relative h-svh overflow-y-auto">
     <div

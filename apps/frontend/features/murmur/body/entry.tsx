@@ -5,20 +5,12 @@ import type { Murmur } from "@play.realtime/contracts";
 import { cn } from "@/libraries/classname";
 import { toHHMM } from "@/libraries/date";
 
-/**
- * 投稿 1 件の入力
- * 新着フラグが立っているときだけ到着演出を 1 度だけ当てる
- */
 type Entry = {
   murmur: Murmur;
   authorName: string;
   fresh: boolean;
 };
 
-/**
- * ひとこと本文 1 件の表示カード
- * 投稿者名の頭文字と時刻を添え 本文は読みやすさを優先した折り返しに整える
- */
 export const Entry = ({ murmur, authorName, fresh }: Entry) => (
   <article
     className={cn("flex flex-col gap-2", fresh && "animate-ink-bleed")}

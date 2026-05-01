@@ -3,20 +3,12 @@
 import { Volume2 } from "lucide-react";
 import type { ChangeEvent } from "react";
 
-/**
- * 音量スライダーの入力
- * 値は 0 から 100 の整数であり 変更通知も同じ範囲に丸める前提とする
- */
 type Slider = {
   value: number;
   onValue: (value: number) => void;
   disabled?: boolean;
 };
 
-/**
- * BGM の音量を調整する水平のスライダー
- * shadcn のスライダー部品は使わず 素の range 入力を Tailwind で直接装飾することで依存を増やさない
- */
 export const Slider = ({ value, onValue, disabled }: Slider) => {
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     onValue(Number(event.target.value));

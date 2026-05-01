@@ -8,10 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Backdrop, Label, Shell } from "../layout";
 import { useEntrance } from "./use-entrance";
 
-/**
- * 既存ルームに名前だけで参加する玄関画面
- * URL を踏んで直接到達した参加者に対し 名前入力のみを求めて cookie セッションを発行する
- */
 export const Entrance = ({ roomId }: { roomId: RoomId }) => {
   const entrance = useEntrance(roomId);
 

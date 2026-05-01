@@ -10,11 +10,6 @@ import { useSse } from "@/libraries/transport";
 
 import { useMurmur } from "./store";
 
-/**
- * ひとこと投稿の SSE 購読を張り 受信内容をストアへ転写するフック
- * スナップショットは全置換 投稿イベントは末尾追加として扱い UI は 1 箇所の一覧だけを見ていれば済む
- * 接続状態の遷移は共通ストアへ流し 切断バーの判定素材に使う
- */
 export const useStream = (roomId: RoomId | null) => {
   const append = useMurmur((store) => store.append);
   const replace = useMurmur((store) => store.replace);

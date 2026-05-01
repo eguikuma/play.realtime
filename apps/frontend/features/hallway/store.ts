@@ -11,17 +11,8 @@ import type {
 } from "@play.realtime/contracts";
 import { create } from "zustand";
 
-/**
- * WebSocket の送信関数を指す短い型
- * ストアに格納した送信関数を 機能側の操作層から呼び出すための窓口として使う
- */
 type Sender = <TData>(name: string, data: TData) => void;
 
-/**
- * 廊下トークのクライアント側ストアが持つ形
- * 招待 通話 メッセージは ID を鍵にした辞書で 定数時間の検索を確保する
- * 接続 ID と送信関数は WebSocket 接続の一生に合わせてなしと値を行き来する
- */
 type HallwayState = {
   connectionId: ConnectionId | null;
   invitations: Record<string, Invitation>;
@@ -38,10 +29,6 @@ type HallwayState = {
   appendMessage: (message: CallMessage) => void;
 };
 
-/**
- * 廊下トークのクライアント側ストア
- * 購読フックが受信した 7 種類のサーバーメッセージを 対応する更新関数で反映する
- */
 export const useHallway = create<HallwayState>()((set) => ({
   connectionId: null,
   invitations: {},

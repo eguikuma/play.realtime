@@ -22,32 +22,16 @@ import { WsConnection, WsHub } from "../../infrastructure/transport/ws";
 import { MEMBER_COOKIE } from "../http/cookies";
 import { dispatchHallwayCommand, type HallwayCommandHandlers } from "./hallway-dispatch";
 
-/**
- * 廊下トーク用の WebSocket エンドポイントを提供するゲートウェイ
- * NestJS の抽象は使わず Express の昇格イベントを直接拾い ws ライブラリで処理する
- */
 @Injectable()
 export class HallwayGateway implements OnModuleInit {
-  /**
-   * ゲートウェイ固有の警告やデバッグログを出す NestJS のロガー
-   */
   private readonly logger = new Logger(HallwayGateway.name);
-  /**
-   * 単一ルームに閉じない WebSocket サーバー本体 昇格を手動で取り回すため noServer を真にする
-   */
+
   private readonly wsServer = new WebSocketServer({ noServer: true });
-  /**
-   * プロセス起動時の環境変数スナップショット WEB_ORIGIN の検証に使う
-   */
+
   private readonly environment = load();
-  /**
-   * 受理する WebSocket のパスパターン 捕捉群の 1 番目がルーム ID となる
-   */
+
   private readonly pathPattern = /^\/rooms\/([^/?#]+)\/hallway(?:\?.*)?$/;
 
-  /**
-   * アダプタホスト WebSocket ハブ ID 生成器 そして全ユースケースを依存性注入で受け取る
-   */
   constructor(
     private readonly adapter: HttpAdapterHost,
     private readonly hub: WsHub,
@@ -65,10 +49,6 @@ export class HallwayGateway implements OnModuleInit {
     private readonly handleDisconnect: HandleHallwayDisconnect,
   ) {}
 
-  /**
-   * クライアント命令名ごとのハンドラ対応表
-   * アロー関数のフィールド初期化で `this` を束縛し 各命令から対応するユースケースへ入力を橋渡しする
-   */
   private readonly handlers = {
     Invite: async ({ context, data }) => {
       await this.invite.execute({
@@ -111,9 +91,6 @@ export class HallwayGateway implements OnModuleInit {
       }),
   } satisfies HallwayCommandHandlers;
 
-  /**
-   * NestJS 起動時に HTTP サーバーの昇格イベントへフックを張る
-   */
   onModuleInit(): void {
     const httpServer = this.adapter.httpAdapter.getHttpServer();
     httpServer.on("upgrade", (request: IncomingMessage, socket: Duplex, head: Buffer) => {
@@ -121,10 +98,6 @@ export class HallwayGateway implements OnModuleInit {
     });
   }
 
-  /**
-   * 昇格リクエストを検証し 適格なものだけ WebSocket に昇格させる
-   * パス オリジン cookie 参加情報の順に確認し 不適格ならソケットを即破棄する
-   */
   private async onUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): Promise<void> {
     const match = this.pathPattern.exec(request.url ?? "");
     if (!match) {
@@ -165,10 +138,6 @@ export class HallwayGateway implements OnModuleInit {
     });
   }
 
-  /**
-   * 接続成立直後の初期配信と 終了時の差し込み処理を設定する
-   * 接続計数で 初回接続の追跡を始め 最終接続の切断時にだけ切断後始末のユースケースを起動する
-   */
   private onConnected(ws: WebSocket, roomId: RoomId, memberId: MemberId): void {
     const connectionId = this.ids.connection() as ConnectionId;
     const connection = new WsConnection(connectionId, memberId, roomId, ws);
@@ -199,10 +168,6 @@ export class HallwayGateway implements OnModuleInit {
     });
   }
 
-  /**
-   * 受信した包みを名前で分岐させ 各ハンドラへ橋渡しする
-   * 分岐本体は純粋関数の `dispatchHallwayCommand` に委ね クラス側はハンドラ対応表と文脈の合成だけを担う
-   */
   private dispatch(
     connection: WsConnection,
     envelope: { name: string; data: unknown },
@@ -219,10 +184,6 @@ export class HallwayGateway implements OnModuleInit {
   }
 }
 
-/**
- * Cookie ヘッダを鍵と値のマップへ緩く展開する
- * 復号の失敗や不完全な行は静かに捨て 残りを返す
- */
 const parseCookies = (header: string): Record<string, string> => {
   if (!header) {
     return {};

@@ -3,9 +3,6 @@
 import { Countdown } from "./countdown";
 import { INVITATION_TTL_MS } from "./ttl";
 
-/**
- * 受信中の招待カードの入力
- */
 type Invitation = {
   fromName: string;
   expiresAt: string;
@@ -13,10 +10,6 @@ type Invitation = {
   onDecline: () => void;
 };
 
-/**
- * 相手からの招待を右上に差し込むカード
- * 経過ミリ秒をアニメーションの開始位置のずらしとして使い 失効時刻に合わせて自動で引いていく
- */
 export const Invitation = ({ fromName, expiresAt, onAccept, onDecline }: Invitation) => {
   const elapsed = INVITATION_TTL_MS - Math.max(0, new Date(expiresAt).getTime() - Date.now());
 

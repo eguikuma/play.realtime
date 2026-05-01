@@ -2,10 +2,6 @@ import { Input as InputPrimitive } from "@base-ui/react/input";
 import type { ComponentProps } from "react";
 import { cn } from "@/libraries/classname";
 
-/**
- * 共通 UI の入力欄
- * @base-ui/react/input の素の部品に shadcn 流の標準クラスを被せたラッパーとなる
- */
 function Input({ className, type, ...props }: ComponentProps<"input">) {
   return (
     <InputPrimitive

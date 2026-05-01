@@ -14,10 +14,6 @@ import { UndoUnavailableFilter } from "./filters/undo-unavailable.filter";
 import { UnknownTrackFilter } from "./filters/unknown-track.filter";
 import { RoomsModule } from "./rooms.module";
 
-/**
- * BGM 機能の組み立てを束ねる NestJS モジュール
- * undo と楽曲に関する 4 種類の例外を受け持つフィルタを APP_FILTER で登録する
- */
 @Module({
   imports: [RoomsModule, SseModule],
   controllers: [BgmsController],

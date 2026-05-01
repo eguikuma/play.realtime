@@ -2,10 +2,6 @@
 
 import { cn } from "@/libraries/classname";
 
-/**
- * メッセージ 1 件ぶんの入力
- * 直前のメッセージとの連続性判定から 親が事前計算した結果をもらう
- */
 type Message = {
   text: string;
   sentAt: string;
@@ -15,10 +11,6 @@ type Message = {
   hasMeta: boolean;
 };
 
-/**
- * 会話ログに表示する 1 件ぶんのメッセージ吹き出し
- * 自分のメッセージのときは右寄せで反転色とし 送信者情報の表示は連続性によって出し分ける
- */
 export const Message = ({ text, sentAt, clock, fromName, mine, hasMeta }: Message) => (
   <div className={cn("flex flex-col gap-1", mine ? "items-end" : "items-start")}>
     {hasMeta && (

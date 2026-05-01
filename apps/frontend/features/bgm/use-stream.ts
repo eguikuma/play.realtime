@@ -10,11 +10,6 @@ import { useSse } from "@/libraries/transport";
 
 import { useBgm } from "./store";
 
-/**
- * BGM の SSE 購読を張り 受信した BGM 状態をストアへ転写するフック
- * 接続状態の遷移は共通ストアへ流し 切断バーの判定素材に使う
- * ルーム ID がなしの間は接続を張らず UI はストアの既定値を見続ける
- */
 export const useStream = (roomId: RoomId | null) => {
   const setState = useBgm((store) => store.setState);
   const setConnectionStatus = useConnectionStatus((store) => store.setStatus);

@@ -6,10 +6,6 @@ import { Avatar } from "../avatar";
 import { Heading } from "./heading";
 import { useRow } from "./use-row";
 
-/**
- * 空気の並びの最上位部品
- * 小見出しと顔表示の横並びを配置し メンバーがいない間は静かな文言だけを表示する
- */
 export const VibeRow = ({ roomId }: { roomId: RoomId }) => {
   const row = useRow(roomId);
 

@@ -6,10 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "../../layout";
 import { useJoin } from "./use-join";
 
-/**
- * ランディングの参加タブ本体
- * ルーム ID を貼り付けるだけでルームページへ遷移し そこで名前入力を求める段取りとする
- */
 export const Join = () => {
   const join = useJoin();
 

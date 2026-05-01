@@ -19,16 +19,9 @@ import { CurrentMember } from "../../shared/decorators/current-member.decorator"
 import { RequireMember } from "../../shared/guards/require-member.guard";
 import { ZodValidationPipe } from "../../shared/pipes/zod-validation.pipe";
 
-/**
- * BGM の SSE 配信と 設定 停止 undo の操作を担う HTTP コントローラ
- * 全エンドポイントで `RequireMember` ガードを通し 部外者からの書き込みを拒絶する
- */
 @Controller("rooms/:roomId/bgm")
 @UseGuards(RequireMember)
 export class BgmsController {
-  /**
-   * BGM に関わる 4 つのユースケースと SSE ハブと ID 生成器を依存性注入で受け取る
-   */
   constructor(
     private readonly setter: SetBgm,
     private readonly stopper: StopBgm,
@@ -39,9 +32,6 @@ export class BgmsController {
     private readonly ids: NanoidIdGenerator,
   ) {}
 
-  /**
-   * SSE ストリームを開始し 接続直後に最新の BGM 状態を `Snapshot` として直送する
-   */
   @Get("stream")
   stream(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
@@ -63,9 +53,6 @@ export class BgmsController {
     });
   }
 
-  /**
-   * BGM を指定の楽曲へ切り替え ルーム全員に `Changed` を配信する
-   */
   @Post()
   async set(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
@@ -80,9 +67,6 @@ export class BgmsController {
     });
   }
 
-  /**
-   * BGM を無音にし ルーム全員に `Changed` を配信する
-   */
   @Post("stop")
   async stop(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
@@ -91,9 +75,6 @@ export class BgmsController {
     return this.stopper.execute({ roomId, memberId: member.id, now: new Date() });
   }
 
-  /**
-   * 直前の BGM 変更を取り消し ルーム全員に `Changed` を配信する
-   */
   @Post("undo")
   async undo(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,

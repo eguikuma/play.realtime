@@ -18,10 +18,6 @@ import { VibesModule } from "../../presentation/http/vibes.module";
 import { RoomsModule } from "../http/rooms.module";
 import { HallwayGateway } from "./hallway.gateway";
 
-/**
- * 廊下トーク機能の組み立てを束ねる NestJS モジュール
- * 空気の「話しかけ可能か」判定のため 空気モジュールを取り込む
- */
 @Module({
   imports: [RoomsModule, VibesModule, WsModule],
   providers: [

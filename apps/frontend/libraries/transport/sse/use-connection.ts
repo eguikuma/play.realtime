@@ -3,10 +3,6 @@ import type { z } from "zod";
 
 import { type SseClient, type SseEvents, SseState } from "./port";
 
-/**
- * React コンポーネントから SSE 接続を宣言的に張るフック
- * URL がなしの間は接続を張らず 受信コールバックは常に最新の値を参照する ref 経由で呼ぶ
- */
 export const useSse = <TMap extends SseEvents>({
   client,
   url,

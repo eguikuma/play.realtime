@@ -6,20 +6,12 @@ import { cn } from "@/libraries/classname";
 
 import type { Track } from "../tracks";
 
-/**
- * ライブラリの 1 行ぶんの入力
- * 選曲中のときは無効化し 同じ曲の重ね選曲を抑える
- */
 type Entry = {
   track: Track;
   tuned: boolean;
   onSelect: () => void;
 };
 
-/**
- * ライブラリに並ぶ 1 曲ぶんの行
- * 選曲中は音量波形のアイコンを点滅させ それ以外は再生アイコンを静的に見せる
- */
 export const Entry = ({ track, tuned, onSelect }: Entry) => (
   <button
     type="button"

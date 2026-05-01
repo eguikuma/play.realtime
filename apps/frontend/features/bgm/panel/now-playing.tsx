@@ -5,24 +5,16 @@ import { AudioLines, Power, Radio } from "lucide-react";
 
 import type { Track } from "../tracks";
 
-/**
- * パネル側の現在曲欄に渡す入力を持つ
- */
 type NowPlaying = {
-  /** 配信中の曲情報 なしのときは何も流れていない */
   current: BgmCurrent | null;
-  /** 曲名や演奏者を含むメタ情報 未解決の間はなし */
+
   track: Track | null;
-  /** 選曲者の表示名 */
+
   byName: string | null;
-  /** 無音に切り替えるためのコールバック */
+
   onStop: () => void;
 };
 
-/**
- * パネルの最上段に置く「今鳴っている」欄
- * 選曲者と停止ボタンを添え 無音のときは静かな案内文だけを表示する
- */
 export const NowPlaying = ({ current, track, byName, onStop }: NowPlaying) => (
   <section className="flex flex-col gap-3">
     <header className="flex items-center gap-2 text-ink-mute">

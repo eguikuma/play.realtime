@@ -12,13 +12,6 @@ import { ws } from "@/libraries/ws-client";
 import { hallwayErrorMessages } from "./errors";
 import { useHallway } from "./store";
 
-/**
- * 廊下トークの WebSocket 購読を張り 受信イベントをストアへ転写するフック
- * 送信関数もストアに載せ 他のフックから操作層越しに呼べるようにする
- * `CommandFailed` は自分の命令が弾かれた通知として受け取り Sonner のトーストに橋渡しする
- * 接続状態の遷移は共通ストアへ流し 切断バーの判定素材に使う
- * ルーム ID がなしの間は接続を張らず 切断時は接続 ID もなしに戻す
- */
 export const useStream = (roomId: RoomId | null) => {
   const setConnectionId = useHallway((state) => state.setConnectionId);
   const setSend = useHallway((state) => state.setSend);

@@ -6,18 +6,11 @@ import { Library } from "./library";
 import { NowPlaying } from "./now-playing";
 import { usePanel } from "./use-panel";
 
-/**
- * パネルの入力として受け取るルーム ID と閉じるためのコールバック
- */
 type Panel = {
   roomId: RoomId;
   onClose: () => void;
 };
 
-/**
- * ストリップから展開する選曲ポップオーバーの最上位
- * 現在曲の欄とライブラリ欄を縦並びで並べる
- */
 export const Panel = ({ roomId, onClose }: Panel) => {
   const panel = usePanel({ roomId, onClose });
 

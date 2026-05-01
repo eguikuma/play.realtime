@@ -7,10 +7,6 @@ import { Empty } from "./empty";
 import { Entry } from "./entry";
 import { useBody } from "./use-body";
 
-/**
- * ひとこと本体の最上位セクション
- * 上部の投稿欄と本文一覧を積み重ね 何もないときは案内文に切り替える
- */
 export const MurmurBody = ({ roomId }: { roomId: RoomId }) => {
   const body = useBody(roomId);
 

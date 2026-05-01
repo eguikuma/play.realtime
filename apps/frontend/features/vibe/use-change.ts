@@ -7,11 +7,6 @@ import { http } from "@/libraries/http-client";
 
 import { useVibe } from "./store";
 
-/**
- * タブの見え方の変化をサーバーに通知する送信関数を返すフック
- * 接続 ID が解決していない間は何もせず 接続成立前の無用な送信を抑える
- * 失敗は握りつぶし 次の変化で再試行させる
- */
 export const useChange = (roomId: RoomId) => {
   const connectionId = useVibe((state) => state.connectionId);
 

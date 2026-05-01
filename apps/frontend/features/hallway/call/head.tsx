@@ -2,19 +2,12 @@
 
 import { ChevronDown, PhoneOff } from "lucide-react";
 
-/**
- * 通話ウィンドウ上部に渡す入力
- */
 type Head = {
   peerName: string;
   onLeave: () => void;
   onMinimize: () => void;
 };
 
-/**
- * 通話ウィンドウの上部の帯
- * 相手の頭文字と名前 しまうボタン そして終了ボタンを配置する
- */
 export const Head = ({ peerName, onLeave, onMinimize }: Head) => (
   <header className="flex items-center gap-3 border-rule/70 border-b px-4 py-3">
     <span

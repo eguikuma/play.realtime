@@ -1,9 +1,5 @@
 "use client";
 
-/**
- * ルートレイアウト自体が崩れた場合の最後の受け皿
- * レイアウト層が使えない前提のため html と body を自前で書き プロバイダやフォント変数には頼らない
- */
 export default function GlobalError({ reset }: { reset: () => void }) {
   return (
     <html lang="ja">

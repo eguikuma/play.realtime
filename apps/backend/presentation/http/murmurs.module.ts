@@ -7,9 +7,6 @@ import { SseModule } from "../../infrastructure/transport/sse";
 import { MurmursController } from "./murmurs.controller";
 import { RoomsModule } from "./rooms.module";
 
-/**
- * ひとこと機能の組み立てを束ねる NestJS モジュール
- */
 @Module({
   imports: [RoomsModule, SseModule],
   controllers: [MurmursController],

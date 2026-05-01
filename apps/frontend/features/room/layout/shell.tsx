@@ -3,19 +3,12 @@
 import type { ReactNode } from "react";
 import { Wordmark } from "./wordmark";
 
-/**
- * 2 段組シェルの入力
- */
 type Shell = {
   headline: string;
   lede: ReactNode;
   children: ReactNode;
 };
 
-/**
- * ランディングと参加画面で共通する 2 段組シェル
- * 左にワードマークと訴求文 右に子要素として入力欄や情報を置く
- */
 export const Shell = ({ headline, lede, children }: Shell) => (
   <div className="grid w-full max-w-4xl grid-cols-1 gap-12 md:grid-cols-[1.1fr_1fr] md:gap-16">
     <div className="flex flex-col gap-7">

@@ -2,27 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/**
- * 音量を localStorage に保存する際の鍵
- */
 const VOLUME_STORAGE_KEY = "rimodoki:bgm:volume";
 
-/**
- * 一時停止状態を localStorage に保存する際の鍵
- * リロード直後も直前の停止意思をそのまま復元し 描画初回の再生中っぽい表示を防ぐ
- */
 const PAUSED_STORAGE_KEY = "rimodoki:bgm:paused";
 
-/**
- * 参加直後の驚きを避けるための初期音量
- */
 const DEFAULT_VOLUME = 5;
 
-/**
- * HTML の audio 要素の再生と音量を宣言的に扱うフック
- * 音源と一時停止の 2 軸から再生と停止を制御し 曲ごとの音量係数を利用者の音量値に掛ける
- * 一時停止の意思と音量はブラウザ単位で localStorage に保存し 再入室やリロード越しに復元する
- */
 export const usePlayer = (src: string | null, gain: number) => {
   const ref = useRef<HTMLAudioElement | null>(null);
 

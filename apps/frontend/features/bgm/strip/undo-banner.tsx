@@ -2,22 +2,14 @@
 
 import { useUndoWindow } from "../use-undo-window";
 
-/**
- * 取り消し帯に渡す入力を持つ
- */
 type UndoBanner = {
-  /** 取り消しが可能な期限の ISO 日時 */
   until: string;
-  /** 変更した人の表示名 */
+
   byName: string;
-  /** 取り消しを実行するためのコールバック */
+
   onUndo: () => void;
 };
 
-/**
- * 他のメンバーが行った BGM 変更を 元に戻すために差し込む帯
- * 残り時間を窓監視のフックで追い 期限切れのときは何も描かないことで自動的に消える
- */
 export const UndoBanner = ({ until, byName, onUndo }: UndoBanner) => {
   const { seconds, expired } = useUndoWindow(until);
 

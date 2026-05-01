@@ -9,18 +9,11 @@ import { useBgm } from "../store";
 import { Tracks } from "../tracks";
 import { useMutations } from "../use-mutations";
 
-/**
- * パネルの入力として受け取るルーム ID と閉じるためのコールバック
- */
 type Panel = {
   roomId: RoomId;
   onClose: () => void;
 };
 
-/**
- * ポップオーバー側のビューモデルを組み立てるフック
- * 選曲や停止が成功したときは 閉じる処理も合わせて呼び ポップオーバーを自動で畳む
- */
 export const usePanel = ({ roomId, onClose }: Panel) => {
   const members = useRoom((state) => state.room?.members ?? []);
   const state = useBgm((state) => state.state);

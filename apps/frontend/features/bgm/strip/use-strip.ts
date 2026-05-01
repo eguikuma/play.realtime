@@ -12,11 +12,6 @@ import { useMutations } from "../use-mutations";
 import { usePlayer } from "../use-player";
 import { useStream } from "../use-stream";
 
-/**
- * 上部の BGM 帯表示を束ねるフック
- * 購読 再生 変更 ポップオーバー開閉の 4 つを 1 つのビューモデルに集約する
- * 取り消し帯は本人以外が変更した場合で かつ時間窓が開いているときだけ組み立てる
- */
 export const useStrip = (roomId: RoomId) => {
   const me = useRoom((state) => state.me);
   const members = useRoom((state) => state.room?.members ?? []);

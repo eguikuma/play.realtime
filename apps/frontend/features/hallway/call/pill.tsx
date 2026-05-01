@@ -2,20 +2,12 @@
 
 import { ChevronUp, PhoneOff } from "lucide-react";
 
-/**
- * 最小化中の通話表示に渡す入力
- */
 type Pill = {
   peerName: string;
   onExpand: () => void;
   onLeave: () => void;
 };
 
-/**
- * 通話を小さくしまった状態の丸型バー
- * 相手の頭文字と名前と話してるの印だけを残し 本体を隠しつつ裏の ひとこと や空気を読めるようにする
- * 右端にひらくボタンと終わるボタンを並べ すぐに元のウィンドウに戻せる
- */
 export const Pill = ({ peerName, onExpand, onLeave }: Pill) => (
   <div className="pointer-events-auto mx-auto flex w-fit items-center gap-2 rounded-pill border border-rule bg-paper/95 py-1.5 pr-2 pl-3 shadow-[0_16px_32px_-20px_oklch(from_var(--ink)_l_c_h/0.32)] backdrop-blur-md">
     <span

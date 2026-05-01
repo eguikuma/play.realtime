@@ -6,10 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "../../layout";
 import { useCreate } from "./use-create";
 
-/**
- * ランディングの作成タブ本体
- * ホスト名だけを取ってルームを発行し 案内文を添えて使い方を自明にする
- */
 export const Create = () => {
   const create = useCreate();
 

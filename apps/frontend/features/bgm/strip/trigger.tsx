@@ -4,18 +4,11 @@ import { Plus } from "lucide-react";
 
 import { cn } from "@/libraries/classname";
 
-/**
- * ポップオーバー開閉のきっかけに渡す状態とコールバック
- */
 type Trigger = {
   open: boolean;
   onToggle: () => void;
 };
 
-/**
- * 帯表示の右端で ポップオーバーの開閉を切り替える十字形ボタン
- * 開いている間は 45 度回転させて 閉じる操作だと視覚的に伝える
- */
 export const Trigger = ({ open, onToggle }: Trigger) => (
   <button
     type="button"

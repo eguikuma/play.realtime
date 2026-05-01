@@ -4,10 +4,6 @@ import { Murmur, PostMurmurRequest, type RoomId } from "@play.realtime/contracts
 
 import { http } from "@/libraries/http-client";
 
-/**
- * ひとこと投稿の変更用フック
- * 失敗は握りつぶし SSE で届く最終一覧を UI の正解として扱う
- */
 export const useMutations = (roomId: RoomId) => {
   const post = async (text: string) => {
     try {

@@ -3,16 +3,7 @@ import type { z } from "zod";
 import { HttpFailure } from "./errors";
 import type { HttpClient } from "./port";
 
-/**
- * fetch を土台にした HTTP クライアント実装を組み立てる
- * 資格情報の付与は include で固定し cookie セッションを確実に添付する
- * 応答は Zod で再検証し サーバー側とクライアント側の型ずれを UI 到達前に潰す
- */
 export const createNativeHttpClient = ({ origin }: { origin: string }): HttpClient => {
-  /**
-   * 共通の fetch ラッパーで JSON 応答を Zod 検証して返す
-   * 失敗応答は本文をメッセージ材料にして `HttpFailure` を投げる
-   */
   const execute = async <T>(
     path: string,
     options: RequestInit,

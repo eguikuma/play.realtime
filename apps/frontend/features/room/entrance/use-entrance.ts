@@ -10,12 +10,6 @@ import { http } from "@/libraries/http-client";
 import { isMissing } from "../errors";
 import { useRoom } from "../store";
 
-/**
- * 参加画面のビューモデルを組み立てるフック
- * 名前入力から 参加リクエスト ストア反映までを 1 箇所で完結させる
- * 送信先ルームに入れない (消失済みやフォーマット違反) ときは missing フラグに倒し レンダー時に notFound を投げて route 直下の not-found に遷移させる
- * それ以外の失敗は Sonner のトーストで伝え レイアウトを揺らさない
- */
 export const useEntrance = (roomId: RoomId) => {
   const setRoom = useRoom((state) => state.setRoom);
   const setMe = useRoom((state) => state.setMe);
