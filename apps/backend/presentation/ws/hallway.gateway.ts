@@ -32,6 +32,7 @@ import { load } from "../../environment";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { WsConnection, WsHub } from "../../infrastructure/transport/ws";
 import { MEMBER_COOKIE } from "../http/cookies";
+import { hallwayErrorCodeOf, isHallwayCommand } from "./hallway-errors";
 
 /**
  * 廊下トーク用の WebSocket エンドポイントを提供するゲートウェイ
@@ -147,8 +148,8 @@ export class HallwayGateway implements OnModuleInit {
         const snapshot = await this.getSnapshot.execute({ roomId });
         attached.send("Snapshot", snapshot);
       },
-      onMessage: async (_attached, envelope) => {
-        await this.dispatch(envelope, roomId, memberId);
+      onMessage: async (attached, envelope) => {
+        await this.dispatch(attached, envelope, roomId, memberId);
       },
     });
 
@@ -166,9 +167,11 @@ export class HallwayGateway implements OnModuleInit {
 
   /**
    * 受信した包みを名前で分岐させ 各ユースケースへ橋渡しする
-   * Zod 解析の失敗やユースケースの例外は 警告ログで握りつぶし 接続自体は維持する
+   * ドメイン例外は操作本人の接続だけに `CommandFailed` として返し それ以外の例外は警告ログで握りつぶす
+   * 接続自体はいずれの場合も維持する
    */
   private async dispatch(
+    connection: WsConnection,
     envelope: { name: string; data: unknown },
     roomId: RoomId,
     memberId: MemberId,
@@ -215,6 +218,15 @@ export class HallwayGateway implements OnModuleInit {
         }
       }
     } catch (error: unknown) {
+      const code = hallwayErrorCodeOf(error);
+      if (code !== null && isHallwayCommand(envelope.name)) {
+        connection.send("CommandFailed", {
+          code,
+          command: envelope.name,
+          message: (error as Error).message,
+        });
+        return;
+      }
       this.logger.warn(`dispatch ${envelope.name} failed ${String(error)}`);
     }
   }
