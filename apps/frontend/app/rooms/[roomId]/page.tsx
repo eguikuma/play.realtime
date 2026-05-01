@@ -69,10 +69,10 @@ const RoomStage = ({ roomId }: { roomId: RoomId }) => {
 };
 
 /**
- * ルームページのエントリー
- * 読み込み中はローディング演出 未参加なら参加ページ 参加済みならステージを出し分ける
+ * ルーム route の入口
+ * 読み込み中はローディング演出 未参加なら玄関画面 参加済みならステージを出し分ける
  */
-export default function RoomPage({ params }: { params: Promise<{ roomId: string }> }) {
+export default function RoomEntry({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params);
   const branded = roomId as RoomId;
   const { loading } = useLoad(branded);
