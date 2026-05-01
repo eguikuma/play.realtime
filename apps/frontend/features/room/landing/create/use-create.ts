@@ -3,6 +3,7 @@
 import { CreateRoomRequest, RoomMembership } from "@play.realtime/contracts";
 import { useRouter } from "next/navigation";
 import { type SyntheticEvent, useState } from "react";
+import { toast } from "sonner";
 
 import { useRoom } from "@/features/room/store";
 import { http } from "@/libraries/clients";
@@ -10,6 +11,7 @@ import { http } from "@/libraries/clients";
 /**
  * ルーム新規発行のビューモデルを組み立てるフック
  * 発行に成功したらストアを埋めて ルームページへ遷移する
+ * 失敗は Sonner のトーストで伝え レイアウトを揺らさない
  */
 export const useCreate = () => {
   const router = useRouter();
@@ -18,14 +20,12 @@ export const useCreate = () => {
 
   const [hostName, setHostName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<unknown>(null);
 
   const submit = async () => {
     const trimmed = hostName.trim();
     if (!trimmed) return;
 
     setLoading(true);
-    setError(null);
     try {
       const { room, me } = await http.post({
         path: "/rooms",
@@ -36,8 +36,8 @@ export const useCreate = () => {
       setRoom(room);
       setMe(me);
       router.push(`/rooms/${room.id}`);
-    } catch (failure) {
-      setError(failure);
+    } catch {
+      toast.error("部屋をつくれませんでした");
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,6 @@ export const useCreate = () => {
     hostName,
     canSubmit: hostName.trim().length > 0 && !loading,
     loading,
-    error,
     onChange: setHostName,
     onSubmit,
   };

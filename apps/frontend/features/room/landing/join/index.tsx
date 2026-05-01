@@ -26,7 +26,6 @@ export const Join = () => {
           className="h-11 rounded-md border-rule bg-paper font-mono text-base text-ink placeholder:text-ink-mute/60"
         />
       </label>
-      {join.error != null && <p className="font-sans text-[12px] text-ember">{join.error}</p>}
       <Button type="submit" size="lg" className="h-11 rounded-md font-sans text-sm">
         その部屋へ入る
       </Button>

@@ -34,9 +34,6 @@ export const JoinPage = ({ roomId }: { roomId: RoomId }) => {
               className="h-11 rounded-md border-rule bg-paper font-sans text-base text-ink placeholder:text-ink-mute/60"
             />
           </label>
-          {page.error != null && (
-            <p className="font-sans text-[12px] text-ember">入室できませんでした</p>
-          )}
           <Button
             type="submit"
             size="lg"

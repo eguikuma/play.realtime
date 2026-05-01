@@ -2,6 +2,7 @@
 
 import { JoinRoomRequest, type RoomId, RoomMembership } from "@play.realtime/contracts";
 import { type SyntheticEvent, useState } from "react";
+import { toast } from "sonner";
 
 import { http } from "@/libraries/clients";
 
@@ -10,6 +11,7 @@ import { useRoom } from "../store";
 /**
  * 参加画面のビューモデルを組み立てるフック
  * 名前入力から 参加リクエスト ストア反映までを 1 箇所で完結させる
+ * 失敗は Sonner のトーストで伝え レイアウトを揺らさない
  */
 export const usePage = (roomId: RoomId) => {
   const setRoom = useRoom((state) => state.setRoom);
@@ -17,14 +19,12 @@ export const usePage = (roomId: RoomId) => {
 
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<unknown>(null);
 
   const submit = async () => {
     const trimmed = name.trim();
     if (!trimmed) return;
 
     setLoading(true);
-    setError(null);
     try {
       const { room, me } = await http.post({
         path: `/rooms/${roomId}/members`,
@@ -34,8 +34,8 @@ export const usePage = (roomId: RoomId) => {
       });
       setRoom(room);
       setMe(me);
-    } catch (failure) {
-      setError(failure);
+    } catch {
+      toast.error("入室できませんでした");
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,6 @@ export const usePage = (roomId: RoomId) => {
     name,
     canSubmit: name.trim().length > 0 && !loading,
     loading,
-    error,
     onChange: setName,
     onSubmit,
   };

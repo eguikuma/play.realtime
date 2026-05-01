@@ -27,9 +27,6 @@ export const Create = () => {
           className="h-11 rounded-md border-rule bg-paper font-sans text-base text-ink placeholder:text-ink-mute/60"
         />
       </label>
-      {create.error != null && (
-        <p className="font-sans text-[12px] text-ember">部屋をつくれませんでした</p>
-      )}
       <Button
         type="submit"
         size="lg"
