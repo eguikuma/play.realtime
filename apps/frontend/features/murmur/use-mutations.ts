@@ -1,6 +1,6 @@
 "use client";
 
-import { Murmur, PostMurmurRequest, type RoomId } from "@play.realtime/contracts";
+import { Murmur, MurmurEndpoint, PostMurmurRequest, type RoomId } from "@play.realtime/contracts";
 
 import { http } from "@/libraries/http-client";
 
@@ -12,7 +12,7 @@ export const useMutations = (roomId: RoomId) => {
   const post = async (text: string) => {
     try {
       await http.post({
-        path: `/rooms/${roomId}/murmurs`,
+        endpoint: MurmurEndpoint.post(roomId),
         body: { text },
         request: PostMurmurRequest,
         response: Murmur,

@@ -314,3 +314,12 @@ export const HallwayEnvelope = z.object({
   data: z.unknown(),
 });
 export type HallwayEnvelope = z.infer<typeof HallwayEnvelope>;
+
+/**
+ * 廊下トーク関連 WebSocket エンドポイントの URL を組み立てる定数
+ * フロントエンドの呼び出し側とバックエンドの Gateway 側で URL の食い違いを起こさないよう、両者がこの定数を経由する前提で配置する
+ */
+export const HallwayEndpoint = {
+  /** `WS /rooms/{roomId}/hallway` 廊下トークの WebSocket 購読経路 */
+  stream: (roomId: RoomId) => `/rooms/${roomId}/hallway`,
+} as const;

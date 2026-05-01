@@ -10,11 +10,11 @@ import type { HttpClient } from "./port";
  */
 export const createNativeHttpClient = ({ origin }: { origin: string }): HttpClient => {
   const execute = async <T>(
-    path: string,
+    endpoint: string,
     options: RequestInit,
     response: z.ZodType<T>,
   ): Promise<T> => {
-    const result = await fetch(`${origin}${path}`, {
+    const result = await fetch(`${origin}${endpoint}`, {
       credentials: "include",
       headers: { "content-type": "application/json" },
       ...options,
@@ -32,13 +32,13 @@ export const createNativeHttpClient = ({ origin }: { origin: string }): HttpClie
   };
 
   return {
-    get: ({ path, response }) => execute(path, { method: "GET" }, response),
-    post: ({ path, body, request, response }) => {
+    get: ({ endpoint, response }) => execute(endpoint, { method: "GET" }, response),
+    post: ({ endpoint, body, request, response }) => {
       const payload = request ? request.parse(body) : body;
-      return execute(path, { method: "POST", body: JSON.stringify(payload) }, response);
+      return execute(endpoint, { method: "POST", body: JSON.stringify(payload) }, response);
     },
-    delete: async ({ path }) => {
-      const result = await fetch(`${origin}${path}`, {
+    delete: async ({ endpoint }) => {
+      const result = await fetch(`${origin}${endpoint}`, {
         method: "DELETE",
         credentials: "include",
         headers: { "content-type": "application/json" },

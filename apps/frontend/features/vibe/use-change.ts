@@ -1,6 +1,11 @@
 "use client";
 
-import { ChangeVibeStatusRequest, type RoomId, type VibeStatus } from "@play.realtime/contracts";
+import {
+  ChangeVibeStatusRequest,
+  type RoomId,
+  VibeEndpoint,
+  type VibeStatus,
+} from "@play.realtime/contracts";
 import { z } from "zod";
 
 import { http } from "@/libraries/http-client";
@@ -18,7 +23,7 @@ export const useChange = (roomId: RoomId) => {
     if (!connectionId) return;
     try {
       await http.post({
-        path: `/rooms/${roomId}/vibe`,
+        endpoint: VibeEndpoint.change(roomId),
         body: { connectionId, status },
         request: ChangeVibeStatusRequest,
         response: z.unknown(),

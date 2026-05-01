@@ -17,7 +17,7 @@ describe("createNativeHttpClient", () => {
     );
 
     const http = createNativeHttpClient({ origin: "http://api.test" });
-    const result = await http.get({ path: "/users/1", response: shape });
+    const result = await http.get({ endpoint: "/users/1", response: shape });
 
     expect(result).toEqual({ name: "alice" });
   });
@@ -31,7 +31,7 @@ describe("createNativeHttpClient", () => {
 
     const http = createNativeHttpClient({ origin: "http://api.test" });
 
-    await expect(http.get({ path: "/users/1", response: shape })).rejects.toBeInstanceOf(
+    await expect(http.get({ endpoint: "/users/1", response: shape })).rejects.toBeInstanceOf(
       HttpFailure,
     );
   });
@@ -45,7 +45,7 @@ describe("createNativeHttpClient", () => {
 
     const http = createNativeHttpClient({ origin: "http://api.test" });
 
-    await expect(http.get({ path: "/missing", response: shape })).rejects.toBeInstanceOf(
+    await expect(http.get({ endpoint: "/missing", response: shape })).rejects.toBeInstanceOf(
       HttpFailure,
     );
   });
@@ -58,7 +58,7 @@ describe("createNativeHttpClient", () => {
 
     const http = createNativeHttpClient({ origin: "http://api.test" });
     const result = await http.post({
-      path: "/items",
+      endpoint: "/items",
       body: { title: "hello" },
       request: requestShape,
       response: responseShape,
@@ -79,7 +79,7 @@ describe("createNativeHttpClient", () => {
     vi.stubGlobal("fetch", mock);
 
     const http = createNativeHttpClient({ origin: "http://api.test" });
-    await http.get({ path: "/echo", response: z.unknown() });
+    await http.get({ endpoint: "/echo", response: z.unknown() });
 
     expect(mock).toHaveBeenCalledWith(
       expect.any(String),
@@ -92,7 +92,7 @@ describe("createNativeHttpClient", () => {
     vi.stubGlobal("fetch", mock);
 
     const http = createNativeHttpClient({ origin: "http://api.test" });
-    await expect(http.delete({ path: "/items/1" })).resolves.toBeUndefined();
+    await expect(http.delete({ endpoint: "/items/1" })).resolves.toBeUndefined();
     expect(mock).toHaveBeenCalledWith(
       "http://api.test/items/1",
       expect.objectContaining({ method: "DELETE", credentials: "include" }),
@@ -107,6 +107,6 @@ describe("createNativeHttpClient", () => {
 
     const http = createNativeHttpClient({ origin: "http://api.test" });
 
-    await expect(http.delete({ path: "/items/1" })).rejects.toBeInstanceOf(HttpFailure);
+    await expect(http.delete({ endpoint: "/items/1" })).rejects.toBeInstanceOf(HttpFailure);
   });
 });

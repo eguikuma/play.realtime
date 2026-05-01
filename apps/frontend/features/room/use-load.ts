@@ -1,6 +1,12 @@
 "use client";
 
-import { type Member, Room, type RoomId, RoomMembership } from "@play.realtime/contracts";
+import {
+  type Member,
+  Room,
+  RoomEndpoint,
+  type RoomId,
+  RoomMembership,
+} from "@play.realtime/contracts";
 import { notFound } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -26,7 +32,7 @@ type RoomContext =
 const fetchRoomContext = async (roomId: RoomId): Promise<RoomContext> => {
   try {
     const { room, me } = await http.get({
-      path: `/rooms/${roomId}/me`,
+      endpoint: RoomEndpoint.me(roomId),
       response: RoomMembership,
     });
     return { kind: "joined", room, me };
@@ -35,7 +41,7 @@ const fetchRoomContext = async (roomId: RoomId): Promise<RoomContext> => {
     if (!(failure instanceof HttpFailure && failure.status === 401)) throw failure;
   }
   try {
-    const room = await http.get({ path: `/rooms/${roomId}`, response: Room });
+    const room = await http.get({ endpoint: RoomEndpoint.get(roomId), response: Room });
     return { kind: "guest", room };
   } catch (failure) {
     if (isMissing(failure)) return { kind: "missing" };

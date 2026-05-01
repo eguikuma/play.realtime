@@ -1,6 +1,11 @@
 "use client";
 
-import { JoinRoomRequest, type RoomId, RoomMembership } from "@play.realtime/contracts";
+import {
+  JoinRoomRequest,
+  RoomEndpoint,
+  type RoomId,
+  RoomMembership,
+} from "@play.realtime/contracts";
 import { notFound } from "next/navigation";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
@@ -30,7 +35,7 @@ export const useEntrance = (roomId: RoomId) => {
     setLoading(true);
     try {
       const { room, me } = await http.post({
-        path: `/rooms/${roomId}/members`,
+        endpoint: RoomEndpoint.join(roomId),
         body: { name: trimmed },
         request: JoinRoomRequest,
         response: RoomMembership,

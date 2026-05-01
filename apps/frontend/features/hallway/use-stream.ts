@@ -1,6 +1,6 @@
 "use client";
 
-import { HallwayServerMessages, type RoomId } from "@play.realtime/contracts";
+import { HallwayEndpoint, HallwayServerMessages, type RoomId } from "@play.realtime/contracts";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -28,7 +28,7 @@ export const useStream = (roomId: RoomId | null) => {
   const appendMessage = useHallway((state) => state.appendMessage);
   const setStatus = useConnectionStatus((state) => state.setStatus);
 
-  const url = roomId ? `${wsOrigin}/rooms/${roomId}/hallway` : null;
+  const url = roomId ? `${wsOrigin}${HallwayEndpoint.stream(roomId)}` : null;
 
   const handlers = {
     Welcome: ({ connectionId }) => setConnectionId(connectionId),

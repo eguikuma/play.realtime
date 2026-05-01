@@ -57,3 +57,14 @@ export const MurmurEvents = {
   /** 新しい投稿が受け付けられたときに逐次届く、投稿 1 件の配信 */
   Posted: Murmur,
 } as const;
+
+/**
+ * ひとこと関連 HTTP エンドポイントの URL を組み立てる定数
+ * フロントエンドの呼び出し側とバックエンドの Controller 側で URL の食い違いを起こさないよう、両者がこの定数を経由する前提で配置する
+ */
+export const MurmurEndpoint = {
+  /** `POST /rooms/{roomId}/murmurs` 新規投稿 */
+  post: (roomId: RoomId) => `/rooms/${roomId}/murmurs`,
+  /** `GET /rooms/{roomId}/murmurs/stream` SSE 購読経路 */
+  stream: (roomId: RoomId) => `/rooms/${roomId}/murmurs/stream`,
+} as const;

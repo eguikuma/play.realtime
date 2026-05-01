@@ -1,6 +1,6 @@
 "use client";
 
-import { MurmurEvents, type RoomId } from "@play.realtime/contracts";
+import { MurmurEndpoint, MurmurEvents, type RoomId } from "@play.realtime/contracts";
 import { useEffect } from "react";
 import type { z } from "zod";
 import { useConnectionStatus } from "@/libraries/connection-status/store";
@@ -20,7 +20,7 @@ export const useStream = (roomId: RoomId | null) => {
   const replace = useMurmur((store) => store.replace);
   const setConnectionStatus = useConnectionStatus((store) => store.setStatus);
 
-  const url = roomId ? `${origin}/rooms/${roomId}/murmurs/stream` : null;
+  const url = roomId ? `${origin}${MurmurEndpoint.stream(roomId)}` : null;
 
   const handlers = {
     Snapshot: ({ items }) => replace(items),

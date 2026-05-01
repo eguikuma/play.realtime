@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { Member, MemberId } from "./member";
+import type { RoomId } from "./room";
 
 /**
  * Vibe 機能におけるメンバーの在室状態
@@ -111,3 +112,14 @@ export const ChangeVibeStatusRequest = z.object({
   status: VibeStatus,
 });
 export type ChangeVibeStatusRequest = z.infer<typeof ChangeVibeStatusRequest>;
+
+/**
+ * Vibe 関連 HTTP エンドポイントの URL を組み立てる定数
+ * フロントエンドの呼び出し側とバックエンドの Controller 側で URL の食い違いを起こさないよう、両者がこの定数を経由する前提で配置する
+ */
+export const VibeEndpoint = {
+  /** `GET /rooms/{roomId}/vibe/stream` SSE 購読経路 */
+  stream: (roomId: RoomId) => `/rooms/${roomId}/vibe/stream`,
+  /** `POST /rooms/{roomId}/vibe` 在室状態の変更通知 */
+  change: (roomId: RoomId) => `/rooms/${roomId}/vibe`,
+} as const;

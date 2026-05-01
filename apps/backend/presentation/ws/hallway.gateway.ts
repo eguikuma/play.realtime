@@ -35,7 +35,7 @@ export class HallwayGateway implements OnModuleInit {
 
   private readonly environment = load();
 
-  private readonly pathPattern = /^\/rooms\/([^/?#]+)\/hallway(?:\?.*)?$/;
+  private readonly endpointPattern = /^\/rooms\/([^/?#]+)\/hallway(?:\?.*)?$/;
 
   constructor(
     private readonly adapter: HttpAdapterHost,
@@ -117,7 +117,7 @@ export class HallwayGateway implements OnModuleInit {
    * どこかで落ちれば `socket.destroy` でハンドシェイクを閉じ、それ以上のレスポンスは返さない
    */
   private async onUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): Promise<void> {
-    const match = this.pathPattern.exec(request.url ?? "");
+    const match = this.endpointPattern.exec(request.url ?? "");
     if (!match) {
       socket.destroy();
       return;

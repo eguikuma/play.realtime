@@ -1,6 +1,6 @@
 "use client";
 
-import { type RoomId, VibeEvents } from "@play.realtime/contracts";
+import { type RoomId, VibeEndpoint, VibeEvents } from "@play.realtime/contracts";
 import { useEffect } from "react";
 import type { z } from "zod";
 
@@ -25,7 +25,7 @@ export const useStream = (roomId: RoomId | null) => {
   const setConnectionId = useVibe((state) => state.setConnectionId);
   const setConnectionStatus = useConnectionStatus((store) => store.setStatus);
 
-  const url = roomId ? `${origin}/rooms/${roomId}/vibe/stream` : null;
+  const url = roomId ? `${origin}${VibeEndpoint.stream(roomId)}` : null;
 
   const handlers = {
     Welcome: ({ connectionId }) => setConnectionId(connectionId),

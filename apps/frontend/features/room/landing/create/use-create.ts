@@ -1,6 +1,6 @@
 "use client";
 
-import { CreateRoomRequest, RoomMembership } from "@play.realtime/contracts";
+import { CreateRoomRequest, RoomEndpoint, RoomMembership } from "@play.realtime/contracts";
 import { useRouter } from "next/navigation";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
@@ -28,7 +28,7 @@ export const useCreate = () => {
     setLoading(true);
     try {
       const { room, me } = await http.post({
-        path: "/rooms",
+        endpoint: RoomEndpoint.create(),
         body: { hostName: trimmed },
         request: CreateRoomRequest,
         response: RoomMembership,

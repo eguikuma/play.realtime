@@ -1,6 +1,12 @@
 "use client";
 
-import { BgmState, type RoomId, SetBgmRequest, type TrackId } from "@play.realtime/contracts";
+import {
+  BgmEndpoint,
+  BgmState,
+  type RoomId,
+  SetBgmRequest,
+  type TrackId,
+} from "@play.realtime/contracts";
 
 import { http } from "@/libraries/http-client";
 
@@ -12,7 +18,7 @@ export const useMutations = (roomId: RoomId) => {
   const set = async (trackId: TrackId) => {
     try {
       await http.post({
-        path: `/rooms/${roomId}/bgm`,
+        endpoint: BgmEndpoint.set(roomId),
         body: { trackId },
         request: SetBgmRequest,
         response: BgmState,
@@ -25,7 +31,7 @@ export const useMutations = (roomId: RoomId) => {
   const stop = async () => {
     try {
       await http.post({
-        path: `/rooms/${roomId}/bgm/stop`,
+        endpoint: BgmEndpoint.stop(roomId),
         body: {},
         response: BgmState,
       });
@@ -37,7 +43,7 @@ export const useMutations = (roomId: RoomId) => {
   const undo = async () => {
     try {
       await http.post({
-        path: `/rooms/${roomId}/bgm/undo`,
+        endpoint: BgmEndpoint.undo(roomId),
         body: {},
         response: BgmState,
       });

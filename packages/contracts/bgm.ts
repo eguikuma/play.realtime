@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { MemberId } from "./member";
+import type { RoomId } from "./room";
 
 /**
  * 選択可能な BGM トラック ID の固定リスト
@@ -105,3 +106,18 @@ export const SetBgmRequest = z.object({
   trackId: TrackId,
 });
 export type SetBgmRequest = z.infer<typeof SetBgmRequest>;
+
+/**
+ * BGM 関連 HTTP エンドポイントの URL を組み立てる定数
+ * フロントエンドの呼び出し側とバックエンドの Controller 側で URL の食い違いを起こさないよう、両者がこの定数を経由する前提で配置する
+ */
+export const BgmEndpoint = {
+  /** `GET /rooms/{roomId}/bgm/stream` SSE 購読経路 */
+  stream: (roomId: RoomId) => `/rooms/${roomId}/bgm/stream`,
+  /** `POST /rooms/{roomId}/bgm` 再生トラックの切替 */
+  set: (roomId: RoomId) => `/rooms/${roomId}/bgm`,
+  /** `POST /rooms/{roomId}/bgm/stop` 再生停止 */
+  stop: (roomId: RoomId) => `/rooms/${roomId}/bgm/stop`,
+  /** `POST /rooms/{roomId}/bgm/undo` 直前操作の取り消し */
+  undo: (roomId: RoomId) => `/rooms/${roomId}/bgm/undo`,
+} as const;

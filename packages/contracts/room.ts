@@ -59,3 +59,18 @@ export const RoomMembership = z.object({
   me: Member,
 });
 export type RoomMembership = z.infer<typeof RoomMembership>;
+
+/**
+ * ルーム関連 HTTP エンドポイントの URL を組み立てる定数
+ * フロントエンドの呼び出し側とバックエンドの Controller 側で URL の食い違いを起こさないよう、両者がこの定数を経由する前提で配置する
+ */
+export const RoomEndpoint = {
+  /** `POST /rooms` ルーム新規作成 */
+  create: () => "/rooms" as const,
+  /** `POST /rooms/{roomId}/members` 既存ルームへの入室 */
+  join: (roomId: RoomId) => `/rooms/${roomId}/members`,
+  /** `GET /rooms/{roomId}/me` 入室済みセッションの自分情報取得 */
+  me: (roomId: RoomId) => `/rooms/${roomId}/me`,
+  /** `GET /rooms/{roomId}` ルーム集約の取得 */
+  get: (roomId: RoomId) => `/rooms/${roomId}`,
+} as const;

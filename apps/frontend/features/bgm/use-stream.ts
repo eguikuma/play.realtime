@@ -1,6 +1,6 @@
 "use client";
 
-import { BgmEvents, type RoomId } from "@play.realtime/contracts";
+import { BgmEndpoint, BgmEvents, type RoomId } from "@play.realtime/contracts";
 import { useEffect } from "react";
 import type { z } from "zod";
 import { useConnectionStatus } from "@/libraries/connection-status/store";
@@ -18,7 +18,7 @@ export const useStream = (roomId: RoomId | null) => {
   const setState = useBgm((store) => store.setState);
   const setConnectionStatus = useConnectionStatus((store) => store.setStatus);
 
-  const url = roomId ? `${origin}/rooms/${roomId}/bgm/stream` : null;
+  const url = roomId ? `${origin}${BgmEndpoint.stream(roomId)}` : null;
 
   const handlers = {
     Snapshot: ({ state }) => setState(state),
