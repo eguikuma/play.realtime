@@ -33,7 +33,7 @@ export class RedisHallwayInvitationTimers implements HallwayInvitationTimers, On
 
   constructor(redisUrl: string, listener: RedisExpiredListener, options: RedisOptions = {}) {
     this.client = new Redis(redisUrl, options);
-    listener.register(PREFIX, (key) => {
+    listener.subscribe(PREFIX, (key) => {
       void this.handleExpired(key);
     });
   }

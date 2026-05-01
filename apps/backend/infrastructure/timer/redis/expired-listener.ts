@@ -6,7 +6,7 @@ type Handler = (key: string) => void;
 /**
  * Redis のキースペース通知 `__keyevent@${db}__:expired` を購読し、prefix で機能ごとに dispatch する専用 service
  * Redis 仕様で SUBSCRIBE 中の client は他コマンドを受け付けないため、`RedisPubSub` の subscriber と混在させずに専用 client を別で持つ
- * 各 Redis timer 実装は constructor で `register(prefix, handler)` を呼び、本クラスの `onModuleInit` で 1 回だけ実 SUBSCRIBE を完了させて受信経路を整える
+ * 各 Redis timer 実装は constructor で `subscribe(prefix, handler)` を呼び、本クラスの `onModuleInit` で 1 回だけ実 SUBSCRIBE を完了させて受信経路を整える
  */
 @Injectable()
 export class RedisExpiredListener implements OnModuleInit, OnModuleDestroy {
@@ -22,20 +22,20 @@ export class RedisExpiredListener implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * prefix と handler の組を dispatch table に登録する
+   * prefix と handler の組を dispatch table に購読登録する
    * 実 SUBSCRIBE は `onModuleInit` でまとめて行うため、本メソッドはネットワーク往復を伴わない同期登録で済む
-   * 同 prefix を二重登録すると後勝ちで上書きされるため、利用側は機能 1 つにつき 1 prefix を厳守する
+   * 同 prefix を二重購読すると後勝ちで上書きされるため、利用側は機能 1 つにつき 1 prefix を厳守する
    */
-  register(prefix: string, handler: Handler): void {
+  subscribe(prefix: string, handler: Handler): void {
     if (this.handlers.has(prefix)) {
-      this.logger.warn(`prefix "${prefix}" is already registered, overwriting`);
+      this.logger.warn(`prefix "${prefix}" is already subscribed, overwriting`);
     }
     this.handlers.set(prefix, handler);
   }
 
   /**
    * NestJS のライフサイクルで providers 解決後に呼ばれ、keyspace notification チャネルへの SUBSCRIBE をここで完了させる
-   * 各 Redis timer 実装の constructor 内 `register` 呼び出しは順序を問わず、実 SUBSCRIBE が確立するまで通知は届かないが、本フックの `await` で確実に確立してから後続の業務処理を受け付ける
+   * 各 Redis timer 実装の constructor 内 `subscribe` 呼び出しは順序を問わず、実 SUBSCRIBE が確立するまで通知は届かないが、本フックの `await` で確実に確立してから後続の業務処理を受け付ける
    * `__keyevent@${db}__:expired` の `db` は ioredis が URL パース時に正規化した `options.db` に追従し、`/N` 付き REDIS_URL でも適切な channel を選ぶ
    */
   async onModuleInit(): Promise<void> {

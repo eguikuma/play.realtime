@@ -30,7 +30,7 @@ describe.skipIf(!REDIS_URL)("RedisExpiredListener", () => {
   it("登録した prefix と一致する expired key を handler に渡す", async () => {
     const prefix = `test-listener-match:${randomUUID().replace(/-/g, "")}:`;
     const handler = vi.fn();
-    listener.register(prefix, handler);
+    listener.subscribe(prefix, handler);
 
     const key = `${prefix}alpha`;
     await writer.set(key, "1", "PX", 200);
@@ -42,7 +42,7 @@ describe.skipIf(!REDIS_URL)("RedisExpiredListener", () => {
   it("登録した prefix と一致しない expired key は handler に渡さない", async () => {
     const prefix = `test-listener-miss:${randomUUID().replace(/-/g, "")}:`;
     const handler = vi.fn();
-    listener.register(prefix, handler);
+    listener.subscribe(prefix, handler);
 
     const otherKey = `unrelated:${randomUUID().replace(/-/g, "")}:beta`;
     await writer.set(otherKey, "1", "PX", 200);
@@ -56,8 +56,8 @@ describe.skipIf(!REDIS_URL)("RedisExpiredListener", () => {
     const skipped = `test-listener-multi-b:${randomUUID().replace(/-/g, "")}:`;
     const matchedHandler = vi.fn();
     const skippedHandler = vi.fn();
-    listener.register(matched, matchedHandler);
-    listener.register(skipped, skippedHandler);
+    listener.subscribe(matched, matchedHandler);
+    listener.subscribe(skipped, skippedHandler);
 
     const key = `${matched}gamma`;
     await writer.set(key, "1", "PX", 200);

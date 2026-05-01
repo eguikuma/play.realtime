@@ -15,7 +15,7 @@ import { RedisVibePresenceGrace } from "./redis/vibe-presence-grace";
  * 猶予タイマー系 port に driver 別実装を紐付ける Global モジュール
  * `STORAGE_DRIVER` 環境変数で `memory` と `redis` を切り替え、usecase / Gateway / Lifecycle の各注入箇所には実装の違いを意識させない
  * Redis 実装はキースペース通知 + SETNX 短期ロックで複数 backend 間の二重配信を防ぐ前提で、本モジュールから差し替える
- * `RedisExpiredListener` は redis driver のときだけ生成され、各 Redis timer 実装が constructor で `register(prefix, handler)` を呼んで dispatch table を構築する
+ * `RedisExpiredListener` は redis driver のときだけ生成され、各 Redis timer 実装が constructor で `subscribe(prefix, handler)` を呼んで dispatch table を構築する
  */
 @Global()
 @Module({
