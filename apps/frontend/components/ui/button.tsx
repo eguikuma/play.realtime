@@ -40,6 +40,10 @@ const buttonVariants = cva(
   },
 );
 
+/**
+ * shadcn / Base UI 流儀のボタン wrapper
+ * `@base-ui/react` の `Button` をそのまま使いつつ、`variant` と `size` を `cva` で組み立てた Tailwind クラスへ対応づける
+ */
 function Button({
   className,
   variant = "default",

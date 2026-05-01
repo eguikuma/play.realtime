@@ -2,6 +2,10 @@ import { Input as InputPrimitive } from "@base-ui/react/input";
 import type { ComponentProps } from "react";
 import { cn } from "@/libraries/classname";
 
+/**
+ * shadcn / Base UI 流儀のテキスト入力 wrapper
+ * `@base-ui/react` の `Input` に標準的な `<input>` のプロップスをそのまま転送し、共通スタイルを Tailwind クラスで重ねる
+ */
 function Input({ className, type, ...props }: ComponentProps<"input">) {
   return (
     <InputPrimitive
