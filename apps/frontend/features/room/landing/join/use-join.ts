@@ -1,5 +1,6 @@
 "use client";
 
+import { RoomId } from "@play.realtime/contracts";
 import { useRouter } from "next/navigation";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
@@ -17,7 +18,7 @@ export const useJoin = () => {
     event.preventDefault();
     const trimmed = roomId.trim();
     const candidate = trimmed.split(/[/?#]/).filter(Boolean).pop() ?? "";
-    if (!/^[A-Za-z0-9_-]{10,}$/.test(candidate)) {
+    if (!RoomId.safeParse(candidate).success) {
       toast.error("もらったリンクをそのまま貼り付けてみてください");
       return;
     }
