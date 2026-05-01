@@ -4,6 +4,10 @@ import { Murmur, PostMurmurRequest, type RoomId } from "@play.realtime/contracts
 
 import { http } from "@/libraries/http-client";
 
+/**
+ * ひとこと投稿 HTTP を送る `post` 関数を返すフック
+ * 失敗してもストアは触らず、SSE の `Posted` が真の最終状態として降ってくる前提で再送や楽観更新を行わない
+ */
 export const useMutations = (roomId: RoomId) => {
   const post = async (text: string) => {
     try {
@@ -14,7 +18,7 @@ export const useMutations = (roomId: RoomId) => {
         response: Murmur,
       });
     } catch {
-      /* SSE で最終状態が配信されるため UI は直近の一覧を保持したままとする */
+      /* SSE の最終状態が配信されるため、UI は直近の一覧を保持したままにする */
     }
   };
 

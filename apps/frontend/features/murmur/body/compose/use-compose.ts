@@ -5,6 +5,9 @@ import { type SyntheticEvent, useState } from "react";
 
 import { useMutations } from "../../use-mutations";
 
+/**
+ * 投稿本文の上限文字数、`Murmur.text` スキーマの上限に揃えてサーバ / クライアントの検証範囲を合わせる
+ */
 const MAX_LENGTH = 140;
 
 type Compose = {
@@ -12,6 +15,10 @@ type Compose = {
   disabled: boolean;
 };
 
+/**
+ * 投稿フォームの状態と送信処理をまとめたフック
+ * 文字数カウンタの残り / 警告閾値、送信中フラグによる二重送信防止、submit 成功時の入力クリアまでを 1 本で面倒見る
+ */
 export const useCompose = ({ roomId, disabled }: Compose) => {
   const mutations = useMutations(roomId);
 
