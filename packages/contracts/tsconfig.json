@@ -1,0 +1,8 @@
+{
+  "extends": "@play.realtime/tsconfig/base.json",
+  "compilerOptions": {
+    "incremental": false
+  },
+  "include": ["**/*"],
+  "exclude": ["node_modules", "dist"]
+}
