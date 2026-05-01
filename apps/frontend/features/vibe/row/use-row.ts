@@ -20,6 +20,11 @@ type Avatar = {
   onInvite: (() => void) | null;
 };
 
+/**
+ * Vibe の行表示に必要なアバター配列を組み立てるフック
+ * SSE 購読 / 可視状態送信 / Hallway の取り込み中判定 / 入室順並び替えをまとめて面倒見て、描画側は返り値をそのまま並べるだけにする
+ * `onInvite` は招待不可条件を全て満たしたときだけ関数で返し、それ以外は `null` にして UI のボタン押下経路を型で塞ぐ
+ */
 export const useRow = (roomId: RoomId) => {
   const me = useRoom((state) => state.me);
   const members = useRoom((state) => state.room?.members ?? []);

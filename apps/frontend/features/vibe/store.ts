@@ -12,6 +12,11 @@ type VibeState = {
   setConnectionId: (connectionId: ConnectionId | null) => void;
 };
 
+/**
+ * Vibe 機能の状態を保持する zustand ストア
+ * メンバー ID をキーにした `statuses` と、自分の SSE 接続を識別する `connectionId` を束ね、UI と `useVisibility` が購読する
+ * `setSnapshot` は購読開始時の一括置換、`setStatus` は増分更新、`remove` は退室反映、`setConnectionId` は `Welcome` 受信時の採番と切断時の `null` リセットに使う
+ */
 export const useVibe = create<VibeState>()((set) => ({
   statuses: {},
   connectionId: null,

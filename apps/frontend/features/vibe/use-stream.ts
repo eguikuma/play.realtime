@@ -12,6 +12,11 @@ import { useSse } from "@/libraries/transport";
 
 import { useVibe } from "./store";
 
+/**
+ * Vibe SSE の購読を張り、受信イベントを `useVibe` / `useRoom` / `useConnectionStatus` に転写するフック
+ * `roomId` が `null` のときは接続せず、ルーム画面に到達して入室済みになって初めて購読開始する
+ * `handlers` の `satisfies` で `VibeEvents` 全件の網羅を型検査に委ね、イベント追加時の実装漏れを検出する
+ */
 export const useStream = (roomId: RoomId | null) => {
   const addMember = useRoom((state) => state.addMember);
   const setSnapshot = useVibe((state) => state.setSnapshot);

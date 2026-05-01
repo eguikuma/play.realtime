@@ -7,6 +7,10 @@ import { http } from "@/libraries/http-client";
 
 import { useVibe } from "./store";
 
+/**
+ * クライアントの可視状態変化をサーバへ POST する送信関数を返すフック
+ * `connectionId` 未確定 (`Welcome` 未着) の間は送信を抑止する、HTTP 失敗時は次回の可視状態変化でまた送るため無視する
+ */
 export const useChange = (roomId: RoomId) => {
   const connectionId = useVibe((state) => state.connectionId);
 
@@ -20,7 +24,7 @@ export const useChange = (roomId: RoomId) => {
         response: z.unknown(),
       });
     } catch {
-      /* 次の見え方変化で再送されるため ここでは握りつぶす */
+      /* 次の可視状態変化で再送されるため、ここでは無視する */
     }
   };
 };
