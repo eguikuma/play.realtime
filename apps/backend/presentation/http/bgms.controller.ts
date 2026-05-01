@@ -4,7 +4,7 @@ import type { Response } from "express";
 import { GetBgmSnapshot } from "../../application/bgm/get-snapshot.usecase";
 import { SetBgm } from "../../application/bgm/set.usecase";
 import { StopBgm } from "../../application/bgm/stop.usecase";
-import { topic } from "../../application/bgm/topic";
+import { Topic } from "../../application/bgm/topic";
 import { UndoBgm } from "../../application/bgm/undo.usecase";
 import { RoomPresence } from "../../application/room/presence";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
@@ -45,7 +45,7 @@ export class BgmsController {
     const connection = new SseConnection(connectionId, member.id, roomId, response);
     this.presence.register(roomId);
     this.hub.attach(connection, {
-      topic: topic(roomId),
+      topic: Topic.room(roomId),
       onAttach: async (attached) => {
         const snapshot = await this.snapshot.execute({ roomId });
         attached.emit("Snapshot", snapshot);

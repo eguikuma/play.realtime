@@ -7,7 +7,7 @@ import { ChangeVibeStatus } from "../../application/vibe/change-status.usecase";
 import { GetVibeSnapshot } from "../../application/vibe/get-snapshot.usecase";
 import { NotifyVibeJoined } from "../../application/vibe/notify-joined.usecase";
 import { NotifyVibeLeft } from "../../application/vibe/notify-left.usecase";
-import { topic } from "../../application/vibe/topic";
+import { Topic } from "../../application/vibe/topic";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { SseConnection, SseHub } from "../../infrastructure/transport/sse";
 import { CurrentMember } from "../../shared/decorators/current-member.decorator";
@@ -47,7 +47,7 @@ export class VibesController {
     const connection = new SseConnection(connectionId, member.id, roomId, response);
     this.presence.register(roomId);
     this.hub.attach(connection, {
-      topic: topic(roomId),
+      topic: Topic.room(roomId),
       onAttach: async (attached) => {
         attached.emit("Welcome", { connectionId });
         const { member: resolved } = await this.membership.execute({

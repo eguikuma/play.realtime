@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type { RoomId, VibeJoined, VibeLeft, VibeUpdated } from "@play.realtime/contracts";
 import { SseHub } from "../../infrastructure/transport/sse";
-import { topic } from "./topic";
+import { Topic } from "./topic";
 
 /**
  * Vibe SSE 配信のイベント別ファサード
@@ -16,20 +16,20 @@ export class VibeBroadcaster {
    * 新規メンバー入室を Vibe トピック購読者全員に配信する
    */
   async joined(roomId: RoomId, data: VibeJoined): Promise<void> {
-    await this.hub.broadcast(topic(roomId), "Joined", data);
+    await this.hub.broadcast(Topic.room(roomId), "Joined", data);
   }
 
   /**
    * メンバー退室を Vibe トピック購読者全員に配信する
    */
   async left(roomId: RoomId, data: VibeLeft): Promise<void> {
-    await this.hub.broadcast(topic(roomId), "Left", data);
+    await this.hub.broadcast(Topic.room(roomId), "Left", data);
   }
 
   /**
    * 既存メンバーの状態変化を Vibe トピック購読者全員に配信する
    */
   async updated(roomId: RoomId, data: VibeUpdated): Promise<void> {
-    await this.hub.broadcast(topic(roomId), "Updated", data);
+    await this.hub.broadcast(Topic.room(roomId), "Updated", data);
   }
 }

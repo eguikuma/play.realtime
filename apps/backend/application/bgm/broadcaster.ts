@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type { BgmChanged, RoomId } from "@play.realtime/contracts";
 import { SseHub } from "../../infrastructure/transport/sse";
-import { topic } from "./topic";
+import { Topic } from "./topic";
 
 /**
  * BGM SSE 配信のイベント別ファサード
@@ -17,6 +17,6 @@ export class BgmBroadcaster {
    * 楽曲の差し替え、停止、直前操作の取り消しのいずれも同じ `Changed` イベントで通知する
    */
   async changed(roomId: RoomId, data: BgmChanged): Promise<void> {
-    await this.hub.broadcast(topic(roomId), "Changed", data);
+    await this.hub.broadcast(Topic.room(roomId), "Changed", data);
   }
 }

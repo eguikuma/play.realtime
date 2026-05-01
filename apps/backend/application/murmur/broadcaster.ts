@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type { Murmur, MurmurId, RoomId } from "@play.realtime/contracts";
 import { SseHub } from "../../infrastructure/transport/sse";
-import { topic } from "./topic";
+import { Topic } from "./topic";
 
 /**
  * ひとこと SSE 配信のイベント別ファサード
@@ -17,6 +17,6 @@ export class MurmurBroadcaster {
    * `id` は SSE の `Last-Event-ID` 再送起点として `MurmurId` を渡す
    */
   async posted(roomId: RoomId, data: Murmur, id: MurmurId): Promise<void> {
-    await this.hub.broadcast(topic(roomId), "Posted", data, id);
+    await this.hub.broadcast(Topic.room(roomId), "Posted", data, id);
   }
 }
