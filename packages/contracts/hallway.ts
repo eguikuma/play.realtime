@@ -139,8 +139,47 @@ export const HallwayCallEnded = z.object({
 export type HallwayCallEnded = z.infer<typeof HallwayCallEnded>;
 
 /**
+ * コマンド処理に失敗した理由を表す列挙
+ * 廊下トークのドメイン例外 6 種に 1 対 1 で対応する
+ */
+export const HallwayErrorCode = z.enum([
+  "SelfInviteNotAllowed",
+  "InviterBusy",
+  "InviteeUnavailable",
+  "InvitationNotFound",
+  "CallNotFound",
+  "NotCallParticipant",
+]);
+export type HallwayErrorCode = z.infer<typeof HallwayErrorCode>;
+
+/**
+ * 直前に送ったクライアント命令の名前
+ * エラー通知に合わせて送り 受信側が何の操作で失敗したかを識別できるようにする
+ */
+export const HallwayCommandName = z.enum([
+  "Invite",
+  "Accept",
+  "Decline",
+  "Cancel",
+  "Send",
+  "Leave",
+]);
+export type HallwayCommandName = z.infer<typeof HallwayCommandName>;
+
+/**
+ * 命令が失敗したことを 操作した本人の接続だけに返すイベント
+ * コードと元命令名に加え 表示用の短い理由文も同梱する
+ */
+export const HallwayCommandFailed = z.object({
+  code: HallwayErrorCode,
+  command: HallwayCommandName,
+  message: z.string(),
+});
+export type HallwayCommandFailed = z.infer<typeof HallwayCommandFailed>;
+
+/**
  * WebSocket でサーバーからクライアントへ送るメッセージ名とペイロードスキーマの対応表
- * `Welcome` は該当接続だけへ直送するため配信経路には乗らない
+ * `Welcome` と `CommandFailed` は該当接続だけへ直送するため配信経路には乗らない
  */
 export const HallwayServerMessages = {
   Welcome: HallwayWelcome,
@@ -150,6 +189,7 @@ export const HallwayServerMessages = {
   CallStarted: HallwayCallStarted,
   Message: HallwayMessage,
   CallEnded: HallwayCallEnded,
+  CommandFailed: HallwayCommandFailed,
 } as const;
 
 /**
