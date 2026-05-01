@@ -42,12 +42,15 @@
 
 3 機能とも、サーバに対して 1 本の長い HTTP レスポンスを開きっぱなしにすることで成立しています
 
-```
-ブラウザ ── GET /rooms/{roomId}/murmurs/stream ── サーバ
-ブラウザ ←─ event: snapshot                     ── サーバ
-ブラウザ ←─ event: posted                       ── サーバ
-ブラウザ ←─ : heartbeat                         ── サーバ
-ブラウザ ←─ event: posted                       ── サーバ
+```mermaid
+sequenceDiagram
+    participant ブラウザ
+    participant サーバ
+    ブラウザ->>サーバ: GET /rooms/{roomId}/murmurs/stream
+    サーバ-->>ブラウザ: event - snapshot
+    サーバ-->>ブラウザ: event - posted
+    サーバ-->>ブラウザ: コメント行 - heartbeat
+    サーバ-->>ブラウザ: event - posted
 ```
 
 最初のリクエストに対して 200 が返ってきますが、レスポンスはそこで終わりません
