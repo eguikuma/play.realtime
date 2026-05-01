@@ -74,7 +74,6 @@ export class SelfInviteNotAllowed extends Error {
  */
 export class NotCallParticipant extends Error {
   readonly callId: CallId;
-
   readonly memberId: MemberId;
 
   constructor(callId: CallId, memberId: MemberId) {

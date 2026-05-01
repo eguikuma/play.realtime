@@ -78,6 +78,7 @@ export const acceptInvitation = (parameters: {
   now: Date;
 }): { call: Call } => {
   canAccept(parameters.invitation, parameters.callerId);
+
   const call: Call = {
     id: parameters.callId,
     roomId: parameters.invitation.roomId,

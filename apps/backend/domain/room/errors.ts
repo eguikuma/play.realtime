@@ -20,7 +20,6 @@ export class RoomNotFound extends Error {
  */
 export class MemberNotFound extends Error {
   readonly roomId: RoomId;
-
   readonly memberId: MemberId;
 
   constructor(roomId: RoomId, memberId: MemberId) {
