@@ -8,11 +8,21 @@ import type { z } from "zod";
 import type { WsConnection } from "../../infrastructure/transport/ws";
 import { hallwayErrorCodeOf } from "./hallway-errors";
 
+/**
+ * 受信した `envelope.name` が廊下トークの既知コマンドかを判定する type guard
+ */
 export const isHallwayCommand = (name: string): name is HallwayCommandName =>
   HallwayCommandName.safeParse(name).success;
 
+/**
+ * コマンドハンドラへ渡す共通コンテキスト、ルームと送信者メンバーだけに限定することで handler 側の責務を狭める
+ */
 export type HallwayHandlerContext = { roomId: RoomId; memberId: MemberId };
 
+/**
+ * 全コマンドに対応するハンドラマップ、`HallwayClientMessages` の schema から自動導出した型で型付けする
+ * `satisfies` で使うことで新しいコマンドの追加時に網羅性を型検査で担保できる
+ */
 export type HallwayCommandHandlers = {
   [K in HallwayCommandName]: (input: {
     context: HallwayHandlerContext;
@@ -20,11 +30,19 @@ export type HallwayCommandHandlers = {
   }) => Promise<void>;
 };
 
+/**
+ * ディスパッチで使う最小限のロガー型、`Logger` 具象への依存を避けてテストで差し替え可能にする
+ */
 export type HallwayDispatchLogger = {
   debug: (message: string) => void;
   warn: (message: string) => void;
 };
 
+/**
+ * 受信 envelope を 1 件ディスパッチする
+ * 未知のコマンドは debug ログで静かに捨て、Domain Error は `CommandFailed` として送信元だけに返す
+ * それ以外の例外は warn ログを残して黙って止める、他メンバーへは配信しない
+ */
 export const dispatchHallwayCommand = async (params: {
   connection: WsConnection;
   envelope: { name: string; data: unknown };

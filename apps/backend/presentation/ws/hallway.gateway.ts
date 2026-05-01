@@ -22,6 +22,11 @@ import { WsConnection, WsHub } from "../../infrastructure/transport/ws";
 import { MEMBER_COOKIE } from "../http/cookies";
 import { dispatchHallwayCommand, type HallwayCommandHandlers } from "./hallway-dispatch";
 
+/**
+ * 廊下トーク WebSocket の入り口を担う Gateway
+ * HTTP サーバの `upgrade` を横取りして URL パターンと Origin と Cookie の三段認可を行い、通過したら `WsConnection` を組み立てて `WsHub` に預ける
+ * 接続単位の生涯は `RoomPresence` と `HallwayConnectionCounter` で二重に追い、最後の接続が切れたときだけ `HandleHallwayDisconnect` を走らせる
+ */
 @Injectable()
 export class HallwayGateway implements OnModuleInit {
   private readonly logger = new Logger(HallwayGateway.name);
@@ -49,6 +54,10 @@ export class HallwayGateway implements OnModuleInit {
     private readonly handleDisconnect: HandleHallwayDisconnect,
   ) {}
 
+  /**
+   * `HallwayCommandName` 全件に対応するコマンドハンドラ束
+   * `satisfies HallwayCommandHandlers` で網羅性を担保し、コマンド追加時に実装漏れを型検査で検出できる
+   */
   private readonly handlers = {
     Invite: async ({ context, data }) => {
       await this.invite.execute({
@@ -91,6 +100,10 @@ export class HallwayGateway implements OnModuleInit {
       }),
   } satisfies HallwayCommandHandlers;
 
+  /**
+   * Nest 起動後に HTTP サーバの `upgrade` イベントへ直接フックする
+   * NestJS の `@WebSocketGateway` / Socket.io アダプタは使わず、生の `ws` ライブラリで学習目的の実装を保つ
+   */
   onModuleInit(): void {
     const httpServer = this.adapter.httpAdapter.getHttpServer();
     httpServer.on("upgrade", (request: IncomingMessage, socket: Duplex, head: Buffer) => {
@@ -98,6 +111,11 @@ export class HallwayGateway implements OnModuleInit {
     });
   }
 
+  /**
+   * upgrade リクエストの認可を 4 段で実施する
+   * URL が `/rooms/{roomId}/hallway` に一致、Origin が `WEB_ORIGIN` と一致、Cookie の `MemberId` が妥当、ルーム内にそのメンバーが存在、の順で検証する
+   * どこかで落ちれば `socket.destroy` でハンドシェイクを閉じ、それ以上のレスポンスは返さない
+   */
   private async onUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): Promise<void> {
     const match = this.pathPattern.exec(request.url ?? "");
     if (!match) {
@@ -138,6 +156,11 @@ export class HallwayGateway implements OnModuleInit {
     });
   }
 
+  /**
+   * 接続成立後のライフサイクルを張る
+   * `onAttach` で `Welcome` と `Snapshot` を送って初期状態を揃え、`onMessage` で受信 envelope をディスパッチへ流す
+   * 切断時は `RoomPresence.deregister` と `HallwayConnectionCounter.detach` の両方を呼び、そのメンバー最後の接続だった場合だけ `HandleHallwayDisconnect` を走らせる
+   */
   private onConnected(ws: WebSocket, roomId: RoomId, memberId: MemberId): void {
     const connectionId = this.ids.connection() as ConnectionId;
     const connection = new WsConnection(connectionId, memberId, roomId, ws);
@@ -184,6 +207,10 @@ export class HallwayGateway implements OnModuleInit {
   }
 }
 
+/**
+ * `Cookie` ヘッダを `{ name: value }` 形式に分解する
+ * `decodeURIComponent` の失敗は単一 Cookie の取り込みを諦めるだけで、他の Cookie 解析は続行する
+ */
 const parseCookies = (header: string): Record<string, string> => {
   if (!header) {
     return {};
