@@ -84,7 +84,7 @@ const buildController = (
 };
 
 describe("VibesController", () => {
-  it("ステータス変更リクエストでは connectionId と status を ChangeVibeStatus に委譲する", async () => {
+  it("ステータス変更リクエストでは `connectionId` と `status` を ChangeVibeStatus ユースケースに委譲する", async () => {
     const { controller, changeStatus } = buildController();
 
     await controller.change(roomId, { connectionId, status: "focused" }, { id: memberId });
@@ -97,7 +97,7 @@ describe("VibesController", () => {
     });
   });
 
-  it("ストリーム取得では SSE 接続を作り vibe トピックに紐付ける", () => {
+  it("ストリーム取得では SSE 接続を立ち上げて `vibe` トピックに紐付ける", () => {
     const { controller, hub } = buildController();
     const response = { on: vi.fn() } as unknown as Response;
 
@@ -109,7 +109,7 @@ describe("VibesController", () => {
     expect(options.topic).toBe(`room:${roomId}:vibe`);
   });
 
-  it("onAttach では Welcome を該当接続に直送してから Snapshot と NotifyVibeJoined を実行する", async () => {
+  it("`onAttach` では `Welcome` を当該接続に直送してから `Snapshot` と NotifyVibeJoined ユースケースを実行する", async () => {
     const { controller, hub, snapshot, notifyJoined } = buildController();
     const response = { on: vi.fn() } as unknown as Response;
 

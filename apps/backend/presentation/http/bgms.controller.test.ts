@@ -67,7 +67,7 @@ const buildController = (
 };
 
 describe("BgmsController", () => {
-  it("POST で trackId を SetBgm に委譲する", async () => {
+  it("`POST` で `trackId` を SetBgm ユースケースに委譲する", async () => {
     const { controller, setter } = buildController();
 
     await controller.set(roomId, { trackId }, { id: memberId });
@@ -77,7 +77,7 @@ describe("BgmsController", () => {
     );
   });
 
-  it("POST stop は StopBgm を呼ぶ", async () => {
+  it("BGM 停止の `POST` は StopBgm ユースケースに委譲する", async () => {
     const { controller, stopper } = buildController();
 
     await controller.stop(roomId, { id: memberId });
@@ -85,7 +85,7 @@ describe("BgmsController", () => {
     expect(stopper.execute).toHaveBeenCalledWith(expect.objectContaining({ roomId, memberId }));
   });
 
-  it("POST undo は UndoBgm を呼ぶ", async () => {
+  it("BGM 取り消しの `POST` は UndoBgm ユースケースに委譲する", async () => {
     const { controller, undoer } = buildController();
 
     await controller.undo(roomId, { id: memberId });
@@ -93,7 +93,7 @@ describe("BgmsController", () => {
     expect(undoer.execute).toHaveBeenCalledWith(expect.objectContaining({ roomId, memberId }));
   });
 
-  it("ストリーム取得では SSE 接続を作り bgm トピックに紐付ける", () => {
+  it("ストリーム取得では SSE 接続を立ち上げて `bgm` トピックに紐付ける", () => {
     const { controller, hub } = buildController();
     const response = { on: vi.fn() } as unknown as Response;
 
@@ -105,7 +105,7 @@ describe("BgmsController", () => {
     expect(options.topic).toBe(`room:${roomId}:bgm`);
   });
 
-  it("onAttach では Snapshot を該当接続に直送する", async () => {
+  it("`onAttach` では `Snapshot` を当該接続に直送する", async () => {
     const { controller, hub, snapshot } = buildController();
     const response = { on: vi.fn() } as unknown as Response;
 

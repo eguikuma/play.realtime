@@ -59,7 +59,7 @@ const buildController = (
 };
 
 describe("MurmursController", () => {
-  it("投稿リクエストを一言投稿ユースケースに委譲する", async () => {
+  it("投稿リクエストを PostMurmur ユースケースに委譲する", async () => {
     const { controller, posting } = buildController();
 
     await controller.create(roomId, { text: "hello" }, { id: memberId });
@@ -71,7 +71,7 @@ describe("MurmursController", () => {
     });
   });
 
-  it("ストリーム取得では SSE 接続を作り一言トピックに紐付ける", () => {
+  it("ストリーム取得では SSE 接続を立ち上げて `murmur` トピックに紐付ける", () => {
     const { controller, hub } = buildController();
     const response = { on: vi.fn() } as unknown as Response;
 
