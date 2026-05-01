@@ -16,7 +16,7 @@ import { useRoom } from "../store";
  * 送信先ルームに入れない (消失済みやフォーマット違反) ときは missing フラグに倒し レンダー時に notFound を投げて route 直下の not-found に遷移させる
  * それ以外の失敗は Sonner のトーストで伝え レイアウトを揺らさない
  */
-export const usePage = (roomId: RoomId) => {
+export const useEntrance = (roomId: RoomId) => {
   const setRoom = useRoom((state) => state.setRoom);
   const setMe = useRoom((state) => state.setMe);
 

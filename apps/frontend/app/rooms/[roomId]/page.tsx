@@ -6,7 +6,7 @@ import { use } from "react";
 import { BgmStrip } from "@/features/bgm";
 import { HallwayOverlays } from "@/features/hallway";
 import { MurmurBody } from "@/features/murmur";
-import { JoinPage, useLoad, useRoom } from "@/features/room";
+import { Entrance, useLoad, useRoom } from "@/features/room";
 import { useVibe, VibeRow } from "@/features/vibe";
 
 /**
@@ -100,7 +100,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   }
 
   if (!me) {
-    return <JoinPage roomId={branded} />;
+    return <Entrance roomId={branded} />;
   }
 
   return <RoomStage roomId={branded} />;

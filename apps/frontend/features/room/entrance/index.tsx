@@ -6,28 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { Backdrop, Label, Shell } from "../layout";
-import { usePage } from "./use-page";
+import { useEntrance } from "./use-entrance";
 
 /**
- * 既存ルームに名前だけで参加するページ
+ * 既存ルームに名前だけで参加する玄関画面
  * URL を踏んで直接到達した参加者に対し 名前入力のみを求めて cookie セッションを発行する
  */
-export const JoinPage = ({ roomId }: { roomId: RoomId }) => {
-  const page = usePage(roomId);
+export const Entrance = ({ roomId }: { roomId: RoomId }) => {
+  const entrance = useEntrance(roomId);
 
   return (
     <Backdrop>
       <Shell headline="そっと、合流しよう" lede="ひとりだけど、ひとりじゃない">
         <form
-          onSubmit={page.onSubmit}
+          onSubmit={entrance.onSubmit}
           className="flex flex-col gap-5 rounded-xl border border-rule bg-paper/80 p-7 shadow-[0_1px_0_var(--rule),0_20px_40px_-24px_oklch(from_var(--ink)_l_c_h/0.18)] backdrop-blur-sm md:p-8"
         >
           <label htmlFor="member-name" className="flex flex-col gap-2">
             <Label>あなたの名前</Label>
             <Input
               id="member-name"
-              value={page.name}
-              onChange={(event) => page.onChange(event.target.value)}
+              value={entrance.name}
+              onChange={(event) => entrance.onChange(event.target.value)}
               placeholder="ゆみ"
               maxLength={24}
               autoFocus
@@ -37,7 +37,7 @@ export const JoinPage = ({ roomId }: { roomId: RoomId }) => {
           <Button
             type="submit"
             size="lg"
-            disabled={!page.canSubmit}
+            disabled={!entrance.canSubmit}
             className="h-11 rounded-md font-sans text-sm"
           >
             そっと入室する
