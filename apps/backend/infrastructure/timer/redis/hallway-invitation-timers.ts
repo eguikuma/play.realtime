@@ -5,7 +5,8 @@ import type { HallwayInvitationTimers } from "../../../application/hallway/invit
 import type { RedisExpiredListener } from "./expired-listener";
 
 /**
- * SETNX 短期ロックの TTL、`handleExpired` の実処理時間を十分上回り、かつ次回 register の TTL と重ならない値で固定する
+ * SETNX 短期ロックの TTL
+ * `handleExpired` の実処理時間を十分上回り、かつ次回 register の TTL と重ならない値で固定する
  */
 const DONE_LOCK_MS = 5000;
 

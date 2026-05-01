@@ -3,7 +3,8 @@ import type { MemberId, RoomId } from "@play.realtime/contracts";
 import type { VibePresenceGrace } from "../../../application/vibe/presence-grace";
 
 /**
- * Vibe 退室通知の猶予期間、このミリ秒内に同じメンバーの再入室が来れば `Left` を送らずに済ませる
+ * Vibe 退室通知の猶予期間
+ * このミリ秒内に同じメンバーの再入室が来れば `Left` を送らずに済ませる
  */
 const GRACE_MS = 1500;
 

@@ -5,12 +5,14 @@ import type { VibePresenceGrace } from "../../../application/vibe/presence-grace
 import type { RedisExpiredListener } from "./expired-listener";
 
 /**
- * Vibe 退室通知の猶予期間、このミリ秒内に同じメンバーの再入室が来れば `Left` を送らずに済ませる
+ * Vibe 退室通知の猶予期間
+ * このミリ秒内に同じメンバーの再入室が来れば `Left` を送らずに済ませる
  */
 const GRACE_MS = 1500;
 
 /**
- * SETNX 短期ロックの TTL、`handleExpired` の実処理時間を十分上回り、かつ次回 schedule の TTL と重ならない値で固定する
+ * SETNX 短期ロックの TTL
+ * `handleExpired` の実処理時間を十分上回り、かつ次回 schedule の TTL と重ならない値で固定する
  */
 const DONE_LOCK_MS = 5000;
 
@@ -44,7 +46,8 @@ export class RedisVibePresenceGrace implements VibePresenceGrace, OnModuleDestro
    * 指定メンバー宛の TTL key を `SET PX 1500 NX` で発行し、fire callback はローカル Map に持つ
    * 同 key の既存 TTL があれば NX で書き込みを諦める
    * 既存 TTL の expired notification と Map 上書きで semantics は維持される
-   * Redis 障害時はログのみで他処理を止めない fire-and-forget で進める、Map には fire を残しておくため復帰後の同 key 再 schedule で上書き解消する
+   * Redis 障害時はログのみで他処理を止めず fire-and-forget で進める
+   * Map には fire を残しておくため復帰後の同 key 再 schedule で上書き解消する
    */
   schedule(roomId: RoomId, memberId: MemberId, fire: () => void | Promise<void>): void {
     const key = keyOf(roomId, memberId);

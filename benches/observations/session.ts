@@ -36,7 +36,7 @@ async function readCounter(redis: Redis): Promise<number> {
   const match = stats.match(/total_commands_processed:(\d+)/);
   if (!match) {
     throw new Error(
-      "INFO stats に total_commands_processed が含まれない、Upstash プランの制限で INFO サブコマンドが封じられている可能性",
+      "INFO stats に total_commands_processed が含まれない（Upstash プランの制限で INFO サブコマンドが封じられている可能性）",
     );
   }
   const captured = match[1];

@@ -26,7 +26,8 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
 
   /**
    * `HSET` の新規/上書き戻り値と直後の `HVALS` 長を合わせて `isFirst` を確定し、members set への `SADD` は常時発火させて欠落自己修復の余地を残すことで MULTI/EXEC を撤廃する
-   * 並列 save が同一メンバーで交錯しても `HSET` → `HVALS` がクライアント単位で順序保存されるため aggregate 入力の欠落は出ない、`SADD` の二重発火はコスト 1 cmd の無害な再投入に収まる
+   * 並列 save が同一メンバーで交錯しても `HSET` → `HVALS` がクライアント単位で順序保存されるため aggregate 入力の欠落は出ない
+   * `SADD` の二重発火はコスト 1 cmd の無害な再投入に収まる
    */
   async save(
     roomId: RoomId,

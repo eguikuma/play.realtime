@@ -35,7 +35,8 @@ export class CachingRoomRepository implements RoomRepository, OnModuleInit, OnMo
 
   /**
    * cache hit なら即返却、miss なら `inner.find` を 1 回呼び結果が `null` でない時だけ cache に載せる
-   * `null` は cache しない、存在しないルームへの問い合わせは稀でわざわざ negative cache を持つ動機が薄い
+   * `null` は cache しない
+   * 存在しないルームへの問い合わせは稀でわざわざ negative cache を持つ動機が薄い
    */
   async find(id: RoomId): Promise<Room | null> {
     const cached = this.cache.get(id);

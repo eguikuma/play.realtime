@@ -40,7 +40,8 @@ const _Environment = z
      */
     STORAGE_DRIVER: z.enum(["memory", "redis"]).default("memory"),
     /**
-     * Redis 接続 URL、`STORAGE_DRIVER=redis` のときだけ参照される
+     * Redis 接続 URL
+     * `STORAGE_DRIVER=redis` のときだけ参照される
      * ローカル docker compose の場合は `redis://localhost:6379`、Upstash の場合は `rediss://default:<token>@<host>:<port>` を渡す
      */
     REDIS_URL: z.url().optional(),
