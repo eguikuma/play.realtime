@@ -34,7 +34,7 @@ describe.skipIf(!REDIS_URL)("RedisRoomPresence", () => {
     await pubsub.onModuleDestroy();
   });
 
-  it("空から初回の接続で populated を配信する", async () => {
+  it("空から初回の接続で `populated` を配信する", async () => {
     const listener = vi.fn();
     presence.onTransition(listener);
     await settle();
@@ -45,7 +45,7 @@ describe.skipIf(!REDIS_URL)("RedisRoomPresence", () => {
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "populated" });
   });
 
-  it("同じルームの 2 本目の接続では populated を配信しない", async () => {
+  it("同じルームの 2 本目の接続では `populated` を配信しない", async () => {
     presence.register(room);
     await settle();
     const listener = vi.fn();
@@ -58,7 +58,7 @@ describe.skipIf(!REDIS_URL)("RedisRoomPresence", () => {
     expect(listener).not.toHaveBeenCalled();
   });
 
-  it("最終接続の切断で empty を配信する", async () => {
+  it("最終接続の切断で `empty` を配信する", async () => {
     presence.register(room);
     presence.register(room);
     await settle();
@@ -75,7 +75,7 @@ describe.skipIf(!REDIS_URL)("RedisRoomPresence", () => {
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "empty" });
   });
 
-  it("countConnections は現在の総接続数を返す", async () => {
+  it("`countConnections` は現在の総接続数を返す", async () => {
     presence.register(room);
     presence.register(room);
     presence.register(room);
@@ -85,7 +85,7 @@ describe.skipIf(!REDIS_URL)("RedisRoomPresence", () => {
     expect(await presence.countConnections(room)).toBe(2);
   });
 
-  it("空になった後に再び登録すると populated を再配信する", async () => {
+  it("空になった後に再び登録すると `populated` を再配信する", async () => {
     presence.register(room);
     await settle();
     presence.deregister(room);

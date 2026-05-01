@@ -6,7 +6,7 @@ const room = "room-abc-1234" as RoomId;
 const other = "room-abc-zzzz" as RoomId;
 
 describe("InMemoryRoomPresence", () => {
-  it("空から初回の接続で populated を配信する", () => {
+  it("空から初回の接続で `populated` を配信する", () => {
     const presence = new InMemoryRoomPresence();
     const listener = vi.fn();
     presence.onTransition(listener);
@@ -16,7 +16,7 @@ describe("InMemoryRoomPresence", () => {
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "populated" });
   });
 
-  it("同じルームの 2 本目の接続では populated を配信しない", () => {
+  it("同じルームの 2 本目の接続では `populated` を配信しない", () => {
     const presence = new InMemoryRoomPresence();
     const listener = vi.fn();
     presence.register(room);
@@ -27,7 +27,7 @@ describe("InMemoryRoomPresence", () => {
     expect(listener).not.toHaveBeenCalled();
   });
 
-  it("最終接続の切断で empty を配信する", () => {
+  it("最終接続の切断で `empty` を配信する", () => {
     const presence = new InMemoryRoomPresence();
     const listener = vi.fn();
     presence.register(room);
@@ -41,7 +41,7 @@ describe("InMemoryRoomPresence", () => {
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "empty" });
   });
 
-  it("接続数 0 の状態で deregister を呼んでも例外にもイベントにもならない", () => {
+  it("接続数 0 の状態で登録解除を呼んでも例外もイベントも起きない", () => {
     const presence = new InMemoryRoomPresence();
     const listener = vi.fn();
     presence.onTransition(listener);
@@ -65,7 +65,7 @@ describe("InMemoryRoomPresence", () => {
     expect(await presence.countConnections(other)).toBe(1);
   });
 
-  it("空になった後に再び登録すると populated を再配信する", () => {
+  it("空になった後に再び登録すると `populated` を再配信する", () => {
     const presence = new InMemoryRoomPresence();
     const listener = vi.fn();
     presence.register(room);
@@ -103,7 +103,7 @@ describe("InMemoryRoomPresence", () => {
     expect(healthy).toHaveBeenCalledWith({ roomId: room, kind: "populated" });
   });
 
-  it("countConnections は現在の総接続数を返す", async () => {
+  it("`countConnections` は現在の総接続数を返す", async () => {
     const presence = new InMemoryRoomPresence();
     presence.register(room);
     presence.register(room);
