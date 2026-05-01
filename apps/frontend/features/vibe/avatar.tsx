@@ -37,8 +37,8 @@ type Avatar = {
 
 /**
  * Vibe 行に並ぶ 1 人分のアバター
- * 状態に応じて周囲の `ring` による光と頭文字円の呼吸アニメーション、ラベル色、話しかけるボタンの見え方を切り替える
- * 招待可能なときのみ要素全体を `<button>` として扱い、招待不可のときは `<div>` に退避させることでフォーカス可能な操作だけを押せる状態にする
+ * シェル全体は常に `<div>` で、招待は名前下の「話しかける」バッジ単独でしか発火しない構造にして円や名前の誤タップで送信されないようにする
+ * `short` ビューポートでは縦幅を食わないよう、円の右下にアイコンのみの円形ボタンをオーバーレイして招待入口を残す
  */
 export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
   const label = `${name}、${statusSr[state]}`;
@@ -51,13 +51,11 @@ export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
 
   const canInvite = onInvite !== null && !disabled;
 
-  const shellClass = cn(
-    "group relative flex shrink-0 flex-col items-center gap-2 short:gap-1 rounded-xl px-2 pt-1 short:pt-0.5 pb-2 short:pb-1 outline-none transition-colors",
-    canInvite && "focus-visible:ring-2 focus-visible:ring-lamp/50",
-  );
+  const badgeShape =
+    "mt-2 short:hidden inline-flex items-center gap-1 whitespace-nowrap rounded-pill border px-2.5 py-1 font-medium font-sans text-[11px] transition-colors";
 
-  const content = (
-    <>
+  return (
+    <div className="group relative flex w-full flex-col items-center gap-2 short:gap-1 rounded-xl px-2 pt-1 short:pt-0.5 pb-2 short:pb-1">
       <span className="sr-only">{label}</span>
       <span
         className={cn(
@@ -74,9 +72,19 @@ export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
             className="absolute top-0 right-0 short:size-2 size-3 animate-pulse-dot rounded-full bg-lamp ring-2 ring-paper"
           />
         )}
+        {canInvite && onInvite && (
+          <button
+            type="button"
+            onClick={onInvite}
+            aria-label={`${name}に話しかける`}
+            className="absolute -right-0.5 -bottom-0.5 short:inline-flex hidden items-center justify-center rounded-full border border-rule bg-paper p-1 text-ink-soft shadow-[0_3px_10px_-6px_oklch(from_var(--ink)_l_c_h/0.35)] transition-colors before:absolute before:inset-[-0.5rem] before:content-[''] hover:border-lamp/60 hover:bg-ink hover:text-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lamp/50"
+          >
+            <MessageCircleHeart className="size-3" />
+          </button>
+        )}
       </span>
       <span
-        className="max-w-[12ch] truncate font-medium font-sans short:text-[11px] text-[13px] text-ink"
+        className="max-w-full truncate font-medium font-sans short:text-[11px] text-[13px] text-ink"
         title={name}
       >
         {name}
@@ -95,33 +103,31 @@ export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
       >
         {statusLabel[state]}
       </span>
-      <span
-        aria-hidden={!canInvite}
-        className={cn(
-          "mt-1 inline-flex short:hidden items-center gap-1 whitespace-nowrap rounded-pill border px-2.5 py-0.5 font-medium font-sans text-[11px] transition-colors",
-          canInvite
-            ? "border-rule bg-paper text-ink-soft shadow-[0_3px_10px_-6px_oklch(from_var(--ink)_l_c_h/0.35)] group-hover:border-lamp/60 group-hover:bg-ink group-hover:text-paper"
-            : "pointer-events-none select-none border-transparent bg-transparent text-transparent",
-        )}
-      >
-        <MessageCircleHeart className={cn("size-3", !canInvite && "invisible")} />
-        話しかける
-      </span>
-    </>
+      {canInvite && onInvite ? (
+        <button
+          type="button"
+          onClick={onInvite}
+          aria-label={`${name}に話しかける`}
+          className={cn(
+            badgeShape,
+            "border-rule bg-paper text-ink-soft shadow-[0_3px_10px_-6px_oklch(from_var(--ink)_l_c_h/0.35)] hover:border-lamp/60 hover:bg-ink hover:text-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lamp/50",
+          )}
+        >
+          <MessageCircleHeart className="size-3" />
+          話しかける
+        </button>
+      ) : (
+        <span
+          aria-hidden
+          className={cn(
+            badgeShape,
+            "pointer-events-none select-none border-transparent bg-transparent text-transparent",
+          )}
+        >
+          <MessageCircleHeart className="invisible size-3" />
+          話しかける
+        </span>
+      )}
+    </div>
   );
-
-  if (canInvite && onInvite) {
-    return (
-      <button
-        type="button"
-        onClick={onInvite}
-        aria-label={`${name}に話しかける`}
-        className={shellClass}
-      >
-        {content}
-      </button>
-    );
-  }
-
-  return <div className={shellClass}>{content}</div>;
 };
