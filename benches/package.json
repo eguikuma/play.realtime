@@ -16,6 +16,7 @@
     "snapshot:no-hexists": "tsx variants/no-hexists.ts",
     "snapshot:room-cache": "tsx variants/room-cache.ts",
     "snapshot:no-vibe-multi": "tsx variants/no-vibe-multi.ts",
+    "snapshot:with-bgm-cycle": "tsx variants/with-bgm-cycle.ts",
     "verify": "tsc --noEmit"
   },
   "dependencies": {

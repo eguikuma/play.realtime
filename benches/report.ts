@@ -86,7 +86,7 @@ const formatSnapshot = (snapshot: CycleSnapshot): string => {
     "",
     `- 計測時間: ${seconds} 秒`,
     `- Redis コマンド合計: ${formatNumber(snapshot.tally.total)}`,
-    `- knobs: visibilitySchedule=${scheduleWindows}区間/${scheduleSeconds}s murmurRounds=${snapshot.knobs.murmurRounds} hallwayMessageRounds=${snapshot.knobs.hallwayMessageRounds} graceMs=${snapshot.knobs.graceMs}`,
+    `- knobs: visibilitySchedule=${scheduleWindows}区間/${scheduleSeconds}s murmurRounds=${snapshot.knobs.murmurRounds} hallwayMessageRounds=${snapshot.knobs.hallwayMessageRounds} bgmRounds=${snapshot.knobs.bgmRounds ?? 0} graceMs=${snapshot.knobs.graceMs}`,
     "",
     "#### コマンド種別",
     "",
