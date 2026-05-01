@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { Dot } from "./dot";
+import { Dot } from "@/components/dot";
 
 type Outgoing = {
   /** 呼んでいる相手の表示名 */

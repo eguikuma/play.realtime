@@ -1,6 +1,6 @@
 "use client";
 
-import { Dot } from "../dot";
+import { Dot } from "@/components/dot";
 import { Countdown } from "./countdown";
 import { INVITATION_TTL_MS } from "./ttl";
 

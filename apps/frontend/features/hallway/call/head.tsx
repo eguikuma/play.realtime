@@ -1,8 +1,8 @@
 "use client";
 
 import { ChevronDown, PhoneOff } from "lucide-react";
+import { Dot } from "@/components/dot";
 import { Monogram } from "@/components/monogram";
-import { Dot } from "../dot";
 
 type Head = {
   /** 通話相手の表示名、頭文字アバターと名前ラベルに使う */

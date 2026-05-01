@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageCircleHeart } from "lucide-react";
+import { Dot } from "@/components/dot";
 import { cn } from "@/libraries/classname";
 
 /**
@@ -66,10 +67,7 @@ export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
       >
         {name.slice(0, 1)}
         {state === "calling" && (
-          <span
-            aria-hidden
-            className="absolute top-0 right-0 short:size-2 size-3 animate-pulse-dot rounded-full bg-lamp ring-2 ring-paper"
-          />
+          <Dot className="absolute top-0 right-0 short:size-2 size-3 ring-2 ring-paper" />
         )}
         {canInvite && onInvite && (
           <button
