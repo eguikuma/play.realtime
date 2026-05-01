@@ -46,7 +46,11 @@ export const HallwayOverlays = ({ roomId }: { roomId: RoomId }) => {
 
       {overlays.call && (
         <div className="pointer-events-none fixed inset-x-4 bottom-6 z-50 md:inset-x-0">
-          <Call callId={overlays.call.id} peerName={overlays.call.peerName} />
+          <Call
+            key={overlays.call.id}
+            callId={overlays.call.id}
+            peerName={overlays.call.peerName}
+          />
         </div>
       )}
     </>

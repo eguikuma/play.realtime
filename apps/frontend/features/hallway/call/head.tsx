@@ -1,6 +1,6 @@
 "use client";
 
-import { PhoneOff } from "lucide-react";
+import { ChevronDown, PhoneOff } from "lucide-react";
 
 /**
  * 通話ウィンドウ上部に渡す入力
@@ -8,13 +8,14 @@ import { PhoneOff } from "lucide-react";
 type Head = {
   peerName: string;
   onLeave: () => void;
+  onMinimize: () => void;
 };
 
 /**
  * 通話ウィンドウの上部の帯
- * 相手の頭文字と名前 そして終了ボタンを配置する
+ * 相手の頭文字と名前 しまうボタン そして終了ボタンを配置する
  */
-export const Head = ({ peerName, onLeave }: Head) => (
+export const Head = ({ peerName, onLeave, onMinimize }: Head) => (
   <header className="flex items-center gap-3 border-rule/70 border-b px-4 py-3">
     <span
       className="flex size-9 shrink-0 items-center justify-center rounded-full bg-paper-2 font-bold font-display text-ink text-sm"
@@ -32,6 +33,14 @@ export const Head = ({ peerName, onLeave }: Head) => (
         話してる
       </span>
     </div>
+    <button
+      type="button"
+      onClick={onMinimize}
+      aria-label="通話をしまう"
+      className="inline-flex size-8 items-center justify-center rounded-full border border-rule text-ink-mute transition-colors hover:bg-paper-2 hover:text-ink"
+    >
+      <ChevronDown className="size-4" />
+    </button>
     <button
       type="button"
       onClick={onLeave}
