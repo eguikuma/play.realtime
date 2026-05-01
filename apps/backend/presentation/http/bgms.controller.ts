@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Inject, Param, Post, Res, UseGuards } from "@nestjs/common";
-import { type BgmState, type MemberId, RoomId, SetBgmRequest } from "@play.realtime/contracts";
+import { type BgmState, RoomId, SetBgmRequest } from "@play.realtime/contracts";
 import type { Response } from "express";
 import { GetBgmSnapshot } from "../../application/bgm/get-snapshot.usecase";
 import { SetBgm } from "../../application/bgm/set.usecase";
@@ -38,7 +38,7 @@ export class BgmsController {
   @Get("stream")
   stream(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
-    @CurrentMember() member: { id: MemberId },
+    @CurrentMember() member: CurrentMember,
     @Res() response: Response,
   ): void {
     const connectionId = this.ids.connection();
@@ -63,7 +63,7 @@ export class BgmsController {
   async set(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
     @Body(new ZodValidationPipe(SetBgmRequest)) body: SetBgmRequest,
-    @CurrentMember() member: { id: MemberId },
+    @CurrentMember() member: CurrentMember,
   ): Promise<BgmState> {
     return this.setter.execute({
       roomId,
@@ -79,7 +79,7 @@ export class BgmsController {
   @Post("stop")
   async stop(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
-    @CurrentMember() member: { id: MemberId },
+    @CurrentMember() member: CurrentMember,
   ): Promise<BgmState> {
     return this.stopper.execute({ roomId, memberId: member.id, now: new Date() });
   }
@@ -90,7 +90,7 @@ export class BgmsController {
   @Post("undo")
   async undo(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
-    @CurrentMember() member: { id: MemberId },
+    @CurrentMember() member: CurrentMember,
   ): Promise<BgmState> {
     return this.undoer.execute({ roomId, memberId: member.id, now: new Date() });
   }

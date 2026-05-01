@@ -73,7 +73,7 @@ export class RoomsController {
   @UseGuards(RequireMember)
   async me(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
-    @CurrentMember() current: { id: MemberId },
+    @CurrentMember() current: CurrentMember,
   ): Promise<RoomMembership> {
     const { room, member } = await this.getMembership.execute({
       roomId,
@@ -100,7 +100,7 @@ export class RoomsController {
   @UseGuards(RequireMember)
   async leave(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
-    @CurrentMember() current: { id: MemberId },
+    @CurrentMember() current: CurrentMember,
   ): Promise<void> {
     await this.leaveRoom.execute({ roomId, memberId: current.id });
   }

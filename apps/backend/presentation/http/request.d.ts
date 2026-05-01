@@ -1,11 +1,9 @@
-import type { MemberId } from "@play.realtime/contracts";
+import type { CurrentMember } from "../../shared/decorators/current-member.decorator";
 
 declare global {
   namespace Express {
     interface Request {
-      member?: {
-        id: MemberId;
-      };
+      member?: CurrentMember;
     }
   }
 }

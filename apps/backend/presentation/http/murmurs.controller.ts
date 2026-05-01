@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Inject, Param, Post, Res, UseGuards } from "@nestjs/common";
-import { type MemberId, type Murmur, PostMurmurRequest, RoomId } from "@play.realtime/contracts";
+import { type Murmur, PostMurmurRequest, RoomId } from "@play.realtime/contracts";
 import type { Response } from "express";
 import { GetMurmurSnapshot } from "../../application/murmur/get-snapshot.usecase";
 import { PostMurmur } from "../../application/murmur/post.usecase";
@@ -33,7 +33,7 @@ export class MurmursController {
   async create(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
     @Body(new ZodValidationPipe(PostMurmurRequest)) body: PostMurmurRequest,
-    @CurrentMember() member: { id: MemberId },
+    @CurrentMember() member: CurrentMember,
   ): Promise<Murmur> {
     return this.posting.execute({
       roomId,
@@ -50,7 +50,7 @@ export class MurmursController {
   @Get("stream")
   stream(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
-    @CurrentMember() member: { id: MemberId },
+    @CurrentMember() member: CurrentMember,
     @Res() response: Response,
   ): void {
     const connection = new SseConnection(this.ids.connection(), member.id, roomId, response);

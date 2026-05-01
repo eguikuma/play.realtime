@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Inject, Param, Post, Res, UseGuards } from "@nestjs/common";
-import { ChangeVibeStatusRequest, type MemberId, RoomId } from "@play.realtime/contracts";
+import { ChangeVibeStatusRequest, RoomId } from "@play.realtime/contracts";
 import type { Response } from "express";
 import { GetRoomMembership } from "../../application/room/get-membership.usecase";
 import { RoomPresence } from "../../application/room/presence";
@@ -40,7 +40,7 @@ export class VibesController {
   @Get("stream")
   stream(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
-    @CurrentMember() member: { id: MemberId },
+    @CurrentMember() member: CurrentMember,
     @Res() response: Response,
   ): void {
     const connectionId = this.ids.connection();
@@ -72,7 +72,7 @@ export class VibesController {
   async change(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
     @Body(new ZodValidationPipe(ChangeVibeStatusRequest)) body: ChangeVibeStatusRequest,
-    @CurrentMember() member: { id: MemberId },
+    @CurrentMember() member: CurrentMember,
   ): Promise<void> {
     await this.changeStatus.execute({
       roomId,
