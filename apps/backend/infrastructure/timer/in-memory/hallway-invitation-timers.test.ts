@@ -15,7 +15,7 @@ describe("InMemoryHallwayInvitationTimers", () => {
     const timers = new InMemoryHallwayInvitationTimers();
     const callback = vi.fn();
 
-    timers.register("i1" as InvitationId, 1_000, callback);
+    timers.schedule("i1" as InvitationId, 1_000, callback);
     vi.advanceTimersByTime(1_000);
 
     expect(callback).toHaveBeenCalledOnce();
@@ -25,7 +25,7 @@ describe("InMemoryHallwayInvitationTimers", () => {
     const timers = new InMemoryHallwayInvitationTimers();
     const callback = vi.fn();
 
-    timers.register("i1" as InvitationId, 1_000, callback);
+    timers.schedule("i1" as InvitationId, 1_000, callback);
     timers.cancel("i1" as InvitationId);
     vi.advanceTimersByTime(5_000);
 

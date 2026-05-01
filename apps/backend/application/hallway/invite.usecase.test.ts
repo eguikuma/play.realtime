@@ -67,8 +67,8 @@ const buildIds = (invitationId = "invitation"): NanoidIdGenerator =>
     invitation: vi.fn(() => invitationId as InvitationId),
   }) as unknown as NanoidIdGenerator;
 
-const buildTimers = (register = vi.fn()): HallwayInvitationTimers =>
-  ({ register, cancel: vi.fn() }) as unknown as HallwayInvitationTimers;
+const buildTimers = (schedule = vi.fn()): HallwayInvitationTimers =>
+  ({ schedule, cancel: vi.fn() }) as unknown as HallwayInvitationTimers;
 
 const buildExpirer = (): ExpireHallwayInvitation =>
   ({ execute: vi.fn() }) as unknown as ExpireHallwayInvitation;
@@ -109,19 +109,19 @@ describe("InviteHallway", () => {
   });
 
   it("10 秒後に期限切れが発火するよう HallwayInvitationTimers に登録する", async () => {
-    const register = vi.fn();
+    const schedule = vi.fn();
     const usecase = new InviteHallway(
       buildHallway(),
       buildVibes(),
       buildBroadcaster(),
       buildIds(),
-      buildTimers(register),
+      buildTimers(schedule),
       buildExpirer(),
     );
 
     await usecase.execute({ roomId, inviterId, inviteeId });
 
-    expect(register).toHaveBeenCalledWith("invitation", 10_000, expect.any(Function));
+    expect(schedule).toHaveBeenCalledWith("invitation", 10_000, expect.any(Function));
   });
 
   it("自分自身を招待すると SelfInviteNotAllowed を投げる", async () => {

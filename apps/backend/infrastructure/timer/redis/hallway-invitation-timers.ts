@@ -43,7 +43,7 @@ export class RedisHallwayInvitationTimers implements HallwayInvitationTimers, On
    * callback はローカル Map に持ち、オーナー印と同期させる
    * Redis 障害時はログのみで他処理を止めず fire-and-forget で進める
    */
-  register(id: InvitationId, delayMs: number, callback: () => void): void {
+  schedule(id: InvitationId, delayMs: number, callback: () => void): void {
     const key = keyOf(id);
     const ownerKey = ownerKeyOf(key);
     this.callbacks.set(key, callback);

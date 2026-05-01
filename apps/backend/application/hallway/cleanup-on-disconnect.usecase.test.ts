@@ -45,7 +45,7 @@ const buildBroadcaster = (
   }) as unknown as HallwayBroadcaster;
 
 const buildTimers = (cancel = vi.fn()): HallwayInvitationTimers =>
-  ({ cancel, register: vi.fn() }) as unknown as HallwayInvitationTimers;
+  ({ cancel, schedule: vi.fn() }) as unknown as HallwayInvitationTimers;
 
 describe("CleanupHallwayOnDisconnect", () => {
   it("発信中の招待があれば InvitationEnded `cancelled` をルーム全員に配信する", async () => {

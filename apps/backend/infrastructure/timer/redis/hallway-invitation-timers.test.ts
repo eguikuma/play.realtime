@@ -32,7 +32,7 @@ describe.skipIf(!REDIS_URL)("RedisHallwayInvitationTimers", () => {
 
   it("登録した遅延時間の経過後にコールバックが呼ばれる", async () => {
     const callback = vi.fn();
-    timers.register(newInvitationId(), 500, callback);
+    timers.schedule(newInvitationId(), 500, callback);
 
     await sleep(1200);
 
@@ -42,7 +42,7 @@ describe.skipIf(!REDIS_URL)("RedisHallwayInvitationTimers", () => {
   it("取り消すとコールバックは呼ばれない", async () => {
     const id = newInvitationId();
     const callback = vi.fn();
-    timers.register(id, 500, callback);
+    timers.schedule(id, 500, callback);
     timers.cancel(id);
 
     await sleep(1200);
@@ -64,7 +64,7 @@ describe.skipIf(!REDIS_URL)("RedisHallwayInvitationTimers", () => {
       const callbackA = vi.fn();
       const callbackB = vi.fn();
 
-      timers.register(id, 500, callbackA);
+      timers.schedule(id, 500, callbackA);
       otherTimers.register(id, 500, callbackB);
 
       await sleep(1200);
@@ -85,7 +85,7 @@ describe.skipIf(!REDIS_URL)("RedisHallwayInvitationTimers", () => {
       const id = newInvitationId();
       const callback = vi.fn();
 
-      timers.register(id, 500, callback);
+      timers.schedule(id, 500, callback);
 
       await sleep(1200);
 

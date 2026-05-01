@@ -4,14 +4,14 @@ import type { HallwayInvitationTimers } from "../../../application/hallway/invit
 
 /**
  * `HallwayInvitationTimers` port の in-memory 実装
- * 単一プロセスの `Map` で招待 ID 別タイマーを保持し、`register` で `setTimeout`、`cancel` で `clearTimeout` する
+ * 単一プロセスの `Map` で招待 ID 別タイマーを保持し、`schedule` で `setTimeout`、`cancel` で `clearTimeout` する
  * 複数 backend 構成では cross-instance 同期されないため、その場合は `infrastructure/timer/redis` 側の実装を使う
  */
 @Injectable()
 export class InMemoryHallwayInvitationTimers implements HallwayInvitationTimers {
   private readonly timers = new Map<InvitationId, NodeJS.Timeout>();
 
-  register(id: InvitationId, delayMs: number, callback: () => void): void {
+  schedule(id: InvitationId, delayMs: number, callback: () => void): void {
     const timeout = setTimeout(() => {
       this.timers.delete(id);
       callback();

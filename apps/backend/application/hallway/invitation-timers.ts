@@ -7,10 +7,10 @@ import type { InvitationId } from "@play.realtime/contracts";
  */
 export type HallwayInvitationTimers = {
   /**
-   * 失効タイマーを登録する
+   * 失効タイマーを開始する
    * 経過後にコールバックが呼ばれ、内部状態からも自動で削除される
    */
-  register: (id: InvitationId, delayMs: number, callback: () => void) => void;
+  schedule: (id: InvitationId, delayMs: number, callback: () => void) => void;
   /**
    * 稼働中のタイマーを取り消す
    * 既に発火済み、または未登録の場合は何もしない

@@ -53,7 +53,7 @@ const buildIds = (): NanoidIdGenerator =>
   ({ call: vi.fn(() => callId) }) as unknown as NanoidIdGenerator;
 
 const buildTimers = (cancel = vi.fn()): HallwayInvitationTimers =>
-  ({ cancel, register: vi.fn() }) as unknown as HallwayInvitationTimers;
+  ({ cancel, schedule: vi.fn() }) as unknown as HallwayInvitationTimers;
 
 describe("AcceptHallwayInvitation", () => {
   beforeEach(() => {

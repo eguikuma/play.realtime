@@ -60,7 +60,7 @@ export class InviteHallway {
     };
     await this.hallway.saveInvitation(invitation);
 
-    this.timers.register(invitation.id, INVITATION_TTL_MS, () => {
+    this.timers.schedule(invitation.id, INVITATION_TTL_MS, () => {
       void this.expirer.execute({ roomId: input.roomId, invitationId: invitation.id });
     });
 

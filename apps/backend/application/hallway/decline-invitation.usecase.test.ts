@@ -47,7 +47,7 @@ const buildBroadcaster = (
   }) as unknown as HallwayBroadcaster;
 
 const buildTimers = (cancel = vi.fn()): HallwayInvitationTimers =>
-  ({ cancel, register: vi.fn() }) as unknown as HallwayInvitationTimers;
+  ({ cancel, schedule: vi.fn() }) as unknown as HallwayInvitationTimers;
 
 describe("DeclineHallwayInvitation", () => {
   it("招待先が拒否すると招待を削除し InvitationEnded `declined` をルーム全員に配信する", async () => {
