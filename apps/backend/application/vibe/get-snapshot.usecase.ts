@@ -20,6 +20,7 @@ export class GetVibeSnapshot {
     if (!room) {
       throw new RoomNotFound(input.roomId);
     }
+
     const statuses = await this.vibes.snapshot(input.roomId);
     return { members: room.members, statuses };
   }

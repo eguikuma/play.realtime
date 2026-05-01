@@ -30,6 +30,7 @@ export class NotifyVibeLeft {
       input.memberId,
       input.connectionId,
     );
+
     if (isLast || aggregated === null) {
       this.grace.schedule(input.roomId, input.memberId, async () => {
         await this.broadcaster.left(input.roomId, {
@@ -38,6 +39,7 @@ export class NotifyVibeLeft {
       });
       return;
     }
+
     await this.broadcaster.updated(input.roomId, {
       memberId: input.memberId,
       status: aggregated,

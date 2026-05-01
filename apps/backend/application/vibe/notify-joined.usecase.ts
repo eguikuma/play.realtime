@@ -33,6 +33,7 @@ export class NotifyVibeJoined {
       "present",
     );
     const rejoined = this.grace.cancel(input.roomId, input.member.id);
+
     if (isFirst && !rejoined) {
       await this.broadcaster.joined(input.roomId, {
         member: input.member,
@@ -40,6 +41,7 @@ export class NotifyVibeJoined {
       });
       return;
     }
+
     await this.broadcaster.updated(input.roomId, {
       memberId: input.member.id,
       status: aggregated,

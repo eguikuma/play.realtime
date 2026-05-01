@@ -30,6 +30,7 @@ export class ChangeVibeStatus {
     if (!room) {
       throw new RoomNotFound(input.roomId);
     }
+
     const { updated, aggregated } = await this.vibes.update(
       input.roomId,
       input.memberId,
@@ -39,6 +40,7 @@ export class ChangeVibeStatus {
     if (!updated || aggregated === null) {
       return;
     }
+
     await this.broadcaster.updated(input.roomId, {
       memberId: input.memberId,
       status: aggregated,

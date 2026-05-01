@@ -27,6 +27,7 @@ export class VibePresenceGrace {
     if (existing !== undefined) {
       clearTimeout(existing);
     }
+
     const timeout = setTimeout(() => {
       this.timers.delete(key);
       void fire();
@@ -44,6 +45,7 @@ export class VibePresenceGrace {
     if (timeout === undefined) {
       return false;
     }
+
     clearTimeout(timeout);
     this.timers.delete(key);
     return true;
