@@ -1,8 +1,9 @@
 "use client";
 
-import type { RoomId } from "@play.realtime/contracts";
+import type { MemberId, RoomId } from "@play.realtime/contracts";
+import { useMemo } from "react";
 import { BgmStrip } from "@/features/bgm";
-import { HallwayOverlays } from "@/features/hallway";
+import { HallwayOverlays, useHallway } from "@/features/hallway";
 import { Compose, MurmurBody } from "@/features/murmur";
 import { useVibe, VibeRow } from "@/features/vibe";
 import { useSession } from "@/stores/session";
@@ -21,11 +22,40 @@ type Stage = {
  * 行 1 から 4 (header / BGM / Vibe / Compose) を auto 高、行 5 (MurmurBody) のみ `minmax(0,1fr)` で可変にして、その内側だけがスクロールする
  * これにより flex-1 の連鎖で起きていた「静的子の合計がビューポートを超えると ol が 0 px に潰れる/外に溢れる」問題を構造的に避ける
  * Hallway の招待と通話オーバーレイは fixed 配置でレイアウトと独立しており、Grid 化の影響を受けない
+ * Hallway 由来の取り込み中、通話中、招待送信は composition feature の責務としてここで集計し、`VibeRow` に props で渡す
  */
 export const RoomStage = ({ roomId }: Stage) => {
   const me = useSession((state) => state.me);
   const presentCount = useVibe((state) => Object.keys(state.statuses).length);
+  const invitations = useHallway((state) => state.invitations);
+  const calls = useHallway((state) => state.calls);
+  const send = useHallway((state) => state.send);
   useLeave(roomId);
+
+  const busyMemberIds = useMemo(() => {
+    const set = new Set<MemberId>();
+    for (const invitation of Object.values(invitations)) {
+      set.add(invitation.fromMemberId);
+      set.add(invitation.toMemberId);
+    }
+    for (const call of Object.values(calls)) {
+      for (const id of call.memberIds) set.add(id);
+    }
+    return set;
+  }, [invitations, calls]);
+
+  const callingMemberIds = useMemo(() => {
+    const set = new Set<MemberId>();
+    for (const call of Object.values(calls)) {
+      for (const id of call.memberIds) set.add(id);
+    }
+    return set;
+  }, [calls]);
+
+  const invite = useMemo(
+    () => (send ? (memberId: MemberId) => send("Invite", { inviteeId: memberId }) : null),
+    [send],
+  );
 
   return (
     <div className="relative h-dvh overflow-hidden">
@@ -49,7 +79,12 @@ export const RoomStage = ({ roomId }: Stage) => {
 
         <BgmStrip roomId={roomId} />
 
-        <VibeRow roomId={roomId} />
+        <VibeRow
+          roomId={roomId}
+          busyMemberIds={busyMemberIds}
+          callingMemberIds={callingMemberIds}
+          invite={invite}
+        />
 
         <Compose roomId={roomId} />
 

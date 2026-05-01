@@ -1,6 +1,6 @@
 "use client";
 
-import type { RoomId } from "@play.realtime/contracts";
+import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { Avatar } from "../avatar";
 import { Heading } from "./heading";
 import { useRow } from "./use-row";
@@ -8,14 +8,21 @@ import { useRow } from "./use-row";
 type VibeRow = {
   /** 表示対象のルーム ID、SSE 購読と可視状態送信の宛先に使う */
   roomId: RoomId;
+  /** 招待や通話で取り込み中のメンバー ID 集合、composition feature が `Hallway` 状態から組み立てて渡す */
+  busyMemberIds: Set<MemberId>;
+  /** 通話中のメンバー ID 集合、avatar の `calling` 状態判定に使う */
+  callingMemberIds: Set<MemberId>;
+  /** 招待コマンドの送信経路、`null` のときは送信不能としてボタンを出さない */
+  invite: ((memberId: MemberId) => void) | null;
 };
 
 /**
  * ルーム画面の上部に置くメンバー在籍ビュー
  * Vibe 購読で集まった各メンバーの状態をアバター行として並べ、招待可能な相手には話しかけるボタンを表示する
+ * 招待や通話の状態は Hallway 由来なので、composition feature (`RoomStage`) が集計して props で注入する
  */
-export const VibeRow = ({ roomId }: VibeRow) => {
-  const row = useRow(roomId);
+export const VibeRow = ({ roomId, busyMemberIds, callingMemberIds, invite }: VibeRow) => {
+  const row = useRow({ roomId, busyMemberIds, callingMemberIds, invite });
 
   return (
     <section className="flex flex-col gap-3 md:gap-4">
