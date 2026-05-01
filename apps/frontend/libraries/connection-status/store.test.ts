@@ -12,7 +12,7 @@ describe("useConnectionStatus", () => {
     vi.useRealTimers();
   });
 
-  it("初期状態では 4 鍵すべてが closed で since が同一時刻で埋まる", () => {
+  it("初期状態では 4 つの全接続が `closed` で `since` が同一時刻になる", () => {
     const statuses = useConnectionStatus.getState().statuses;
     const now = Date.now();
     expect(statuses["sse:vibe"]).toEqual({ state: "closed", since: now });
@@ -21,7 +21,7 @@ describe("useConnectionStatus", () => {
     expect(statuses["ws:hallway"]).toEqual({ state: "closed", since: now });
   });
 
-  it("setStatus で状態が変わると since が現在時刻に更新される", () => {
+  it("`setStatus` で状態が変わると `since` が現在時刻に更新される", () => {
     vi.advanceTimersByTime(5_000);
     useConnectionStatus.getState().setStatus("sse:vibe", "open");
 
@@ -30,7 +30,7 @@ describe("useConnectionStatus", () => {
     expect(status.since).toBe(new Date("2026-04-23T00:00:05Z").getTime());
   });
 
-  it("同じ状態を連続で流し込んでも since は維持される", () => {
+  it("同じ状態を連続で `setStatus` しても `since` は維持される", () => {
     vi.advanceTimersByTime(1_000);
     useConnectionStatus.getState().setStatus("ws:hallway", "error");
     const first = useConnectionStatus.getState().statuses["ws:hallway"].since;
@@ -42,7 +42,7 @@ describe("useConnectionStatus", () => {
     expect(second).toBe(first);
   });
 
-  it("reset で全鍵が closed に戻り since も揃う", () => {
+  it("`reset` で全接続が `closed` に戻り `since` も揃う", () => {
     useConnectionStatus.getState().setStatus("sse:vibe", "open");
     useConnectionStatus.getState().setStatus("ws:hallway", "error");
 
