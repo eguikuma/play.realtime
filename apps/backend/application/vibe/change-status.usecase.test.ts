@@ -24,7 +24,8 @@ const buildRoom = (): Room =>
   });
 
 const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => ({
-  save: vi.fn(async () => ({ isFirst: false, aggregated: "focused" as VibeStatus })),
+  save: vi.fn(),
+  update: vi.fn(async () => ({ updated: true, aggregated: "focused" as VibeStatus })),
   delete: vi.fn(),
   snapshot: vi.fn(),
   get: vi.fn(),
@@ -49,24 +50,44 @@ describe("ChangeVibeStatus", () => {
     ).rejects.toBeInstanceOf(RoomNotFound);
   });
 
-  it("接続単位でステータスを保存し集約結果を Update として購読者全員に配信する", async () => {
+  it("既存接続のステータスを書き換え 集約結果を Update として購読者全員に配信する", async () => {
     const rooms = {
       find: vi.fn(async () => buildRoom()),
       save: vi.fn(),
       remove: vi.fn(),
     } as RoomRepository;
     const vibes = buildVibes({
-      save: vi.fn(async () => ({ isFirst: false, aggregated: "present" as VibeStatus })),
+      update: vi.fn(async () => ({ updated: true, aggregated: "present" as VibeStatus })),
     });
     const broadcast = vi.fn();
     const usecase = new ChangeVibeStatus(rooms, vibes, buildHub(broadcast));
 
     await usecase.execute({ roomId, memberId, connectionId, status: "focused" });
 
-    expect(vibes.save).toHaveBeenCalledWith(roomId, memberId, connectionId, "focused");
+    expect(vibes.update).toHaveBeenCalledWith(roomId, memberId, connectionId, "focused");
+    expect(vibes.save).not.toHaveBeenCalled();
     expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
       memberId,
       status: "present",
     });
+  });
+
+  it("既に閉じられた接続への遅延 POST は 何も書き込まず配信もしない", async () => {
+    const rooms = {
+      find: vi.fn(async () => buildRoom()),
+      save: vi.fn(),
+      remove: vi.fn(),
+    } as RoomRepository;
+    const vibes = buildVibes({
+      update: vi.fn(async () => ({ updated: false, aggregated: null })),
+    });
+    const broadcast = vi.fn();
+    const usecase = new ChangeVibeStatus(rooms, vibes, buildHub(broadcast));
+
+    await usecase.execute({ roomId, memberId, connectionId, status: "focused" });
+
+    expect(vibes.update).toHaveBeenCalledWith(roomId, memberId, connectionId, "focused");
+    expect(vibes.save).not.toHaveBeenCalled();
+    expect(broadcast).not.toHaveBeenCalled();
   });
 });

@@ -21,8 +21,10 @@ export class ChangeVibeStatus {
   ) {}
 
   /**
-   * ルームの検証から始まり 接続単位での状態保存 集約後の配信の順で更新する
+   * ルームの検証から始まり 既存接続に対する状態更新 集約後の配信の順で進める
    * ルームが存在しなければ `RoomNotFound` を投げる
+   * 対象接続が既に閉じられて台帳から消えていた場合は 復活させずに何もしない
+   * これは SSE の onClose と POST の到着順が逆転した際に 削除済み接続が `update` で復活して他メンバーの画面に「消えないユーザー」として残り続ける事故を避けるため
    */
   async execute(input: {
     roomId: RoomId;
@@ -34,12 +36,15 @@ export class ChangeVibeStatus {
     if (!room) {
       throw new RoomNotFound(input.roomId);
     }
-    const { aggregated } = await this.vibes.save(
+    const { updated, aggregated } = await this.vibes.update(
       input.roomId,
       input.memberId,
       input.connectionId,
       input.status,
     );
+    if (!updated || aggregated === null) {
+      return;
+    }
     await this.hub.broadcast(topic(input.roomId), "Update", {
       memberId: input.memberId,
       status: aggregated,
