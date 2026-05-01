@@ -12,11 +12,13 @@ const setVisibility = (state: "visible" | "hidden") => {
 
 describe("useVisibility", () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     setVisibility("visible");
   });
 
   afterEach(() => {
     setVisibility("visible");
+    vi.useRealTimers();
   });
 
   it("`enabled` が `false` なら `onChange` を呼ばない", () => {
@@ -25,6 +27,7 @@ describe("useVisibility", () => {
 
     act(() => {
       setVisibility("hidden");
+      vi.advanceTimersByTime(8_000);
     });
 
     expect(onChange).not.toHaveBeenCalled();
@@ -53,11 +56,13 @@ describe("useVisibility", () => {
 
     act(() => {
       setVisibility("hidden");
+      vi.advanceTimersByTime(8_000);
     });
     expect(onChange).toHaveBeenLastCalledWith("focused");
 
     act(() => {
       setVisibility("visible");
+      vi.advanceTimersByTime(8_000);
     });
     expect(onChange).toHaveBeenLastCalledWith("present");
   });
@@ -71,6 +76,7 @@ describe("useVisibility", () => {
     act(() => {
       setVisibility("visible");
       setVisibility("visible");
+      vi.advanceTimersByTime(8_000);
     });
 
     expect(onChange).not.toHaveBeenCalled();
@@ -86,6 +92,81 @@ describe("useVisibility", () => {
 
     act(() => {
       setVisibility("hidden");
+      vi.advanceTimersByTime(8_000);
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("デバウンス窓内の `visible` → `hidden` → `visible` フリッカは通知されない", () => {
+    setVisibility("visible");
+    const onChange = vi.fn();
+    renderHook(() => useVisibility({ enabled: true, onChange }));
+    onChange.mockClear();
+
+    act(() => {
+      setVisibility("hidden");
+      vi.advanceTimersByTime(2_000);
+      setVisibility("visible");
+      vi.advanceTimersByTime(8_000);
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("デバウンス窓経過後の最終状態だけを通知する", () => {
+    setVisibility("visible");
+    const onChange = vi.fn();
+    renderHook(() => useVisibility({ enabled: true, onChange }));
+    onChange.mockClear();
+
+    act(() => {
+      setVisibility("hidden");
+      vi.advanceTimersByTime(7_999);
+    });
+    expect(onChange).not.toHaveBeenCalled();
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenLastCalledWith("focused");
+  });
+
+  it("アンマウント時に保留中のデバウンスタイマーを破棄する", () => {
+    setVisibility("visible");
+    const onChange = vi.fn();
+    const { unmount } = renderHook(() => useVisibility({ enabled: true, onChange }));
+    onChange.mockClear();
+
+    act(() => {
+      setVisibility("hidden");
+    });
+    unmount();
+
+    act(() => {
+      vi.advanceTimersByTime(8_000);
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("`enabled` が `true` から `false` に変わったとき保留中のデバウンスタイマーを破棄する", () => {
+    setVisibility("visible");
+    const onChange = vi.fn();
+    const { rerender } = renderHook(
+      ({ enabled }: { enabled: boolean }) => useVisibility({ enabled, onChange }),
+      { initialProps: { enabled: true } },
+    );
+    onChange.mockClear();
+
+    act(() => {
+      setVisibility("hidden");
+    });
+    rerender({ enabled: false });
+
+    act(() => {
+      vi.advanceTimersByTime(8_000);
     });
 
     expect(onChange).not.toHaveBeenCalled();
