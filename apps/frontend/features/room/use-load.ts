@@ -9,10 +9,8 @@ import {
 } from "@play.realtime/contracts";
 import { notFound } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-
 import { http } from "@/libraries/http-client";
 import { HttpFailure } from "@/libraries/transport/http";
-
 import { isMissing } from "./errors";
 import { useRoom } from "./store";
 

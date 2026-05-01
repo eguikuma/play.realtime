@@ -8,7 +8,6 @@ import { useConnectionStatus } from "@/libraries/connection-status/store";
 import { wsOrigin } from "@/libraries/environment";
 import { useWs, WsState } from "@/libraries/transport/ws";
 import { ws } from "@/libraries/ws-client";
-
 import { hallwayErrorMessages } from "./errors";
 import { useHallway } from "./store";
 

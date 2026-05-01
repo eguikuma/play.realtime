@@ -2,9 +2,7 @@
 
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { useMemo } from "react";
-
 import { useRoom } from "@/features/room/store";
-
 import { useHallway } from "../store";
 import { useActions } from "../use-actions";
 import { useStream } from "../use-stream";

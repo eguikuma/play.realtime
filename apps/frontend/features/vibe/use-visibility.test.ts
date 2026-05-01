@@ -1,6 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
 import { useVisibility } from "./use-visibility";
 
 const setVisibility = (state: "visible" | "hidden") => {

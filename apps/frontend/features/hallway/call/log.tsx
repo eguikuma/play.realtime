@@ -1,7 +1,6 @@
 "use client";
 
 import type { RefObject } from "react";
-
 import { Message } from "./message";
 
 type Entry = {

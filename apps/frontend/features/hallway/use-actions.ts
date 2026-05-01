@@ -1,7 +1,6 @@
 "use client";
 
 import type { CallId, InvitationId } from "@play.realtime/contracts";
-
 import { useHallway } from "./store";
 
 /**

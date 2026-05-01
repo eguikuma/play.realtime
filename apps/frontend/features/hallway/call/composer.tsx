@@ -2,7 +2,6 @@
 
 import { Send } from "lucide-react";
 import type { SyntheticEvent } from "react";
-
 import { Input } from "@/components/ui/input";
 
 type Composer = {

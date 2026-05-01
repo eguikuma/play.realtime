@@ -2,10 +2,8 @@
 
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { useMemo } from "react";
-
 import { useHallway } from "@/features/hallway/store";
 import { useRoom } from "@/features/room/store";
-
 import type { AvatarState } from "../avatar";
 import { useVibe } from "../store";
 import { useChange } from "../use-change";

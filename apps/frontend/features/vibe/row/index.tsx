@@ -1,7 +1,6 @@
 "use client";
 
 import type { RoomId } from "@play.realtime/contracts";
-
 import { Avatar } from "../avatar";
 import { Heading } from "./heading";
 import { useRow } from "./use-row";

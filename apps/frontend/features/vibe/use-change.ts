@@ -7,9 +7,7 @@ import {
   type VibeStatus,
 } from "@play.realtime/contracts";
 import { z } from "zod";
-
 import { http } from "@/libraries/http-client";
-
 import { useVibe } from "./store";
 
 /**

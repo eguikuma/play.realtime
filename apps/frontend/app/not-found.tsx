@@ -1,5 +1,4 @@
 import Link from "next/link";
-
 import { Backdrop, Notice } from "@/features/room/layout";
 
 /**

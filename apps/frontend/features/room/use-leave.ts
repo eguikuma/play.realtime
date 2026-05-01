@@ -2,7 +2,6 @@
 
 import { RoomEndpoint, type RoomId } from "@play.realtime/contracts";
 import { useEffect } from "react";
-
 import { origin } from "@/libraries/environment";
 
 /**

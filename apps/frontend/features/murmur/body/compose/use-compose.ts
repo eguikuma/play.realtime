@@ -2,9 +2,7 @@
 
 import type { RoomId } from "@play.realtime/contracts";
 import { type SyntheticEvent, useState } from "react";
-
 import { useRoom } from "@/features/room/store";
-
 import { useMutations } from "../../use-mutations";
 
 /**

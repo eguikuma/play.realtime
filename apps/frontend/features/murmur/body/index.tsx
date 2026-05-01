@@ -1,7 +1,6 @@
 "use client";
 
 import type { RoomId } from "@play.realtime/contracts";
-
 import { Empty } from "./empty";
 import { Entry } from "./entry";
 import { useBody } from "./use-body";

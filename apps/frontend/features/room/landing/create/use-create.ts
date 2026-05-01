@@ -4,7 +4,6 @@ import { CreateRoomRequest, RoomEndpoint, RoomMembership } from "@play.realtime/
 import { useRouter } from "next/navigation";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
-
 import { useRoom } from "@/features/room/store";
 import { http } from "@/libraries/http-client";
 

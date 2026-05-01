@@ -2,10 +2,8 @@
 
 import type { CallId, MemberId } from "@play.realtime/contracts";
 import { type SyntheticEvent, useRef, useState } from "react";
-
 import { useRoom } from "@/features/room/store";
 import { toHHMM } from "@/libraries/date";
-
 import { useHallway } from "../store";
 import { useActions } from "../use-actions";
 import { useAutoscroll } from "../use-autoscroll";

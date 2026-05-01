@@ -6,12 +6,10 @@ import {
   Zen_Kaku_Gothic_New,
   Zen_Maru_Gothic,
 } from "next/font/google";
-
 import { ConnectionBanner } from "@/components/connection-banner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/libraries/classname";
-
 import "./globals.css";
 import type { ReactNode } from "react";
 

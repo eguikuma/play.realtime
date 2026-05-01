@@ -2,7 +2,6 @@
 
 import type { RoomId } from "@play.realtime/contracts";
 import { use } from "react";
-
 import { BgmStrip } from "@/features/bgm";
 import { HallwayOverlays } from "@/features/hallway";
 import { Compose, MurmurBody } from "@/features/murmur";

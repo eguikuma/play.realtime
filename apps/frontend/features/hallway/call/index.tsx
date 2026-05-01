@@ -2,7 +2,6 @@
 
 import type { CallId } from "@play.realtime/contracts";
 import { useState } from "react";
-
 import { Composer } from "./composer";
 import { Head } from "./head";
 import { Log } from "./log";
