@@ -13,4 +13,9 @@ export const GlobalTopic = {
    * `MemberLeft` は `pagehide` 起点の明示退出シグナルを SSE と WebSocket の両 Hub に fanout する経路
    */
   MemberLeft: "room:member-leave" as RoomTopic,
+  /**
+   * `RoomCacheInvalidate` はルーム別のローカル cache を全インスタンス間で無効化する経路
+   * `CachingRoomRepository` の `save` と `remove` で配信され、購読側は `cache.delete(roomId)` のみを行う
+   */
+  RoomCacheInvalidate: "room:cache-invalidate" as RoomTopic,
 } as const;

@@ -1,10 +1,12 @@
 import { Global, Module } from "@nestjs/common";
+import { PubSub } from "../../application/shared/ports/pubsub";
 import { BgmRepository } from "../../domain/bgm";
 import { HallwayRepository } from "../../domain/hallway";
 import { MurmurRepository } from "../../domain/murmur";
 import { RoomRepository } from "../../domain/room";
 import { VibeRepository } from "../../domain/vibe";
 import { Environment } from "../../environment";
+import { CachingRoomRepository } from "./caching/room";
 import { InMemoryBgmRepository } from "./in-memory/bgm";
 import { InMemoryHallwayRepository } from "./in-memory/hallway";
 import { InMemoryMurmurRepository } from "./in-memory/murmur";
@@ -27,14 +29,15 @@ import { RedisVibeRepository } from "./redis/vibe";
   providers: [
     {
       provide: RoomRepository,
-      useFactory: (environment: Environment) => {
+      useFactory: (environment: Environment, pubsub: PubSub) => {
         if (environment.STORAGE_DRIVER === "redis") {
-          return new RedisRoomRepository(environment.REDIS_URL as string);
+          const inner = new RedisRoomRepository(environment.REDIS_URL as string);
+          return new CachingRoomRepository(inner, pubsub);
         }
 
         return new InMemoryRoomRepository();
       },
-      inject: [Environment],
+      inject: [Environment, PubSub],
     },
     {
       provide: VibeRepository,
