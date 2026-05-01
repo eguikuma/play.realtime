@@ -23,7 +23,7 @@ const RoomStage = ({ roomId }: { roomId: RoomId }) => {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[70svh] animate-lamp-drift bg-[radial-gradient(ellipse_55%_75%_at_14%_4%,oklch(from_var(--lamp)_l_c_h/0.32),transparent_62%)]"
       />
-      <div className="relative mx-auto flex h-full max-w-[980px] flex-col px-6 pt-8 md:px-10 md:pt-12">
+      <div className="relative mx-auto flex h-full max-w-[980px] flex-col px-4 pt-4 md:px-10 md:pt-12">
         <header className="flex shrink-0 items-center justify-between gap-6">
           <span className="font-bold font-display text-[30px] text-ink leading-none tracking-[-0.01em]">
             りもどき
@@ -58,7 +58,7 @@ const RoomStage = ({ roomId }: { roomId: RoomId }) => {
           <VibeRow roomId={roomId} />
         </div>
 
-        <main className="mt-14 flex min-h-0 flex-1 flex-col pb-6">
+        <main className="mt-4 flex min-h-0 flex-1 flex-col pb-4 md:mt-14 md:pb-6">
           <MurmurBody roomId={roomId} />
         </main>
       </div>

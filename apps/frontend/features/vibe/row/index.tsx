@@ -14,13 +14,13 @@ export const VibeRow = ({ roomId }: { roomId: RoomId }) => {
   const row = useRow(roomId);
 
   return (
-    <section className="mt-10 flex flex-col gap-4">
+    <section className="mt-6 flex flex-col gap-3 md:mt-10 md:gap-4">
       <Heading />
 
       {row.empty ? (
         <p className="py-3 font-display text-ink-mute">まだ誰もいません</p>
       ) : (
-        <div className="-mx-2 flex gap-1 overflow-x-auto px-2 pt-4 pb-3 [scroll-snap-type:x_mandatory] sm:flex-wrap sm:overflow-visible">
+        <div className="-mx-2 flex gap-1 overflow-x-auto px-2 pt-3 pb-2 [scroll-snap-type:x_mandatory] sm:flex-wrap sm:overflow-visible md:pt-4 md:pb-3">
           {row.avatars.map((avatar) => (
             <div key={avatar.key} className="[scroll-snap-align:start]">
               <Avatar

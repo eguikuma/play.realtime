@@ -25,7 +25,7 @@ export const Compose = ({ roomId, disabled }: Compose) => {
   return (
     <form
       onSubmit={compose.onSubmit}
-      className="flex shrink-0 items-center gap-3 rounded-2xl border border-rule bg-paper-2 px-4 py-2.5 shadow-[0_16px_40px_-28px_oklch(from_var(--ink)_l_c_h/0.3),0_0_0_1px_oklch(from_var(--paper)_l_c_h/0.6)]"
+      className="flex shrink-0 items-center gap-3 rounded-2xl border border-rule bg-paper-2 px-4 py-2 shadow-[0_16px_40px_-28px_oklch(from_var(--ink)_l_c_h/0.3),0_0_0_1px_oklch(from_var(--paper)_l_c_h/0.6)] md:py-2.5"
     >
       <span className="font-bold font-display text-[13px] text-ink">ひとこと</span>
       <Input
