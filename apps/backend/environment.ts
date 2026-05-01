@@ -2,11 +2,20 @@ import * as z from "zod";
 
 /**
  * process.env を Zod で検証したあとのサーバー環境値
- * ポート番号と WEB_ORIGIN は欠落時に既定値を適用し CI や開発機でも .env なしで動かせるようにする
  */
 export const Environment = z.object({
+  /**
+   * サーバーの待ち受けポート番号
+   */
   PORT: z.coerce.number().int().positive().default(4000),
+  /**
+   * フロントエンドのオリジン
+   */
   WEB_ORIGIN: z.url().default("http://localhost:3000"),
+  /**
+   * 最終接続断から削除までの猶予
+   */
+  ROOM_GRACE_MS: z.coerce.number().int().positive().default(30_000),
 });
 
 export type Environment = z.infer<typeof Environment>;

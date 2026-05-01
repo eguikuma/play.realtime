@@ -1,0 +1,121 @@
+import type { RoomId } from "@play.realtime/contracts";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { PubSub } from "../ports/pubsub";
+import { RoomLifecycle } from "./lifecycle";
+import { RoomPresence } from "./presence";
+
+const room = "room-abc-1234" as RoomId;
+
+const createPubSubStub = () => {
+  const closeByPrefix = vi.fn<(prefix: string) => void>();
+  const pubsub: PubSub = {
+    publish: vi.fn(async () => undefined),
+    subscribe: vi.fn(() => ({ unsubscribe: vi.fn() })),
+    closeByPrefix,
+  };
+  return Object.assign(pubsub, { closeByPrefix });
+};
+
+describe("RoomLifecycle", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("最終接続が抜けてから猶予経過後に登録された全後片付けが走る", async () => {
+    const presence = new RoomPresence();
+    const pubsub = createPubSubStub();
+    const lifecycle = new RoomLifecycle(presence, pubsub);
+    lifecycle.overrideGracePeriod(1_000);
+    const firstCleanup = vi.fn(async () => undefined);
+    const secondCleanup = vi.fn(async () => undefined);
+    lifecycle.registerCleanup(firstCleanup);
+    lifecycle.registerCleanup(secondCleanup);
+
+    presence.register(room);
+    presence.deregister(room);
+
+    expect(firstCleanup).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    expect(firstCleanup).toHaveBeenCalledWith(room);
+    expect(secondCleanup).toHaveBeenCalledWith(room);
+    expect(pubsub.closeByPrefix).toHaveBeenCalledWith(`room:${room}:`);
+  });
+
+  it("猶予中に新規接続が入ると後片付けは走らない", async () => {
+    const presence = new RoomPresence();
+    const lifecycle = new RoomLifecycle(presence, createPubSubStub());
+    lifecycle.overrideGracePeriod(1_000);
+    const cleanup = vi.fn(async () => undefined);
+    lifecycle.registerCleanup(cleanup);
+
+    presence.register(room);
+    presence.deregister(room);
+    await vi.advanceTimersByTimeAsync(500);
+    presence.register(room);
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    expect(cleanup).not.toHaveBeenCalled();
+  });
+
+  it("復帰後にまた最終接続が抜けると猶予は再起動する", async () => {
+    const presence = new RoomPresence();
+    const lifecycle = new RoomLifecycle(presence, createPubSubStub());
+    lifecycle.overrideGracePeriod(1_000);
+    const cleanup = vi.fn(async () => undefined);
+    lifecycle.registerCleanup(cleanup);
+
+    presence.register(room);
+    presence.deregister(room);
+    await vi.advanceTimersByTimeAsync(500);
+    presence.register(room);
+    presence.deregister(room);
+    await vi.advanceTimersByTimeAsync(999);
+    expect(cleanup).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(1);
+    expect(cleanup).toHaveBeenCalledWith(room);
+  });
+
+  it("ある後片付けが例外を投げても残りの後片付けは呼ばれる", async () => {
+    const presence = new RoomPresence();
+    const lifecycle = new RoomLifecycle(presence, createPubSubStub());
+    lifecycle.overrideGracePeriod(1_000);
+    const failing = vi.fn(async () => {
+      throw new Error("boom");
+    });
+    const healthy = vi.fn(async () => undefined);
+    lifecycle.registerCleanup(failing);
+    lifecycle.registerCleanup(healthy);
+
+    presence.register(room);
+    presence.deregister(room);
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    expect(failing).toHaveBeenCalledTimes(1);
+    expect(healthy).toHaveBeenCalledWith(room);
+  });
+
+  it("destroy を直接呼べば即時に後片付けが走りタイマーも打ち切られる", async () => {
+    const presence = new RoomPresence();
+    const pubsub = createPubSubStub();
+    const lifecycle = new RoomLifecycle(presence, pubsub);
+    lifecycle.overrideGracePeriod(10_000);
+    const cleanup = vi.fn(async () => undefined);
+    lifecycle.registerCleanup(cleanup);
+
+    presence.register(room);
+    presence.deregister(room);
+    await lifecycle.destroy(room);
+
+    expect(cleanup).toHaveBeenCalledWith(room);
+    expect(pubsub.closeByPrefix).toHaveBeenCalledWith(`room:${room}:`);
+
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(cleanup).toHaveBeenCalledTimes(1);
+  });
+});
