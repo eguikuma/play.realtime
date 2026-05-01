@@ -21,5 +21,6 @@ import { RoomsModule } from "./rooms.module";
       useClass: InMemoryMurmurRepository,
     },
   ],
+  exports: [MurmurRepository],
 })
 export class MurmursModule {}

@@ -43,5 +43,6 @@ import { HallwayGateway } from "./hallway.gateway";
       useClass: InMemoryHallwayRepository,
     },
   ],
+  exports: [HallwayRepository],
 })
 export class HallwayModule {}

@@ -47,5 +47,6 @@ import { RoomsModule } from "./rooms.module";
       useClass: UndoBySelfFilter,
     },
   ],
+  exports: [BgmRepository],
 })
 export class BgmsModule {}
