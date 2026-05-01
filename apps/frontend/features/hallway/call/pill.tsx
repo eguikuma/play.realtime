@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronUp, PhoneOff } from "lucide-react";
+import { Monogram } from "@/components/monogram";
 
 type Pill = {
   /** 通話相手の表示名、アバターと名前ラベルに使う */
@@ -17,13 +18,11 @@ type Pill = {
  */
 export const Pill = ({ peerName, onExpand, onLeave }: Pill) => (
   <div className="pointer-events-auto mx-auto flex w-fit items-center gap-2 rounded-pill border border-rule bg-paper/95 py-1.5 pr-2 pl-3 shadow-[0_16px_32px_-20px_oklch(from_var(--ink)_l_c_h/0.32)] backdrop-blur-md">
-    <span
-      aria-hidden
-      className="flex size-7 shrink-0 items-center justify-center rounded-full bg-paper-2 font-bold font-display text-[11px] text-ink leading-none"
+    <Monogram
+      name={peerName}
+      className="size-7 bg-paper-2 text-[11px] text-ink leading-none"
       style={{ boxShadow: "0 0 0 1.5px var(--lamp), 0 0 10px oklch(from var(--lamp) l c h / 0.3)" }}
-    >
-      {peerName.slice(0, 1)}
-    </span>
+    />
     <div className="flex min-w-0 flex-col">
       <span className="max-w-[10ch] truncate font-display text-[13px] text-ink leading-none">
         {peerName}

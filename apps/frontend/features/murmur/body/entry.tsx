@@ -1,6 +1,7 @@
 "use client";
 
 import type { Murmur } from "@play.realtime/contracts";
+import { Monogram } from "@/components/monogram";
 import { cn } from "@/libraries/classname";
 import { toHHMM } from "@/libraries/date";
 
@@ -23,13 +24,11 @@ export const Entry = ({ murmur, authorName, fresh }: Entry) => (
     style={fresh ? { animationDelay: "40ms" } : undefined}
   >
     <header className="flex items-center gap-3">
-      <span
-        aria-hidden
-        className="flex size-7 shrink-0 items-center justify-center rounded-full bg-paper-2 font-bold font-display text-[12px] text-ink"
+      <Monogram
+        name={authorName}
+        className="size-7 bg-paper-2 text-[12px] text-ink"
         style={{ boxShadow: "inset 0 0 0 1.5px oklch(from var(--lamp) l c h / 0.45)" }}
-      >
-        {authorName.slice(0, 1)}
-      </span>
+      />
       <span className="font-bold font-display text-[14px] text-ink">{authorName}</span>
       <time dateTime={murmur.postedAt} className="font-sans text-[11px] text-ink-mute tabular-nums">
         {toHHMM(murmur.postedAt)}

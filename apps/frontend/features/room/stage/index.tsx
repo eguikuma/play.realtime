@@ -1,6 +1,7 @@
 "use client";
 
 import type { RoomId } from "@play.realtime/contracts";
+import { Monogram } from "@/components/monogram";
 import { BgmStrip } from "@/features/bgm";
 import { HallwayOverlays } from "@/features/hallway";
 import { Compose, MurmurBody } from "@/features/murmur";
@@ -44,16 +45,14 @@ export const RoomStage = ({ roomId }: Stage) => {
             </span>
             {me && (
               <span className="flex items-center gap-2 rounded-pill border border-rule bg-paper-2/70 px-3 py-1.5 backdrop-blur-sm">
-                <span
-                  className="flex size-6 items-center justify-center rounded-full bg-paper font-bold font-display text-[11px] text-lamp"
+                <Monogram
+                  name={me.name}
+                  className="size-6 bg-paper text-[11px] text-lamp"
                   style={{
                     boxShadow:
                       "inset 0 0 0 1.5px var(--lamp), 0 0 0 3px oklch(from var(--lamp) l c h / 0.18)",
                   }}
-                  aria-hidden
-                >
-                  {me.name.slice(0, 1)}
-                </span>
+                />
                 <span className="max-w-[9ch] truncate font-sans text-ink text-sm">{me.name}</span>
               </span>
             )}
