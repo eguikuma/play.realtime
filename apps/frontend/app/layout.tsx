@@ -7,6 +7,7 @@ import {
   Zen_Maru_Gothic,
 } from "next/font/google";
 
+import { ConnectionBanner } from "@/components/connection-banner";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/libraries/classname";
 
@@ -100,6 +101,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       </head>
       <body className="h-svh overflow-hidden font-sans text-ink antialiased">
         {children}
+        <ConnectionBanner />
         <Toaster />
       </body>
     </html>
