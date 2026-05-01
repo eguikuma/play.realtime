@@ -45,7 +45,7 @@ export class MurmursController {
 
   /**
    * `GET /rooms/{roomId}/murmurs/stream` ひとことの SSE 購読経路
-   * 接続成立時に `RoomPresence` へ 1 接続として記録し、切断時に `deregister` を呼ぶ
+   * 接続成立時に `RoomPresence` へ 1 接続として記録し、切断時に `detach` を呼ぶ
    * `onAttach` で購読成立直後に `Snapshot` を送出して、遅れて参加したクライアントも過去の流れを再構築できる
    */
   @Get("stream")

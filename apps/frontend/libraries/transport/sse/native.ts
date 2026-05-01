@@ -33,7 +33,7 @@ export const createNativeSseClient = (): SseClient => {
         );
       };
 
-      const register = <K extends keyof TMap & string>(name: K, shape: TMap[K]) => {
+      const subscribe = <K extends keyof TMap & string>(name: K, shape: TMap[K]) => {
         source.addEventListener(name, (message) => {
           let payload: unknown;
           try {
@@ -54,7 +54,7 @@ export const createNativeSseClient = (): SseClient => {
 
       for (const name of Object.keys(events) as Array<keyof TMap & string>) {
         const shape = events[name];
-        if (shape !== undefined) register(name, shape);
+        if (shape !== undefined) subscribe(name, shape);
       }
 
       return {

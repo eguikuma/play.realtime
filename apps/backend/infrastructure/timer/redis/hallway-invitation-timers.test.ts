@@ -65,7 +65,7 @@ describe.skipIf(!REDIS_URL)("RedisHallwayInvitationTimers", () => {
       const callbackB = vi.fn();
 
       timers.schedule(id, 500, callbackA);
-      otherTimers.register(id, 500, callbackB);
+      otherTimers.schedule(id, 500, callbackB);
 
       await sleep(1200);
 

@@ -21,20 +21,20 @@ type StubPubSub = PubSub & {
 const buildPubSub = (): StubPubSub => {
   const unsubscribe = vi.fn();
   const subscription: Subscription = { unsubscribe };
-  let registered: SubscribeHandler | null = null;
+  let captured: SubscribeHandler | null = null;
 
   return {
     publish: vi.fn(async () => undefined),
     subscribe: vi.fn((_topic, handler) => {
-      registered = handler as SubscribeHandler;
+      captured = handler as SubscribeHandler;
       return subscription;
     }),
     closeByPrefix: vi.fn(),
     emit: () => {
-      if (!registered) {
+      if (!captured) {
         throw new Error("subscribe が呼ばれる前に emit した");
       }
-      return registered;
+      return captured;
     },
     unsubscribe,
   };

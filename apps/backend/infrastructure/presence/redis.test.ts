@@ -17,7 +17,7 @@ describe.skipIf(!REDIS_URL)("RedisRoomPresence", () => {
   let room: RoomId;
 
   /**
-   * `register` `deregister` は fire-and-forget で `INCR`/`DECR` を投げるため、検証前に Redis 往復ぶんだけ待つ必要がある
+   * `attach` `detach` は fire-and-forget で `INCR`/`DECR` を投げるため、検証前に Redis 往復ぶんだけ待つ必要がある
    * `presence:transition` の pub/sub 配信も Redis 経由で完了に時間が要るので、固定の短い待ち時間で吸収する
    */
   const settle = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 80));

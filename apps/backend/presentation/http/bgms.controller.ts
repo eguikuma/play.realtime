@@ -33,7 +33,7 @@ export class BgmsController {
   /**
    * `GET /rooms/{roomId}/bgm/stream` BGM の SSE 購読経路
    * 購読成立直後に `Snapshot` を送り、以降は `Changed` イベントで操作反映を逐次配信する
-   * 接続数は `RoomPresence` に register して、無人遷移の判定に参加させる
+   * 接続数は `RoomPresence` に attach して、無人遷移の判定に参加させる
    */
   @Get("stream")
   stream(

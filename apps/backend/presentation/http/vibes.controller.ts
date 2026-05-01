@@ -35,7 +35,7 @@ export class VibesController {
   /**
    * `GET /rooms/{roomId}/vibe/stream` Vibe の SSE 購読経路
    * 接続ごとに `connectionId` を採番し、購読成立直後に `Welcome` と `Snapshot` を送ってから `NotifyVibeJoined` を走らせる
-   * SSE 接続切断時は `RoomPresence.deregister` と `NotifyVibeLeft` を呼び、猶予タイマーで他メンバーの画面点滅を防ぐ
+   * SSE 接続切断時は `RoomPresence.detach` と `NotifyVibeLeft` を呼び、猶予タイマーで他メンバーの画面点滅を防ぐ
    */
   @Get("stream")
   stream(

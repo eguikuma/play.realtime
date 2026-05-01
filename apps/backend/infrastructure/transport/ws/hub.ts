@@ -98,7 +98,7 @@ export class WsHub implements OnModuleInit {
 
   /**
    * 自インスタンスが保持する `roomId` 配下の `memberId` の WebSocket 接続をすべて `GoingAway` で閉じる
-   * 各接続の `close()` 呼び出しは内部で冪等、close ハンドラ経由で `RoomPresence.deregister` と `HallwayConnectionCounter.detach` 等の通常切断パスを踏ませる
+   * 各接続の `close()` 呼び出しは内部で冪等、close ハンドラ経由で `RoomPresence.detach` と `HallwayConnectionCounter.detach` 等の通常切断パスを踏ませる
    */
   closeByMember(roomId: RoomId, memberId: MemberId): void {
     for (const connection of this.connections) {
