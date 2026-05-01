@@ -100,14 +100,29 @@ re schedule への耐性も自然に出る
 
 ## 用語ノート
 
-**TTL key** Redis に書き込んだキーが指定したミリ秒で自動消去される仕組み、タイマーの代用として使う
-**keyspace notification** Redis のキー消去の瞬間に購読者へ通知が飛ぶ機能、ポーリングなしで「あの key の TTL が切れた」を知れる
-**SETNX** Redis の操作の 1 つで、まだ存在しないときだけ書き込む条件付き SET、lock の素材としてよく使われる
-**done lock** 「誰が fire を担当したか」を 取り合いで決めるための排他キー、本図のアンチパターンの中心
-**Map fail-safe** 勝者の Map に fire が無かったときの保険として done lock を消し戻す動作、本図ではこれが 「敗者は再試行しない」 性質と噛み合わずに機能不全になる
-**instanceId** 起動時に instance ごとに 1 度生成する一意な識別子、ログや owner side key に使う
-**owner side key** 「誰が責任を持つか」を別キーに instanceId として書いておき、各 instance が GET で見て自分の責任か判定する設計、競合がそもそも発生しない
-**deterministic dispatch** 「誰が処理するか」が race なしに必ず 1 通りに決まる配信、確率的決定の対極
+**TTL key** Redis に書き込んだキーが指定したミリ秒で自動消去される仕組み
+タイマーの代用として使う
+
+**keyspace notification** Redis のキー消去の瞬間に購読者へ通知が飛ぶ機能
+ポーリングなしで「あの key の TTL が切れた」を知れる
+
+**SETNX** Redis の操作の 1 つで、まだ存在しないときだけ書き込む条件付き SET
+lock の素材としてよく使われる
+
+**done lock** 「誰が fire を担当したか」を取り合いで決めるための排他キー
+本図のアンチパターンの中心
+
+**Map fail-safe** 勝者の Map に fire が無かったときの保険として done lock を消し戻す動作
+本図ではこれが 「敗者は再試行しない」 性質と噛み合わずに機能不全になる
+
+**instanceId** 起動時に instance ごとに 1 度生成する一意な識別子
+ログや owner side key に使う
+
+**owner side key** 「誰が責任を持つか」を別キーに instanceId として書いておき、各 instance が GET で見て自分の責任か判定する設計
+競合がそもそも発生しない
+
+**deterministic dispatch** 「誰が処理するか」が race なしに必ず 1 通りに決まる配信
+確率的決定の対極
 
 ## 実装の踏み込み先
 
