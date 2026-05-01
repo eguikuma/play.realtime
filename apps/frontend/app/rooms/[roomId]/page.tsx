@@ -7,6 +7,7 @@ import { BgmStrip } from "@/features/bgm";
 import { HallwayOverlays } from "@/features/hallway";
 import { Compose, MurmurBody } from "@/features/murmur";
 import { Entrance, useLeave, useLoad, useRoom } from "@/features/room";
+import { BrandMark } from "@/features/room/layout";
 import { useVibe, VibeRow } from "@/features/vibe";
 
 /**
@@ -29,7 +30,8 @@ const RoomStage = ({ roomId }: { roomId: RoomId }) => {
       />
       <div className="relative mx-auto grid h-full max-w-[980px] grid-rows-[auto_auto_auto_auto_minmax(0,1fr)] gap-y-3 short:gap-y-2 px-4 pt-4 short:pt-2 pb-4 short:pb-2 md:gap-y-4 md:px-10 md:pt-6 md:pb-6">
         <header className="flex items-center justify-between gap-6">
-          <span className="font-bold font-display short:text-[20px] text-[24px] text-ink leading-none tracking-[-0.01em] md:text-[30px]">
+          <span className="inline-flex items-center gap-2 font-bold font-display short:text-[20px] text-[24px] text-ink leading-none tracking-[-0.01em] md:text-[30px]">
+            <BrandMark className="short:size-6 size-7 shrink-0 md:size-8" />
             りもどき
           </span>
           <div className="flex items-center gap-3">

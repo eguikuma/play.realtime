@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="りもどき">
+  <defs>
+    <radialGradient id="lampGlow" cx="50%" cy="42%" r="40%">
+      <stop offset="0%" stop-color="#FBE6BD" stop-opacity="0.85" />
+      <stop offset="50%" stop-color="#E0974A" stop-opacity="0.32" />
+      <stop offset="100%" stop-color="#FAF5EC" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="1024" height="1024" rx="192" ry="192" fill="#FAF5EC" />
+  <rect x="0" y="0" width="1024" height="1024" rx="192" ry="192" fill="url(#lampGlow)" />
+  <g fill="#332720" stroke="#332720" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="500" cy="880" rx="200" ry="28" />
+    <rect x="486" y="660" width="28" height="220" rx="14" />
+    <circle cx="500" cy="660" r="28" />
+    <line x1="500" y1="660" x2="340" y2="440" stroke-width="40" />
+    <circle cx="340" cy="440" r="28" />
+    <line x1="340" y1="440" x2="540" y2="340" stroke-width="40" />
+    <circle cx="540" cy="340" r="22" />
+    <polygon points="520,330 562,318 700,470 568,494" />
+  </g>
+  <ellipse cx="634" cy="482" rx="60" ry="12" fill="#FBE6BD" />
+  <polygon points="568,494 700,470 760,640 510,660" fill="#E0974A" opacity="0.32" />
+</svg>
