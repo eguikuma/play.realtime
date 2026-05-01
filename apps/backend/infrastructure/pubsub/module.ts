@@ -18,6 +18,7 @@ import { RedisPubSub } from "./redis";
         if (environment.STORAGE_DRIVER === "redis") {
           return new RedisPubSub(environment.REDIS_URL as string);
         }
+
         return new InMemoryPubSub();
       },
       inject: [Environment],

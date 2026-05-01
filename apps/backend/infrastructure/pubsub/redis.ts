@@ -12,11 +12,8 @@ type Handler = (payload: unknown) => void;
 @Injectable()
 export class RedisPubSub implements PubSub, OnModuleDestroy {
   private readonly publisher: Redis;
-
   private readonly subscriber: Redis;
-
   private readonly subscribers = new Map<string, Set<Handler>>();
-
   private readonly logger = new Logger(RedisPubSub.name);
 
   constructor(redisUrl: string) {
@@ -63,6 +60,7 @@ export class RedisPubSub implements PubSub, OnModuleDestroy {
         if (!current) {
           return;
         }
+
         current.delete(typed);
         if (current.size === 0) {
           this.subscribers.delete(topic);
@@ -91,6 +89,7 @@ export class RedisPubSub implements PubSub, OnModuleDestroy {
     for (const topic of matched) {
       this.subscribers.delete(topic);
     }
+
     if (matched.length > 0) {
       void this.subscriber.unsubscribe(...matched).catch((error: unknown) => {
         this.logger.error(

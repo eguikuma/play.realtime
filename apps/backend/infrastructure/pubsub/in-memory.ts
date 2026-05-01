@@ -10,7 +10,6 @@ type Handler = (payload: unknown) => void;
 @Injectable()
 export class InMemoryPubSub implements PubSub {
   private readonly subscribers = new Map<string, Set<Handler>>();
-
   private readonly logger = new Logger(InMemoryPubSub.name);
 
   /**
@@ -54,6 +53,7 @@ export class InMemoryPubSub implements PubSub {
         if (!current) {
           return;
         }
+
         current.delete(typed);
         if (current.size === 0) {
           this.subscribers.delete(topic);
