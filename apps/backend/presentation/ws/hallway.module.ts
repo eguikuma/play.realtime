@@ -2,11 +2,11 @@ import { Module } from "@nestjs/common";
 import { AcceptHallwayInvitation } from "../../application/hallway/accept-invitation.usecase";
 import { HallwayBroadcaster } from "../../application/hallway/broadcaster";
 import { CancelHallwayInvitation } from "../../application/hallway/cancel-invitation.usecase";
+import { CleanupHallwayOnDisconnect } from "../../application/hallway/cleanup-on-disconnect.usecase";
 import { HallwayConnectionCounter } from "../../application/hallway/connection-counter";
 import { DeclineHallwayInvitation } from "../../application/hallway/decline-invitation.usecase";
 import { ExpireHallwayInvitation } from "../../application/hallway/expire-invitation.usecase";
 import { GetHallwaySnapshot } from "../../application/hallway/get-snapshot.usecase";
-import { HandleHallwayDisconnect } from "../../application/hallway/handle-disconnect.usecase";
 import { HallwayInvitationTimers } from "../../application/hallway/invitation-timers";
 import { InviteHallway } from "../../application/hallway/invite.usecase";
 import { LeaveHallwayCall } from "../../application/hallway/leave-call.usecase";
@@ -36,7 +36,7 @@ import { HallwayGateway } from "./hallway.gateway";
     ExpireHallwayInvitation,
     SendHallwayMessage,
     LeaveHallwayCall,
-    HandleHallwayDisconnect,
+    CleanupHallwayOnDisconnect,
     GetHallwaySnapshot,
     {
       provide: HallwayRepository,

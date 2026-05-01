@@ -12,11 +12,12 @@ export class SseHeartbeat {
    * heartbeat ループを開始する、戻り値の関数を呼ぶと `clearInterval` で停止する
    */
   start(connection: SseConnection): () => void {
-    const handle = setInterval(() => {
+    const timer = setInterval(() => {
       connection.comment("heartbeat");
     }, SSE_HEARTBEAT_INTERVAL_MS);
+
     return () => {
-      clearInterval(handle);
+      clearInterval(timer);
     };
   }
 }

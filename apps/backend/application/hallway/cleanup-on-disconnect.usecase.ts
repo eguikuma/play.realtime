@@ -10,7 +10,7 @@ import { HallwayInvitationTimers } from "./invitation-timers";
  * WebSocket 接続切断イベントは能動的な操作と区別できないため、発信側と受信側でそれぞれ自然な終了理由を当てる
  */
 @Injectable()
-export class HandleHallwayDisconnect {
+export class CleanupHallwayOnDisconnect {
   constructor(
     @Inject(HallwayRepository) private readonly hallway: HallwayRepository,
     private readonly broadcaster: HallwayBroadcaster,

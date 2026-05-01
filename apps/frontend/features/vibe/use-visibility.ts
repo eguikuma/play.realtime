@@ -34,16 +34,16 @@ export const useVisibility = ({
       latestOnChange.current(next);
     };
 
-    const handle = () => {
+    const apply = () => {
       transition(document.visibilityState === "visible" ? "present" : "focused");
     };
 
-    handle();
+    apply();
 
-    document.addEventListener("visibilitychange", handle);
+    document.addEventListener("visibilitychange", apply);
 
     return () => {
-      document.removeEventListener("visibilitychange", handle);
+      document.removeEventListener("visibilitychange", apply);
     };
   }, [enabled]);
 };

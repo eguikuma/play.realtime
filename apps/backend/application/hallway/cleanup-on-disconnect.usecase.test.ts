@@ -9,7 +9,7 @@ import type {
 import { describe, expect, it, vi } from "vitest";
 import type { HallwayRepository } from "../../domain/hallway";
 import type { HallwayBroadcaster } from "./broadcaster";
-import { HandleHallwayDisconnect } from "./handle-disconnect.usecase";
+import { CleanupHallwayOnDisconnect } from "./cleanup-on-disconnect.usecase";
 import type { HallwayInvitationTimers } from "./invitation-timers";
 
 const roomId = "room-abc-1234" as RoomId;
@@ -47,7 +47,7 @@ const buildBroadcaster = (
 const buildTimers = (cancel = vi.fn()): HallwayInvitationTimers =>
   ({ cancel, register: vi.fn() }) as unknown as HallwayInvitationTimers;
 
-describe("HandleHallwayDisconnect", () => {
+describe("CleanupHallwayOnDisconnect", () => {
   it("送信中の招待があれば InvitationEnded cancelled をルーム全員に配信する", async () => {
     const outgoing: Invitation = {
       id: "out-1" as InvitationId,
@@ -59,7 +59,7 @@ describe("HandleHallwayDisconnect", () => {
     const hallway = buildHallway({ findOutgoingInvitation: vi.fn(async () => outgoing) });
     const broadcaster = buildBroadcaster();
     const cancel = vi.fn();
-    const usecase = new HandleHallwayDisconnect(hallway, broadcaster, buildTimers(cancel));
+    const usecase = new CleanupHallwayOnDisconnect(hallway, broadcaster, buildTimers(cancel));
 
     await usecase.execute({ roomId, memberId: self });
 
@@ -81,7 +81,7 @@ describe("HandleHallwayDisconnect", () => {
     };
     const hallway = buildHallway({ findIncomingInvitation: vi.fn(async () => incoming) });
     const broadcaster = buildBroadcaster();
-    const usecase = new HandleHallwayDisconnect(hallway, broadcaster, buildTimers());
+    const usecase = new CleanupHallwayOnDisconnect(hallway, broadcaster, buildTimers());
 
     await usecase.execute({ roomId, memberId: self });
 
@@ -100,7 +100,7 @@ describe("HandleHallwayDisconnect", () => {
     };
     const hallway = buildHallway({ findCallForMember: vi.fn(async () => call) });
     const broadcaster = buildBroadcaster();
-    const usecase = new HandleHallwayDisconnect(hallway, broadcaster, buildTimers());
+    const usecase = new CleanupHallwayOnDisconnect(hallway, broadcaster, buildTimers());
 
     await usecase.execute({ roomId, memberId: self });
 
@@ -113,7 +113,7 @@ describe("HandleHallwayDisconnect", () => {
 
   it("招待も通話も無いメンバーの切断では何もせず配信しない", async () => {
     const broadcaster = buildBroadcaster();
-    const usecase = new HandleHallwayDisconnect(buildHallway(), broadcaster, buildTimers());
+    const usecase = new CleanupHallwayOnDisconnect(buildHallway(), broadcaster, buildTimers());
 
     await usecase.execute({ roomId, memberId: self });
 

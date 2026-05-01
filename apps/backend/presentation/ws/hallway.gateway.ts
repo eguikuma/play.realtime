@@ -6,10 +6,10 @@ import { type ConnectionId, MemberId, RoomId } from "@play.realtime/contracts";
 import { type WebSocket, WebSocketServer } from "ws";
 import { AcceptHallwayInvitation } from "../../application/hallway/accept-invitation.usecase";
 import { CancelHallwayInvitation } from "../../application/hallway/cancel-invitation.usecase";
+import { CleanupHallwayOnDisconnect } from "../../application/hallway/cleanup-on-disconnect.usecase";
 import { HallwayConnectionCounter } from "../../application/hallway/connection-counter";
 import { DeclineHallwayInvitation } from "../../application/hallway/decline-invitation.usecase";
 import { GetHallwaySnapshot } from "../../application/hallway/get-snapshot.usecase";
-import { HandleHallwayDisconnect } from "../../application/hallway/handle-disconnect.usecase";
 import { InviteHallway } from "../../application/hallway/invite.usecase";
 import { LeaveHallwayCall } from "../../application/hallway/leave-call.usecase";
 import { SendHallwayMessage } from "../../application/hallway/send-message.usecase";
@@ -25,7 +25,7 @@ import { dispatchHallwayCommand, type HallwayCommandHandlers } from "./hallway-d
 /**
  * 廊下トーク WebSocket の入り口を担う Gateway
  * HTTP サーバの `upgrade` を横取りして URL パターンと Origin と Cookie の三段認可を行い、通過したら `WsConnection` を組み立てて `WsHub` に預ける
- * 接続単位の生涯は `RoomPresence` と `HallwayConnectionCounter` で二重に追い、最後の接続が切れたときだけ `HandleHallwayDisconnect` を走らせる
+ * 接続単位の生涯は `RoomPresence` と `HallwayConnectionCounter` で二重に追い、最後の接続が切れたときだけ `CleanupHallwayOnDisconnect` を走らせる
  */
 @Injectable()
 export class HallwayGateway implements OnModuleInit {
@@ -51,7 +51,7 @@ export class HallwayGateway implements OnModuleInit {
     private readonly cancel: CancelHallwayInvitation,
     private readonly send: SendHallwayMessage,
     private readonly leave: LeaveHallwayCall,
-    private readonly handleDisconnect: HandleHallwayDisconnect,
+    private readonly cleanupOnDisconnect: CleanupHallwayOnDisconnect,
   ) {}
 
   /**
@@ -159,7 +159,7 @@ export class HallwayGateway implements OnModuleInit {
   /**
    * 接続成立後のライフサイクルを張る
    * `onAttach` で `Welcome` と `Snapshot` を送って初期状態を揃え、`onMessage` で受信 envelope をディスパッチへ流す
-   * WebSocket 接続切断時は `RoomPresence.deregister` と `HallwayConnectionCounter.detach` の両方を呼び、そのメンバー最後の接続だった場合だけ `HandleHallwayDisconnect` を走らせる
+   * WebSocket 接続切断時は `RoomPresence.deregister` と `HallwayConnectionCounter.detach` の両方を呼び、そのメンバー最後の接続だった場合だけ `CleanupHallwayOnDisconnect` を走らせる
    */
   private onConnected(ws: WebSocket, roomId: RoomId, memberId: MemberId): void {
     const connectionId = this.ids.connection() as ConnectionId;
@@ -185,8 +185,8 @@ export class HallwayGateway implements OnModuleInit {
       if (!isLast) {
         return;
       }
-      void this.handleDisconnect.execute({ roomId, memberId }).catch((error: unknown) => {
-        this.logger.warn(`handle-disconnect failed ${String(error)}`);
+      void this.cleanupOnDisconnect.execute({ roomId, memberId }).catch((error: unknown) => {
+        this.logger.warn(`cleanup-on-disconnect failed ${String(error)}`);
       });
     });
   }

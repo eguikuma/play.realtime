@@ -3,7 +3,7 @@ import type { MemberId, RoomId } from "@play.realtime/contracts";
 
 /**
  * 廊下トーク WebSocket の接続数をルームとメンバーの単位でカウントするサービス
- * 複数タブ接続の初回接続と最終接続の遷移だけを検知して、`HandleHallwayDisconnect` の発火を最後の接続切断に限定する
+ * 複数タブ接続の初回接続と最終接続の遷移だけを検知して、`CleanupHallwayOnDisconnect` の発火を最後の接続切断に限定する
  */
 @Injectable()
 export class HallwayConnectionCounter {
@@ -21,7 +21,7 @@ export class HallwayConnectionCounter {
 
   /**
    * 接続を 1 本減らし、そのメンバー最後の接続が切れたかを `isLast` で返す
-   * `isLast` が `true` のときだけ呼び出し側は `HandleHallwayDisconnect` を実行して、招待と通話の掃除を走らせる
+   * `isLast` が `true` のときだけ呼び出し側は `CleanupHallwayOnDisconnect` を実行して、招待と通話の掃除を走らせる
    */
   detach(roomId: RoomId, memberId: MemberId): { isLast: boolean } {
     const key = this.key(roomId, memberId);
