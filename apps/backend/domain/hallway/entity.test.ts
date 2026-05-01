@@ -15,19 +15,19 @@ import {
   SelfInviteNotAllowed,
 } from "./errors";
 
-const m1 = "m1" as MemberId;
-const m2 = "m2" as MemberId;
-const m3 = "m3" as MemberId;
+const inviter = "inviter" as MemberId;
+const invitee = "invitee" as MemberId;
+const outsider = "outsider" as MemberId;
 const roomId = "room-abc-1234" as RoomId;
-const invitationId = "inv-1" as InvitationId;
-const callId = "call-1" as CallId;
+const invitationId = "invitation" as InvitationId;
+const callId = "call" as CallId;
 const expiresAt = "2026-04-20T09:00:10.000Z";
 
 const buildInvitation = (overrides: Partial<Invitation> = {}): Invitation => ({
   id: invitationId,
   roomId,
-  fromMemberId: m1,
-  toMemberId: m2,
+  fromMemberId: inviter,
+  toMemberId: invitee,
   expiresAt,
   ...overrides,
 });
@@ -35,14 +35,14 @@ const buildInvitation = (overrides: Partial<Invitation> = {}): Invitation => ({
 const buildCall = (overrides: Partial<Call> = {}): Call => ({
   id: callId,
   roomId,
-  memberIds: [m1, m2],
+  memberIds: [inviter, invitee],
   startedAt: "2026-04-20T08:55:00.000Z",
   ...overrides,
 });
 
 const valid = {
-  inviter: { id: m1, busy: false },
-  invitee: { id: m2, busy: false, present: true },
+  inviter: { id: inviter, busy: false },
+  invitee: { id: invitee, busy: false, present: true },
 };
 
 describe("canInvite", () => {
@@ -51,7 +51,7 @@ describe("canInvite", () => {
   });
 
   it("自分自身を招待しようとすると SelfInviteNotAllowed を投げる", () => {
-    expect(() => canInvite({ ...valid, invitee: { ...valid.invitee, id: m1 } })).toThrow(
+    expect(() => canInvite({ ...valid, invitee: { ...valid.invitee, id: inviter } })).toThrow(
       SelfInviteNotAllowed,
     );
   });
@@ -77,8 +77,8 @@ describe("canInvite", () => {
   it("自己招待は招待元の取り込み中チェックや招待先条件より先に判定する", () => {
     expect(() =>
       canInvite({
-        inviter: { id: m1, busy: true },
-        invitee: { id: m1, busy: true, present: false },
+        inviter: { id: inviter, busy: true },
+        invitee: { id: inviter, busy: true, present: false },
       }),
     ).toThrow(SelfInviteNotAllowed);
   });
@@ -104,21 +104,21 @@ describe("isBusy", () => {
 
 describe("canAccept", () => {
   it("受信者本人ならば何も投げずに通る", () => {
-    expect(() => canAccept(buildInvitation(), m2)).not.toThrow();
+    expect(() => canAccept(buildInvitation(), invitee)).not.toThrow();
   });
 
   it("受信者でないメンバーが受諾しようとすると InvitationNotFound を投げる", () => {
-    expect(() => canAccept(buildInvitation(), m3)).toThrow(InvitationNotFound);
+    expect(() => canAccept(buildInvitation(), outsider)).toThrow(InvitationNotFound);
   });
 });
 
 describe("canDecline", () => {
   it("受信者本人ならば何も投げずに通る", () => {
-    expect(() => canDecline(buildInvitation(), m2)).not.toThrow();
+    expect(() => canDecline(buildInvitation(), invitee)).not.toThrow();
   });
 
   it("受信者でないメンバーが辞退しようとすると InvitationNotFound を投げる", () => {
-    expect(() => canDecline(buildInvitation(), m3)).toThrow(InvitationNotFound);
+    expect(() => canDecline(buildInvitation(), outsider)).toThrow(InvitationNotFound);
   });
 });
 
@@ -127,7 +127,7 @@ describe("acceptInvitation", () => {
     const now = new Date("2026-04-20T09:00:00.000Z");
     const { call } = acceptInvitation({
       invitation: buildInvitation(),
-      callerId: m2,
+      callerId: invitee,
       callId,
       now,
     });
@@ -135,7 +135,7 @@ describe("acceptInvitation", () => {
     expect(call).toEqual({
       id: callId,
       roomId,
-      memberIds: [m1, m2],
+      memberIds: [inviter, invitee],
       startedAt: now.toISOString(),
     });
   });
@@ -144,7 +144,7 @@ describe("acceptInvitation", () => {
     expect(() =>
       acceptInvitation({
         invitation: buildInvitation(),
-        callerId: m3,
+        callerId: outsider,
         callId,
         now: new Date("2026-04-20T09:00:00.000Z"),
       }),

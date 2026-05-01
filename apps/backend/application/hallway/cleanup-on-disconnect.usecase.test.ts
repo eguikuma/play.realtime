@@ -13,8 +13,8 @@ import { CleanupHallwayOnDisconnect } from "./cleanup-on-disconnect.usecase";
 import type { HallwayInvitationTimers } from "./invitation-timers";
 
 const roomId = "room-abc-1234" as RoomId;
-const self = "m1" as MemberId;
-const peer = "m2" as MemberId;
+const self = "self" as MemberId;
+const peer = "peer" as MemberId;
 
 const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayRepository => ({
   saveInvitation: vi.fn(),
@@ -50,7 +50,7 @@ const buildTimers = (cancel = vi.fn()): HallwayInvitationTimers =>
 describe("CleanupHallwayOnDisconnect", () => {
   it("発信中の招待があれば InvitationEnded `cancelled` をルーム全員に配信する", async () => {
     const outgoing: Invitation = {
-      id: "out-1" as InvitationId,
+      id: "outgoing" as InvitationId,
       roomId,
       fromMemberId: self,
       toMemberId: peer,
@@ -73,7 +73,7 @@ describe("CleanupHallwayOnDisconnect", () => {
 
   it("着信中の招待があれば InvitationEnded `declined` をルーム全員に配信する", async () => {
     const incoming: Invitation = {
-      id: "in-1" as InvitationId,
+      id: "incoming" as InvitationId,
       roomId,
       fromMemberId: peer,
       toMemberId: self,
@@ -93,7 +93,7 @@ describe("CleanupHallwayOnDisconnect", () => {
 
   it("進行中の通話があれば CallEnded `disconnect` をルーム全員に配信する", async () => {
     const call: Call = {
-      id: "call-1" as CallId,
+      id: "call" as CallId,
       roomId,
       memberIds: [self, peer],
       startedAt: "2026-04-20T09:00:30.000Z",

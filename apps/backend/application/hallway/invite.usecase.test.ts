@@ -20,8 +20,8 @@ import type { HallwayInvitationTimers } from "./invitation-timers";
 import { InviteHallway } from "./invite.usecase";
 
 const roomId = "room-abc-1234" as RoomId;
-const inviterId = "m1" as MemberId;
-const inviteeId = "m2" as MemberId;
+const inviterId = "inviter" as MemberId;
+const inviteeId = "invitee" as MemberId;
 const now = new Date("2026-04-20T09:00:00.000Z");
 
 const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayRepository => ({
@@ -62,7 +62,7 @@ const buildBroadcaster = (
     ...overrides,
   }) as unknown as HallwayBroadcaster;
 
-const buildIds = (invitationId = "inv-1"): NanoidIdGenerator =>
+const buildIds = (invitationId = "invitation"): NanoidIdGenerator =>
   ({
     invitation: vi.fn(() => invitationId as InvitationId),
   }) as unknown as NanoidIdGenerator;
@@ -98,7 +98,7 @@ describe("InviteHallway", () => {
     const invitation = await usecase.execute({ roomId, inviterId, inviteeId });
 
     expect(invitation).toEqual<Invitation>({
-      id: "inv-1" as InvitationId,
+      id: "invitation" as InvitationId,
       roomId,
       fromMemberId: inviterId,
       toMemberId: inviteeId,
@@ -121,7 +121,7 @@ describe("InviteHallway", () => {
 
     await usecase.execute({ roomId, inviterId, inviteeId });
 
-    expect(register).toHaveBeenCalledWith("inv-1", 10_000, expect.any(Function));
+    expect(register).toHaveBeenCalledWith("invitation", 10_000, expect.any(Function));
   });
 
   it("自分自身を招待すると SelfInviteNotAllowed を投げる", async () => {
@@ -144,7 +144,7 @@ describe("InviteHallway", () => {
       id: "existing" as InvitationId,
       roomId,
       fromMemberId: inviterId,
-      toMemberId: "m3" as MemberId,
+      toMemberId: "outsider" as MemberId,
       expiresAt: now.toISOString(),
     };
     const hallway = buildHallway({ findOutgoingInvitation: vi.fn(async () => existing) });

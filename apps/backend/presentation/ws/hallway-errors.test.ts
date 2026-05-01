@@ -10,9 +10,9 @@ import {
 } from "../../domain/hallway/errors";
 import { hallwayErrorCodeOf } from "./hallway-errors";
 
-const memberId = "m-1" as MemberId;
-const invitationId = "iv-1" as InvitationId;
-const callId = "c-1" as CallId;
+const memberId = "member" as MemberId;
+const invitationId = "invitation" as InvitationId;
+const callId = "call" as CallId;
 
 describe("hallwayErrorCodeOf", () => {
   it("自己招待の例外には SelfInviteNotAllowed のコードを引き当てる", () => {

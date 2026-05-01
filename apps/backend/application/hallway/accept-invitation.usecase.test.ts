@@ -7,10 +7,10 @@ import type { HallwayBroadcaster } from "./broadcaster";
 import type { HallwayInvitationTimers } from "./invitation-timers";
 
 const roomId = "room-abc-1234" as RoomId;
-const inviterId = "m1" as MemberId;
-const inviteeId = "m2" as MemberId;
-const invitationId = "inv-1" as InvitationId;
-const callId = "call-1" as CallId;
+const inviterId = "inviter" as MemberId;
+const inviteeId = "invitee" as MemberId;
+const invitationId = "invitation" as InvitationId;
+const callId = "call" as CallId;
 const now = new Date("2026-04-20T09:00:00.000Z");
 
 const invitation: Invitation = {
@@ -104,7 +104,7 @@ describe("AcceptHallwayInvitation", () => {
     );
 
     await expect(
-      usecase.execute({ roomId, memberId: "m3" as MemberId, invitationId }),
+      usecase.execute({ roomId, memberId: "outsider" as MemberId, invitationId }),
     ).rejects.toBeInstanceOf(InvitationNotFound);
   });
 

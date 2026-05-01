@@ -5,13 +5,13 @@ import type { HallwayBroadcaster } from "./broadcaster";
 import { ExpireHallwayInvitation } from "./expire-invitation.usecase";
 
 const roomId = "room-abc-1234" as RoomId;
-const invitationId = "inv-1" as InvitationId;
+const invitationId = "invitation" as InvitationId;
 
 const invitation: Invitation = {
   id: invitationId,
   roomId,
-  fromMemberId: "m1" as MemberId,
-  toMemberId: "m2" as MemberId,
+  fromMemberId: "inviter" as MemberId,
+  toMemberId: "invitee" as MemberId,
   expiresAt: "2026-04-20T09:00:10.000Z",
 };
 

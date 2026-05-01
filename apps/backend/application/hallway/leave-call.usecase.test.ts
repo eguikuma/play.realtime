@@ -5,9 +5,9 @@ import type { HallwayBroadcaster } from "./broadcaster";
 import { LeaveHallwayCall } from "./leave-call.usecase";
 
 const roomId = "room-abc-1234" as RoomId;
-const callId = "call-1" as CallId;
-const inviter = "m1" as MemberId;
-const invitee = "m2" as MemberId;
+const callId = "call" as CallId;
+const inviter = "inviter" as MemberId;
+const invitee = "invitee" as MemberId;
 
 const call: Call = {
   id: callId,
@@ -72,7 +72,7 @@ describe("LeaveHallwayCall", () => {
     const usecase = new LeaveHallwayCall(buildHallway(), buildBroadcaster());
 
     await expect(
-      usecase.execute({ roomId, callId, memberId: "m3" as MemberId }),
+      usecase.execute({ roomId, callId, memberId: "outsider" as MemberId }),
     ).rejects.toBeInstanceOf(NotCallParticipant);
   });
 });

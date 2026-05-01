@@ -5,8 +5,8 @@ import type { WsConnection } from "../../infrastructure/transport/ws";
 import { dispatchHallwayCommand, type HallwayCommandHandlers } from "./hallway-dispatch";
 
 const roomId = "room-abc-1234" as RoomId;
-const memberId = "m-1" as MemberId;
-const inviteeId = "m-2" as MemberId;
+const memberId = "member" as MemberId;
+const inviteeId = "invitee" as MemberId;
 
 const buildConnection = (): WsConnection =>
   ({

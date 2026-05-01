@@ -11,8 +11,8 @@ import type { HallwayRepository } from "../../domain/hallway";
 import { GetHallwaySnapshot } from "./get-snapshot.usecase";
 
 const roomId = "room-abc-1234" as RoomId;
-const self = "m1" as MemberId;
-const peer = "m2" as MemberId;
+const self = "self" as MemberId;
+const peer = "peer" as MemberId;
 
 const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayRepository => ({
   saveInvitation: vi.fn(),
@@ -33,14 +33,14 @@ const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayReposi
 describe("GetHallwaySnapshot", () => {
   it("ルーム内の全招待と全通話を返す", async () => {
     const invitation: Invitation = {
-      id: "inv-1" as InvitationId,
+      id: "invitation" as InvitationId,
       roomId,
       fromMemberId: self,
       toMemberId: peer,
       expiresAt: "2026-04-20T09:00:10.000Z",
     };
     const call: Call = {
-      id: "call-1" as CallId,
+      id: "call" as CallId,
       roomId,
       memberIds: [self, peer],
       startedAt: "2026-04-20T09:00:30.000Z",

@@ -6,9 +6,9 @@ import { DeclineHallwayInvitation } from "./decline-invitation.usecase";
 import type { HallwayInvitationTimers } from "./invitation-timers";
 
 const roomId = "room-abc-1234" as RoomId;
-const inviterId = "m1" as MemberId;
-const inviteeId = "m2" as MemberId;
-const invitationId = "inv-1" as InvitationId;
+const inviterId = "inviter" as MemberId;
+const inviteeId = "invitee" as MemberId;
+const invitationId = "invitation" as InvitationId;
 
 const invitation: Invitation = {
   id: invitationId,

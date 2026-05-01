@@ -10,10 +10,10 @@ import { describe, expect, it } from "vitest";
 import { InMemoryHallwayRepository } from "./hallway";
 
 const roomId = "room-abc-1234" as RoomId;
-const inviterId = "m1" as MemberId;
-const inviteeId = "m2" as MemberId;
-const invitationId = "inv-1" as InvitationId;
-const callId = "call-1" as CallId;
+const inviterId = "inviter" as MemberId;
+const inviteeId = "invitee" as MemberId;
+const invitationId = "invitation" as InvitationId;
+const callId = "call" as CallId;
 
 const invitation = (overrides: Partial<Invitation> = {}): Invitation => ({
   id: invitationId,
@@ -46,9 +46,9 @@ describe("InMemoryHallwayRepository", () => {
   it("ルーム単位で全招待を取得できる", async () => {
     const repository = new InMemoryHallwayRepository();
     const another: Invitation = invitation({
-      id: "inv-2" as InvitationId,
-      fromMemberId: "m3" as MemberId,
-      toMemberId: "m4" as MemberId,
+      id: "another-invitation" as InvitationId,
+      fromMemberId: "another-inviter" as MemberId,
+      toMemberId: "another-invitee" as MemberId,
     });
     await repository.saveInvitation(invitation());
     await repository.saveInvitation(another);
@@ -84,8 +84,8 @@ describe("InMemoryHallwayRepository", () => {
   it("ルーム単位で全通話を取得できる", async () => {
     const repository = new InMemoryHallwayRepository();
     const another: Call = call({
-      id: "call-2" as CallId,
-      memberIds: ["m3" as MemberId, "m4" as MemberId],
+      id: "another-call" as CallId,
+      memberIds: ["another-inviter" as MemberId, "another-invitee" as MemberId],
     });
     await repository.saveCall(call());
     await repository.saveCall(another);
@@ -119,10 +119,10 @@ describe("InMemoryHallwayRepository", () => {
     const repository = new InMemoryHallwayRepository();
     const keepRoomId = "room-keep-0000" as RoomId;
     const keepInvitation = invitation({
-      id: "inv-keep" as InvitationId,
+      id: "keep-invitation" as InvitationId,
       roomId: keepRoomId,
-      fromMemberId: "m9" as MemberId,
-      toMemberId: "m10" as MemberId,
+      fromMemberId: "keep-inviter" as MemberId,
+      toMemberId: "keep-invitee" as MemberId,
     });
 
     await repository.saveInvitation(invitation());
@@ -139,7 +139,7 @@ describe("InMemoryHallwayRepository", () => {
     expect(await repository.findCallForMember(inviterId)).toBeNull();
     expect(await repository.findCallForMember(inviteeId)).toBeNull();
     expect(await repository.findAllCallsInRoom(roomId)).toEqual([]);
-    expect(await repository.findInvitation("inv-keep" as InvitationId)).toEqual(keepInvitation);
+    expect(await repository.findInvitation("keep-invitation" as InvitationId)).toEqual(keepInvitation);
   });
 
   it("存在しないルームを取り除いても例外を投げない", async () => {

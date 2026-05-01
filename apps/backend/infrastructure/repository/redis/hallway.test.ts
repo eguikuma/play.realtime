@@ -13,10 +13,10 @@ import { RedisHallwayRepository } from "./hallway";
 const REDIS_URL = process.env.REDIS_URL;
 
 const roomId = "room-redis-hallway-1" as RoomId;
-const inviterId = "m1" as MemberId;
-const inviteeId = "m2" as MemberId;
-const invitationId = "inv-1" as InvitationId;
-const callId = "call-1" as CallId;
+const inviterId = "inviter" as MemberId;
+const inviteeId = "invitee" as MemberId;
+const invitationId = "invitation" as InvitationId;
+const callId = "call" as CallId;
 
 const invitation = (overrides: Partial<Invitation> = {}): Invitation => ({
   id: invitationId,
@@ -61,9 +61,9 @@ describe.skipIf(!REDIS_URL)("RedisHallwayRepository", () => {
 
   it("ルーム単位で全招待を取得できる", async () => {
     const another: Invitation = invitation({
-      id: "inv-2" as InvitationId,
-      fromMemberId: "m3" as MemberId,
-      toMemberId: "m4" as MemberId,
+      id: "another-invitation" as InvitationId,
+      fromMemberId: "another-inviter" as MemberId,
+      toMemberId: "another-invitee" as MemberId,
     });
 
     await repository.saveInvitation(invitation());
@@ -96,8 +96,8 @@ describe.skipIf(!REDIS_URL)("RedisHallwayRepository", () => {
 
   it("ルーム単位で全通話を取得できる", async () => {
     const another: Call = call({
-      id: "call-2" as CallId,
-      memberIds: ["m3" as MemberId, "m4" as MemberId],
+      id: "another-call" as CallId,
+      memberIds: ["another-inviter" as MemberId, "another-invitee" as MemberId],
     });
 
     await repository.saveCall(call());
@@ -128,10 +128,10 @@ describe.skipIf(!REDIS_URL)("RedisHallwayRepository", () => {
   it("ルーム単位の取り除きで配下の招待と通話と全逆引き索引が破棄される", async () => {
     const keepRoomId = "room-redis-hallway-keep" as RoomId;
     const keepInvitation = invitation({
-      id: "inv-keep" as InvitationId,
+      id: "keep-invitation" as InvitationId,
       roomId: keepRoomId,
-      fromMemberId: "m9" as MemberId,
-      toMemberId: "m10" as MemberId,
+      fromMemberId: "keep-inviter" as MemberId,
+      toMemberId: "keep-invitee" as MemberId,
     });
 
     await repository.saveInvitation(invitation());
@@ -148,7 +148,7 @@ describe.skipIf(!REDIS_URL)("RedisHallwayRepository", () => {
     expect(await repository.findCallForMember(inviterId)).toBeNull();
     expect(await repository.findCallForMember(inviteeId)).toBeNull();
     expect(await repository.findAllCallsInRoom(roomId)).toEqual([]);
-    expect(await repository.findInvitation("inv-keep" as InvitationId)).toEqual(keepInvitation);
+    expect(await repository.findInvitation("keep-invitation" as InvitationId)).toEqual(keepInvitation);
   });
 
   it("存在しないルームを取り除いても例外を投げない", async () => {
