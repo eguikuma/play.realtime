@@ -2,6 +2,7 @@
 
 import { HallwayServerMessages, type RoomId } from "@play.realtime/contracts";
 import { useEffect } from "react";
+import { toast } from "sonner";
 import type { z } from "zod";
 
 import { ws } from "@/libraries/clients";
@@ -9,11 +10,13 @@ import { useConnectionStatus } from "@/libraries/connection-status/store";
 import { wsOrigin } from "@/libraries/environment";
 import { useWs } from "@/libraries/transport/ws";
 
+import { hallwayErrorMessages } from "./errors";
 import { useHallway } from "./store";
 
 /**
  * 廊下トークの WebSocket 購読を張り 受信イベントをストアへ転写するフック
  * 送信関数もストアに載せ 他のフックから操作層越しに呼べるようにする
+ * `CommandFailed` は自分の命令が弾かれた通知として受け取り Sonner のトーストに橋渡しする
  * 接続状態の遷移は共通ストアへ流し 切断バーの判定素材に使う
  * ルーム ID がなしの間は接続を張らず 切断時は接続 ID もなしに戻す
  */
@@ -38,6 +41,7 @@ export const useStream = (roomId: RoomId | null) => {
     CallStarted: ({ call }) => addCall(call),
     Message: ({ message }) => appendMessage(message),
     CallEnded: ({ callId }) => removeCall(callId),
+    CommandFailed: ({ code }) => toast.error(hallwayErrorMessages[code]),
   } satisfies {
     [K in keyof typeof HallwayServerMessages]: (
       payload: z.infer<(typeof HallwayServerMessages)[K]>,
