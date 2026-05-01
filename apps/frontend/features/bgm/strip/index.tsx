@@ -27,10 +27,10 @@ export const BgmStrip = ({ roomId }: BgmStrip) => {
   const strip = useStrip(roomId);
 
   return (
-    <div ref={strip.ref} className="relative mt-3 md:mt-4">
+    <div ref={strip.ref} className="relative">
       <div
         className={cn(
-          "relative flex items-center gap-3 overflow-hidden rounded-md border border-rule py-2.5 pr-3 pl-4 transition-colors",
+          "relative flex items-center gap-3 overflow-hidden rounded-md border border-rule py-2.5 short:py-1.5 pr-3 pl-4 transition-colors",
           strip.shell.active ? "bg-paper-2" : "bg-paper/60",
         )}
       >

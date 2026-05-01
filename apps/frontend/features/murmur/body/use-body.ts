@@ -34,8 +34,6 @@ export const useBody = (roomId: RoomId) => {
   }));
 
   return {
-    roomId,
-    composeDisabled: me === null,
     empty: list.length === 0,
     entries,
   };

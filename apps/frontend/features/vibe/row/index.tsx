@@ -19,13 +19,15 @@ export const VibeRow = ({ roomId }: VibeRow) => {
   const row = useRow(roomId);
 
   return (
-    <section className="mt-6 flex flex-col gap-3 md:mt-10 md:gap-4">
-      <Heading />
+    <section className="flex flex-col gap-3 md:gap-4">
+      <div className="short:hidden">
+        <Heading />
+      </div>
 
       {row.empty ? (
         <p className="py-3 font-display text-ink-mute">まだ誰もいません</p>
       ) : (
-        <div className="-mx-2 flex gap-1 overflow-x-auto px-2 pt-3 pb-2 [scroll-snap-type:x_mandatory] sm:flex-wrap sm:overflow-visible md:pt-4 md:pb-3">
+        <div className="-mx-2 flex gap-1 overflow-x-auto px-2 pt-3 short:pt-1 pb-2 short:pb-0 [scroll-snap-type:x_mandatory] sm:flex-wrap sm:overflow-visible md:pt-4 md:pb-3">
           {row.avatars.map((avatar) => (
             <div key={avatar.key} className="[scroll-snap-align:start]">
               <Avatar

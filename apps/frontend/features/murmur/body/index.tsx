@@ -2,7 +2,6 @@
 
 import type { RoomId } from "@play.realtime/contracts";
 
-import { Compose } from "./compose";
 import { Empty } from "./empty";
 import { Entry } from "./entry";
 import { useBody } from "./use-body";
@@ -13,20 +12,19 @@ type MurmurBody = {
 };
 
 /**
- * ルーム画面中央のひとことパネル
- * 上部に投稿フォーム、下部に投稿一覧を並べ、投稿が 1 件もないときは空状態メッセージを出す
+ * ルーム画面のひとこと一覧領域
+ * 親グリッドの可変 1 行 (`minmax(0,1fr)`) に置かれ、自身は内部スクロールだけを担当する
+ * 投稿が 0 件のときは空状態メッセージ、1 件以上のときは投稿リストを描画する
  */
 export const MurmurBody = ({ roomId }: MurmurBody) => {
   const body = useBody(roomId);
 
   return (
-    <section className="flex h-full min-h-0 flex-col gap-4">
-      <Compose roomId={body.roomId} disabled={body.composeDisabled} />
-
+    <div className="scrollable h-full min-h-0 overflow-y-auto pt-2 pr-2 pb-4">
       {body.empty ? (
         <Empty />
       ) : (
-        <ol className="scrollable flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto pt-2 pr-2 pb-4">
+        <ol className="flex flex-col gap-6">
           {body.entries.map((entry) => (
             <li key={entry.murmur.id}>
               <Entry murmur={entry.murmur} authorName={entry.authorName} fresh={entry.fresh} />
@@ -34,6 +32,8 @@ export const MurmurBody = ({ roomId }: MurmurBody) => {
           ))}
         </ol>
       )}
-    </section>
+    </div>
   );
 };
+
+export { Compose } from "./compose";

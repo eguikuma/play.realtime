@@ -5,27 +5,30 @@ import { use } from "react";
 
 import { BgmStrip } from "@/features/bgm";
 import { HallwayOverlays } from "@/features/hallway";
-import { MurmurBody } from "@/features/murmur";
+import { Compose, MurmurBody } from "@/features/murmur";
 import { Entrance, useLoad, useRoom } from "@/features/room";
 import { useVibe, VibeRow } from "@/features/vibe";
 
 /**
  * 入室済みルームの画面本体
- * BGM ストリップ、Vibe 行、Murmur 本体を縦に積み、Hallway の招待と通話オーバーレイを最上位に重ねる
+ * 外殻をビューポート高に固定し、内部を CSS Grid 5 行で組む
+ * 行 1 から 4 (header / BGM / Vibe / Compose) を auto 高、行 5 (MurmurBody) のみ `minmax(0,1fr)` で可変にして、その内側だけがスクロールする
+ * これにより flex-1 の連鎖で起きていた「静的子の合計がビューポートを超えると ol が 0 px に潰れる/外に溢れる」問題を構造的に避ける
+ * Hallway の招待と通話オーバーレイは fixed 配置でレイアウトと独立しており、Grid 化の影響を受けない
  */
 const RoomStage = ({ roomId }: { roomId: RoomId }) => {
   const me = useRoom((state) => state.me);
   const presentCount = useVibe((state) => Object.keys(state.statuses).length);
 
   return (
-    <div className="relative h-svh overflow-hidden">
+    <div className="relative h-dvh overflow-hidden">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[70svh] animate-lamp-drift bg-[radial-gradient(ellipse_55%_75%_at_14%_4%,oklch(from_var(--lamp)_l_c_h/0.32),transparent_62%)]"
       />
-      <div className="relative mx-auto flex h-full max-w-[980px] flex-col px-4 pt-4 md:px-10 md:pt-12">
-        <header className="flex shrink-0 items-center justify-between gap-6">
-          <span className="font-bold font-display text-[30px] text-ink leading-none tracking-[-0.01em]">
+      <div className="relative mx-auto grid h-full max-w-[980px] grid-rows-[auto_auto_auto_auto_minmax(0,1fr)] gap-y-3 short:gap-y-2 px-4 pt-4 short:pt-2 pb-4 short:pb-2 md:gap-y-4 md:px-10 md:pt-6 md:pb-6">
+        <header className="flex items-center justify-between gap-6">
+          <span className="font-bold font-display short:text-[20px] text-[24px] text-ink leading-none tracking-[-0.01em] md:text-[30px]">
             りもどき
           </span>
           <div className="flex items-center gap-3">
@@ -50,17 +53,13 @@ const RoomStage = ({ roomId }: { roomId: RoomId }) => {
           </div>
         </header>
 
-        <div className="shrink-0">
-          <BgmStrip roomId={roomId} />
-        </div>
+        <BgmStrip roomId={roomId} />
 
-        <div className="shrink-0">
-          <VibeRow roomId={roomId} />
-        </div>
+        <VibeRow roomId={roomId} />
 
-        <main className="mt-4 flex min-h-0 flex-1 flex-col pb-4 md:mt-14 md:pb-6">
-          <MurmurBody roomId={roomId} />
-        </main>
+        <Compose roomId={roomId} />
+
+        <MurmurBody roomId={roomId} />
       </div>
 
       <HallwayOverlays roomId={roomId} />

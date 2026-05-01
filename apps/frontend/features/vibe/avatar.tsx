@@ -52,7 +52,7 @@ export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
   const canInvite = onInvite !== null && !disabled;
 
   const shellClass = cn(
-    "group relative flex shrink-0 flex-col items-center gap-2 rounded-xl px-2 pt-1 pb-2 outline-none transition-colors",
+    "group relative flex shrink-0 flex-col items-center gap-2 short:gap-1 rounded-xl px-2 pt-1 short:pt-0.5 pb-2 short:pb-1 outline-none transition-colors",
     canInvite && "focus-visible:ring-2 focus-visible:ring-lamp/50",
   );
 
@@ -61,7 +61,7 @@ export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
       <span className="sr-only">{label}</span>
       <span
         className={cn(
-          "relative flex size-16 items-center justify-center rounded-full bg-paper-2 font-bold font-display text-[22px] text-ink",
+          "relative flex short:size-10 size-16 items-center justify-center rounded-full bg-paper-2 font-bold font-display short:text-[16px] text-[22px] text-ink",
           (state === "present" || state === "self") && "animate-breath",
           state === "focused" && "opacity-60",
         )}
@@ -71,19 +71,19 @@ export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
         {state === "calling" && (
           <span
             aria-hidden
-            className="absolute top-0 right-0 size-3 animate-pulse-dot rounded-full bg-lamp ring-2 ring-paper"
+            className="absolute top-0 right-0 short:size-2 size-3 animate-pulse-dot rounded-full bg-lamp ring-2 ring-paper"
           />
         )}
       </span>
       <span
-        className="max-w-[12ch] truncate font-medium font-sans text-[13px] text-ink"
+        className="max-w-[12ch] truncate font-medium font-sans short:text-[11px] text-[13px] text-ink"
         title={name}
       >
         {name}
       </span>
       <span
         className={cn(
-          "font-display text-[11px]",
+          "short:hidden font-display text-[11px]",
           state === "self"
             ? "text-lamp"
             : state === "calling"
@@ -98,7 +98,7 @@ export const Avatar = ({ name, state, disabled, onInvite }: Avatar) => {
       <span
         aria-hidden={!canInvite}
         className={cn(
-          "mt-1 inline-flex items-center gap-1 whitespace-nowrap rounded-pill border px-2.5 py-0.5 font-medium font-sans text-[11px] transition-colors",
+          "mt-1 inline-flex short:hidden items-center gap-1 whitespace-nowrap rounded-pill border px-2.5 py-0.5 font-medium font-sans text-[11px] transition-colors",
           canInvite
             ? "border-rule bg-paper text-ink-soft shadow-[0_3px_10px_-6px_oklch(from_var(--ink)_l_c_h/0.35)] group-hover:border-lamp/60 group-hover:bg-ink group-hover:text-paper"
             : "pointer-events-none select-none border-transparent bg-transparent text-transparent",

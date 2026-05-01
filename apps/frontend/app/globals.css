@@ -3,6 +3,7 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant short (@media (max-height: 640px));
 
 @theme inline {
     --font-serif: var(--font-instrument-serif), var(--font-zen-maru),
