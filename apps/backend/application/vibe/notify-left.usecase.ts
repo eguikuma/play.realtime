@@ -6,7 +6,7 @@ import { VibePresenceGrace } from "./presence-grace";
 import { topic } from "./topic";
 
 /**
- * Vibe SSE 切断時に呼ばれ、接続単位の Vibe を削除してから他メンバーへ通知する usecase
+ * SSE 接続切断時に呼ばれ、接続単位の Vibe を削除してから他メンバーへ通知する usecase
  * 最後の接続が切れた場合のみ猶予タイマーを張って `Left` を遅らせ、その間に再入室があれば `Left` を送らない
  */
 @Injectable()

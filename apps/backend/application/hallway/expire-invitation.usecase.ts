@@ -5,7 +5,7 @@ import { HallwayBroadcaster } from "./broadcaster";
 
 /**
  * 招待の TTL 到来時に `HallwayInvitationTimers` から呼ばれる自動失効 usecase
- * 既に `Accept` / `Decline` / `Cancel` / 切断で消えていた場合は何もせず静かに終わらせる
+ * 既に `Accept`、`Decline`、`Cancel`、WebSocket 接続切断による自動失効のいずれかで消えていた場合は何もせず静かに終わらせる
  */
 @Injectable()
 export class ExpireHallwayInvitation {

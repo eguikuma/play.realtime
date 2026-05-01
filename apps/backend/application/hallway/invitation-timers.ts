@@ -3,7 +3,7 @@ import type { InvitationId } from "@play.realtime/contracts";
 
 /**
  * 招待の自動失効タイマーを ID 別に保持するサービス
- * `InviteHallway` が 10 秒後の失効コールバックを登録し、`Accept` / `Decline` / `Cancel` / 切断時に `cancel` されて発火前に停止する
+ * `InviteHallway` が 10 秒後の失効コールバックを登録し、`Accept`、`Decline`、`Cancel`、WebSocket 接続切断のいずれかで `cancel` されて発火前に停止する
  */
 @Injectable()
 export class HallwayInvitationTimers {

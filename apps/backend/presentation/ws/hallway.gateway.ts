@@ -159,7 +159,7 @@ export class HallwayGateway implements OnModuleInit {
   /**
    * 接続成立後のライフサイクルを張る
    * `onAttach` で `Welcome` と `Snapshot` を送って初期状態を揃え、`onMessage` で受信 envelope をディスパッチへ流す
-   * 切断時は `RoomPresence.deregister` と `HallwayConnectionCounter.detach` の両方を呼び、そのメンバー最後の接続だった場合だけ `HandleHallwayDisconnect` を走らせる
+   * WebSocket 接続切断時は `RoomPresence.deregister` と `HallwayConnectionCounter.detach` の両方を呼び、そのメンバー最後の接続だった場合だけ `HandleHallwayDisconnect` を走らせる
    */
   private onConnected(ws: WebSocket, roomId: RoomId, memberId: MemberId): void {
     const connectionId = this.ids.connection() as ConnectionId;
