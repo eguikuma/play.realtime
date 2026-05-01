@@ -7,6 +7,7 @@ import {
 } from "@play.realtime/contracts";
 import type { Response } from "express";
 import { GetRoomMembership } from "../../application/room/get-membership.usecase";
+import { RoomPresence } from "../../application/room/presence";
 import { ChangeVibeStatus } from "../../application/vibe/change-status.usecase";
 import { GetVibeSnapshot } from "../../application/vibe/get-snapshot.usecase";
 import { NotifyVibeJoined } from "../../application/vibe/notify-joined.usecase";
@@ -34,6 +35,7 @@ export class VibesController {
     private readonly notifyLeft: NotifyVibeLeft,
     private readonly changeStatus: ChangeVibeStatus,
     private readonly membership: GetRoomMembership,
+    private readonly presence: RoomPresence,
     private readonly hub: SseHub,
     private readonly ids: NanoidIdGenerator,
   ) {}
@@ -50,6 +52,7 @@ export class VibesController {
   ): void {
     const connectionId = this.ids.connection() as ConnectionId;
     const connection = new SseConnection(connectionId, member.id, roomId, response);
+    this.presence.register(roomId);
     this.hub.attach(connection, {
       topic: topic(roomId),
       onAttach: async (attached) => {
@@ -64,6 +67,7 @@ export class VibesController {
       },
     });
     connection.onClose(() => {
+      this.presence.deregister(roomId);
       void this.notifyLeft.execute({ roomId, memberId: member.id, connectionId });
     });
   }

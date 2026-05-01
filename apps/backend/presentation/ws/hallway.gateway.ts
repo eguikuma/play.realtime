@@ -27,6 +27,7 @@ import { LeaveHallwayCall } from "../../application/hallway/leave-call.usecase";
 import { SendHallwayMessage } from "../../application/hallway/send-message.usecase";
 import { topic } from "../../application/hallway/topic";
 import { GetRoomMembership } from "../../application/room/get-membership.usecase";
+import { RoomPresence } from "../../application/room/presence";
 import { load } from "../../environment";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { WsConnection, WsHub } from "../../infrastructure/transport/ws";
@@ -63,6 +64,7 @@ export class HallwayGateway implements OnModuleInit {
     private readonly hub: WsHub,
     private readonly ids: NanoidIdGenerator,
     private readonly counter: HallwayConnectionCounter,
+    private readonly presence: RoomPresence,
     private readonly membership: GetRoomMembership,
     private readonly getSnapshot: GetHallwaySnapshot,
     private readonly invite: InviteHallway,
@@ -136,6 +138,7 @@ export class HallwayGateway implements OnModuleInit {
     const connectionId = this.ids.connection() as ConnectionId;
     const connection = new WsConnection(connectionId, memberId, roomId, ws);
 
+    this.presence.register(roomId);
     this.hub.attach(connection, {
       topic: topic(roomId, memberId),
       onAttach: async (attached) => {
@@ -150,6 +153,7 @@ export class HallwayGateway implements OnModuleInit {
     });
 
     connection.onClose(() => {
+      this.presence.deregister(roomId);
       const { isLast } = this.counter.detach(roomId, memberId);
       if (!isLast) {
         return;

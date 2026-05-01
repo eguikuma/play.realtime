@@ -4,6 +4,7 @@ import type { Response } from "express";
 import { GetMurmurSnapshot } from "../../application/murmur/get-snapshot.usecase";
 import { PostMurmur } from "../../application/murmur/post.usecase";
 import { topic } from "../../application/murmur/topic";
+import { RoomPresence } from "../../application/room/presence";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { SseConnection, SseHub } from "../../infrastructure/transport/sse";
 import { CurrentMember } from "../../shared/decorators/current-member.decorator";
@@ -23,6 +24,7 @@ export class MurmursController {
   constructor(
     private readonly posting: PostMurmur,
     private readonly snapshot: GetMurmurSnapshot,
+    private readonly presence: RoomPresence,
     private readonly hub: SseHub,
     private readonly ids: NanoidIdGenerator,
   ) {}
@@ -53,12 +55,16 @@ export class MurmursController {
     @Res() response: Response,
   ): void {
     const connection = new SseConnection(this.ids.connection(), member.id, roomId, response);
+    this.presence.register(roomId);
     this.hub.attach(connection, {
       topic: topic(roomId),
       onAttach: async (attached) => {
         const items = await this.snapshot.execute({ roomId });
         attached.emit("Snapshot", { items });
       },
+    });
+    connection.onClose(() => {
+      this.presence.deregister(roomId);
     });
   }
 }

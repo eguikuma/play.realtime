@@ -3,6 +3,7 @@ import type { Response } from "express";
 import { describe, expect, it, vi } from "vitest";
 import type { GetMurmurSnapshot } from "../../application/murmur/get-snapshot.usecase";
 import type { PostMurmur } from "../../application/murmur/post.usecase";
+import { RoomPresence } from "../../application/room/presence";
 import type { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { SseConnection, type SseHub } from "../../infrastructure/transport/sse";
 import { MurmursController } from "./murmurs.controller";
@@ -23,6 +24,7 @@ const buildController = (
   overrides: {
     posting?: Partial<PostMurmur>;
     snapshot?: Partial<GetMurmurSnapshot>;
+    presence?: RoomPresence;
     hub?: Partial<SseHub>;
     ids?: Partial<NanoidIdGenerator>;
   } = {},
@@ -35,6 +37,7 @@ const buildController = (
     execute: vi.fn(async () => []),
     ...overrides.snapshot,
   } as unknown as GetMurmurSnapshot;
+  const presence = overrides.presence ?? new RoomPresence();
   const hub = {
     attach: vi.fn(),
     broadcast: vi.fn(),
@@ -45,9 +48,10 @@ const buildController = (
     ...overrides.ids,
   } as unknown as NanoidIdGenerator;
   return {
-    controller: new MurmursController(posting, snapshot, hub, ids),
+    controller: new MurmursController(posting, snapshot, presence, hub, ids),
     posting,
     snapshot,
+    presence,
     hub,
     ids,
   };

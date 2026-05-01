@@ -5,6 +5,7 @@ import type { GetBgmSnapshot } from "../../application/bgm/get-snapshot.usecase"
 import type { SetBgm } from "../../application/bgm/set.usecase";
 import type { StopBgm } from "../../application/bgm/stop.usecase";
 import type { UndoBgm } from "../../application/bgm/undo.usecase";
+import { RoomPresence } from "../../application/room/presence";
 import type { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { SseConnection, type SseHub } from "../../infrastructure/transport/sse";
 import { BgmsController } from "./bgms.controller";
@@ -21,6 +22,7 @@ const buildController = (
     stopper?: Partial<StopBgm>;
     undoer?: Partial<UndoBgm>;
     snapshot?: Partial<GetBgmSnapshot>;
+    presence?: RoomPresence;
     hub?: Partial<SseHub>;
     ids?: Partial<NanoidIdGenerator>;
   } = {},
@@ -41,6 +43,7 @@ const buildController = (
     execute: vi.fn(async () => ({ state: emptyState })),
     ...overrides.snapshot,
   } as unknown as GetBgmSnapshot;
+  const presence = overrides.presence ?? new RoomPresence();
   const hub = {
     attach: vi.fn(),
     broadcast: vi.fn(),
@@ -51,11 +54,12 @@ const buildController = (
     ...overrides.ids,
   } as unknown as NanoidIdGenerator;
   return {
-    controller: new BgmsController(setter, stopper, undoer, snapshot, hub, ids),
+    controller: new BgmsController(setter, stopper, undoer, snapshot, presence, hub, ids),
     setter,
     stopper,
     undoer,
     snapshot,
+    presence,
     hub,
     ids,
   };

@@ -29,6 +29,7 @@ const buildPubSub = () => {
         }),
       };
     }),
+    closeByPrefix: vi.fn(),
   };
   return { pubsub, subscribers };
 };

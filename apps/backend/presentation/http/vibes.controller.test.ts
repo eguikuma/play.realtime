@@ -2,6 +2,7 @@ import { type ConnectionId, type MemberId, type RoomId } from "@play.realtime/co
 import type { Response } from "express";
 import { describe, expect, it, vi } from "vitest";
 import type { GetRoomMembership } from "../../application/room/get-membership.usecase";
+import { RoomPresence } from "../../application/room/presence";
 import type { ChangeVibeStatus } from "../../application/vibe/change-status.usecase";
 import type { GetVibeSnapshot } from "../../application/vibe/get-snapshot.usecase";
 import type { NotifyVibeJoined } from "../../application/vibe/notify-joined.usecase";
@@ -21,6 +22,7 @@ const buildController = (
     notifyLeft?: Partial<NotifyVibeLeft>;
     changeStatus?: Partial<ChangeVibeStatus>;
     membership?: Partial<GetRoomMembership>;
+    presence?: RoomPresence;
     hub?: Partial<SseHub>;
     ids?: Partial<NanoidIdGenerator>;
   } = {},
@@ -48,6 +50,7 @@ const buildController = (
     })),
     ...overrides.membership,
   } as unknown as GetRoomMembership;
+  const presence = overrides.presence ?? new RoomPresence();
   const hub = {
     attach: vi.fn(),
     broadcast: vi.fn(),
@@ -64,6 +67,7 @@ const buildController = (
       notifyLeft,
       changeStatus,
       membership,
+      presence,
       hub,
       ids,
     ),
@@ -72,6 +76,7 @@ const buildController = (
     notifyLeft,
     changeStatus,
     membership,
+    presence,
     hub,
     ids,
   };

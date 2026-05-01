@@ -12,6 +12,7 @@ import { SetBgm } from "../../application/bgm/set.usecase";
 import { StopBgm } from "../../application/bgm/stop.usecase";
 import { topic } from "../../application/bgm/topic";
 import { UndoBgm } from "../../application/bgm/undo.usecase";
+import { RoomPresence } from "../../application/room/presence";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { SseConnection, SseHub } from "../../infrastructure/transport/sse";
 import { CurrentMember } from "../../shared/decorators/current-member.decorator";
@@ -33,6 +34,7 @@ export class BgmsController {
     private readonly stopper: StopBgm,
     private readonly undoer: UndoBgm,
     private readonly snapshot: GetBgmSnapshot,
+    private readonly presence: RoomPresence,
     private readonly hub: SseHub,
     private readonly ids: NanoidIdGenerator,
   ) {}
@@ -48,12 +50,16 @@ export class BgmsController {
   ): void {
     const connectionId = this.ids.connection() as ConnectionId;
     const connection = new SseConnection(connectionId, member.id, roomId, response);
+    this.presence.register(roomId);
     this.hub.attach(connection, {
       topic: topic(roomId),
       onAttach: async (attached) => {
         const snapshot = await this.snapshot.execute({ roomId });
         attached.emit("Snapshot", snapshot);
       },
+    });
+    connection.onClose(() => {
+      this.presence.deregister(roomId);
     });
   }
 
