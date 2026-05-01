@@ -1,0 +1,178 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { PubSub, Subscription } from "../../../application/ports/pubsub";
+import type { WsConnection } from "./connection";
+import { WsHeartbeat } from "./heartbeat";
+import { WsHub } from "./hub";
+
+type Handler = (payload: unknown) => void;
+type MessageHandler = (raw: string) => void;
+
+const buildPubSub = () => {
+  const subscribers = new Map<string, Handler[]>();
+  const pubsub: PubSub = {
+    publish: vi.fn(async (topic, payload) => {
+      for (const handler of subscribers.get(topic) ?? []) {
+        handler(payload);
+      }
+    }),
+    subscribe: vi.fn((topic, handler): Subscription => {
+      const list = subscribers.get(topic) ?? [];
+      list.push(handler as Handler);
+      subscribers.set(topic, list);
+      return {
+        unsubscribe: vi.fn(() => {
+          const current = subscribers.get(topic) ?? [];
+          subscribers.set(
+            topic,
+            current.filter((entry) => entry !== handler),
+          );
+        }),
+      };
+    }),
+  };
+  return { pubsub, subscribers };
+};
+
+const buildConnection = () => {
+  const closeHandlers: Array<() => void> = [];
+  const messageHandlers: MessageHandler[] = [];
+  const connection = {
+    send: vi.fn(),
+    close: vi.fn(),
+    onMessage: vi.fn((handler: MessageHandler) => {
+      messageHandlers.push(handler);
+    }),
+    onClose: vi.fn((callback: () => void) => {
+      closeHandlers.push(callback);
+    }),
+  } as unknown as WsConnection;
+
+  const fireClose = () => {
+    for (const handler of closeHandlers) {
+      handler();
+    }
+  };
+  const fireMessage = (raw: string) => {
+    for (const handler of messageHandlers) {
+      handler(raw);
+    }
+  };
+
+  return { connection, fireClose, fireMessage };
+};
+
+const buildHeartbeat = (stop: () => void = () => {}, onPong: () => void = () => {}) => {
+  const heartbeat = new WsHeartbeat();
+  vi.spyOn(heartbeat, "start").mockReturnValue({ stop, onPong });
+  return heartbeat;
+};
+
+describe("WsHub", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("接続を紐付けるとハートビートを開始しトピックを購読する", () => {
+    const { pubsub, subscribers } = buildPubSub();
+    const hub = new WsHub(pubsub, buildHeartbeat());
+    const { connection } = buildConnection();
+
+    hub.attach(connection, { topic: "room:abc:hallway" });
+
+    expect(subscribers.get("room:abc:hallway")?.length).toBe(1);
+  });
+
+  it("クライアントが切断すると購読とハートビートを自動で解除する", () => {
+    const { pubsub, subscribers } = buildPubSub();
+    const stop = vi.fn();
+    const hub = new WsHub(pubsub, buildHeartbeat(stop));
+    const { connection, fireClose } = buildConnection();
+
+    hub.attach(connection, { topic: "room:abc:hallway" });
+    fireClose();
+
+    expect(subscribers.get("room:abc:hallway")?.length).toBe(0);
+    expect(stop).toHaveBeenCalledOnce();
+  });
+
+  it("ブロードキャストは封筒形式で PubSub に流す", async () => {
+    const { pubsub } = buildPubSub();
+    const hub = new WsHub(pubsub, buildHeartbeat());
+
+    await hub.broadcast("room:abc:hallway", "Invited", { invitationId: "i1" });
+
+    expect(pubsub.publish).toHaveBeenCalledWith("room:abc:hallway", {
+      name: "Invited",
+      data: { invitationId: "i1" },
+    });
+  });
+
+  it("トピックへの publish 後に購読中の接続へ封筒を転送する", async () => {
+    const { pubsub } = buildPubSub();
+    const hub = new WsHub(pubsub, buildHeartbeat());
+    const { connection } = buildConnection();
+
+    hub.attach(connection, { topic: "room:abc:hallway" });
+    await hub.broadcast("room:abc:hallway", "Message", { text: "hi" });
+
+    expect(connection.send).toHaveBeenCalledWith("Message", { text: "hi" });
+  });
+
+  it("Pong 封筒の受信は onMessage に渡さずハートビートにのみ通知する", () => {
+    const { pubsub } = buildPubSub();
+    const onPong = vi.fn();
+    const hub = new WsHub(
+      pubsub,
+      buildHeartbeat(() => {}, onPong),
+    );
+    const { connection, fireMessage } = buildConnection();
+    const onMessage = vi.fn();
+
+    hub.attach(connection, { topic: "room:abc:hallway", onMessage });
+    fireMessage(`{"name":"Pong","data":{}}`);
+
+    expect(onPong).toHaveBeenCalledOnce();
+    expect(onMessage).not.toHaveBeenCalled();
+  });
+
+  it("Pong 以外の封筒は onMessage に転送する", () => {
+    const { pubsub } = buildPubSub();
+    const hub = new WsHub(pubsub, buildHeartbeat());
+    const { connection, fireMessage } = buildConnection();
+    const onMessage = vi.fn();
+
+    hub.attach(connection, { topic: "room:abc:hallway", onMessage });
+    fireMessage(`{"name":"Invite","data":{"targetMemberId":"m2"}}`);
+
+    expect(onMessage).toHaveBeenCalledWith(connection, {
+      name: "Invite",
+      data: { targetMemberId: "m2" },
+    });
+  });
+
+  it("不正な JSON や name を持たないメッセージは無視する", () => {
+    const { pubsub } = buildPubSub();
+    const hub = new WsHub(pubsub, buildHeartbeat());
+    const { connection, fireMessage } = buildConnection();
+    const onMessage = vi.fn();
+
+    hub.attach(connection, { topic: "room:abc:hallway", onMessage });
+    fireMessage("not-json");
+    fireMessage(`{"data":"missing-name"}`);
+    fireMessage(`{"name":123}`);
+
+    expect(onMessage).not.toHaveBeenCalled();
+  });
+
+  it("接続時の初期処理 callback を実行する", async () => {
+    const { pubsub } = buildPubSub();
+    const hub = new WsHub(pubsub, buildHeartbeat());
+    const { connection } = buildConnection();
+    const onAttach = vi.fn();
+
+    hub.attach(connection, { topic: "room:abc:hallway", onAttach });
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(onAttach).toHaveBeenCalledWith(connection);
+  });
+});
