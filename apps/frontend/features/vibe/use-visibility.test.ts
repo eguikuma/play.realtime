@@ -20,7 +20,7 @@ describe("useVisibility", () => {
     setVisibility("visible");
   });
 
-  it("enabled が false なら onChange を呼ばない", () => {
+  it("`enabled` が `false` なら `onChange` を呼ばない", () => {
     const onChange = vi.fn();
     renderHook(() => useVisibility({ enabled: false, onChange }));
 
@@ -31,7 +31,7 @@ describe("useVisibility", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it("マウント時に現在の visibility に応じて present を通知する", () => {
+  it("マウント時に `visibility` が `visible` なら `present` を通知する", () => {
     setVisibility("visible");
     const onChange = vi.fn();
     renderHook(() => useVisibility({ enabled: true, onChange }));
@@ -39,7 +39,7 @@ describe("useVisibility", () => {
     expect(onChange).toHaveBeenCalledWith("present");
   });
 
-  it("マウント時に visibility が hidden なら focused を通知する", () => {
+  it("マウント時に `visibility` が `hidden` なら `focused` を通知する", () => {
     setVisibility("hidden");
     const onChange = vi.fn();
     renderHook(() => useVisibility({ enabled: true, onChange }));
@@ -47,7 +47,7 @@ describe("useVisibility", () => {
     expect(onChange).toHaveBeenCalledWith("focused");
   });
 
-  it("visibility 変化で present と focused を切り替える", () => {
+  it("`visibility` の変化で `present` と `focused` を切り替える", () => {
     setVisibility("visible");
     const onChange = vi.fn();
     renderHook(() => useVisibility({ enabled: true, onChange }));
@@ -63,7 +63,7 @@ describe("useVisibility", () => {
     expect(onChange).toHaveBeenLastCalledWith("present");
   });
 
-  it("同じ visibility への遷移では重複通知しない", () => {
+  it("同じ `visibility` への遷移では重複通知しない", () => {
     setVisibility("visible");
     const onChange = vi.fn();
     renderHook(() => useVisibility({ enabled: true, onChange }));
@@ -77,7 +77,7 @@ describe("useVisibility", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it("unmount では listener を解除する", () => {
+  it("アンマウント時に `visibilitychange` リスナーを解除する", () => {
     setVisibility("visible");
     const onChange = vi.fn();
     const { unmount } = renderHook(() => useVisibility({ enabled: true, onChange }));
