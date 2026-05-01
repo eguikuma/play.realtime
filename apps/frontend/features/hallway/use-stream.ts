@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import type { z } from "zod";
 import { useConnectionStatus } from "@/libraries/connection-status/store";
 import { wsOrigin } from "@/libraries/environment";
-import { useWs } from "@/libraries/transport/ws";
+import { useWs, WsState } from "@/libraries/transport/ws";
 import { ws } from "@/libraries/ws-client";
 
 import { hallwayErrorMessages } from "./errors";
@@ -15,7 +15,7 @@ import { useHallway } from "./store";
 /**
  * 廊下トークの WebSocket 購読を張り、受信イベントをストアへ転写するフック
  * `CommandFailed` は自分宛の rejected 通知として扱い、`hallwayErrorMessages` 経由で Sonner トーストに中継する
- * 切断時クリーンアップで `send` を `null` に戻し、`connectionId` もリセットして「接続なし」の状態を明示する
+ * `send` は接続が `Open` の間だけストアへ公開し、再接続中や切断中は `null` に戻して送信ボタンが no-op に倒れないようにする
  */
 export const useStream = (roomId: RoomId | null) => {
   const setConnectionId = useHallway((state) => state.setConnectionId);
@@ -59,14 +59,11 @@ export const useStream = (roomId: RoomId | null) => {
   }, [state, setStatus]);
 
   useEffect(() => {
-    if (!url) {
+    if (state !== WsState.Open) {
       setSend(null);
+      setConnectionId(null);
       return;
     }
     setSend(send);
-    return () => {
-      setSend(null);
-      setConnectionId(null);
-    };
-  }, [url, send, setSend, setConnectionId]);
+  }, [state, send, setSend, setConnectionId]);
 };
