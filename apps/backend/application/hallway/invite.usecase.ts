@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { Invitation, MemberId, RoomId } from "@play.realtime/contracts";
-import { canInvite, HallwayRepository } from "../../domain/hallway";
+import { canInvite, HallwayRepository, isBusy, type MemberEngagements } from "../../domain/hallway";
 import { VibeRepository } from "../../domain/vibe";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { HallwayBroadcaster } from "./broadcaster";
@@ -28,7 +28,7 @@ export class InviteHallway {
   ) {}
 
   /**
-   * 招待者と被招待者の取り込み状況、被招待者の Vibe を並列取得し、`canInvite` で不成立ケースを弾く
+   * 招待者と被招待者の関与状態、被招待者の Vibe を並列取得し、`canInvite` で不成立ケースを弾く
    * 招待を保存した後に 10 秒の失効タイマーを登録し、`Invited` をルーム全体へ配信する
    */
   async execute(input: {
@@ -36,17 +36,17 @@ export class InviteHallway {
     inviterId: MemberId;
     inviteeId: MemberId;
   }): Promise<Invitation> {
-    const [inviterBusy, inviteeBusy, inviteeStatus] = await Promise.all([
-      this.isBusy(input.inviterId),
-      this.isBusy(input.inviteeId),
+    const [inviterEngagements, inviteeEngagements, inviteeStatus] = await Promise.all([
+      this.fetchEngagements(input.inviterId),
+      this.fetchEngagements(input.inviteeId),
       this.vibes.get(input.roomId, input.inviteeId),
     ]);
 
     canInvite({
-      inviter: { id: input.inviterId, busy: inviterBusy },
+      inviter: { id: input.inviterId, busy: isBusy(inviterEngagements) },
       invitee: {
         id: input.inviteeId,
-        busy: inviteeBusy,
+        busy: isBusy(inviteeEngagements),
         present: inviteeStatus === "present",
       },
     });
@@ -70,14 +70,15 @@ export class InviteHallway {
   }
 
   /**
-   * 対象メンバーが発信中招待、着信中招待、通話中のいずれかに該当すれば取り込み中と判定する
+   * 対象メンバーの発信中招待、着信中招待、通話を並列で集めて `MemberEngagements` に詰めて返す
+   * 取り込み中判定そのものは domain 関数 `isBusy` に委譲し、ここでは状態の収集だけに責務を絞る
    */
-  private async isBusy(memberId: MemberId): Promise<boolean> {
+  private async fetchEngagements(memberId: MemberId): Promise<MemberEngagements> {
     const [outgoing, incoming, call] = await Promise.all([
       this.hallway.findOutgoingInvitation(memberId),
       this.hallway.findIncomingInvitation(memberId),
       this.hallway.findCallForMember(memberId),
     ]);
-    return outgoing !== null || incoming !== null || call !== null;
+    return { outgoing, incoming, call };
   }
 }
