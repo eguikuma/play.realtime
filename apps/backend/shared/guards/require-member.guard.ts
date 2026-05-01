@@ -22,6 +22,7 @@ export class RequireMember implements CanActivate {
     if (!parsed.success) {
       throw new UnauthorizedException("memberId cookie is missing or invalid");
     }
+
     request.member = { id: parsed.data };
     return true;
   }

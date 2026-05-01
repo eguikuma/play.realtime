@@ -30,11 +30,8 @@ import { dispatchHallwayCommand, type HallwayCommandHandlers } from "./hallway-d
 @Injectable()
 export class HallwayGateway implements OnModuleInit {
   private readonly logger = new Logger(HallwayGateway.name);
-
   private readonly wsServer = new WebSocketServer({ noServer: true });
-
   private readonly environment = load();
-
   private readonly endpointPattern = /^\/rooms\/([^/?#]+)\/hallway(?:\?.*)?$/;
 
   constructor(
