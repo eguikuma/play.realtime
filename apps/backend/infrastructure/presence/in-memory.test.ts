@@ -11,7 +11,7 @@ describe("InMemoryRoomPresence", () => {
     const listener = vi.fn();
     presence.onTransition(listener);
 
-    presence.register(room);
+    presence.attach(room);
 
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "populated" });
   });
@@ -19,10 +19,10 @@ describe("InMemoryRoomPresence", () => {
   it("同じルームの 2 本目の接続では `populated` を配信しない", () => {
     const presence = new InMemoryRoomPresence();
     const listener = vi.fn();
-    presence.register(room);
+    presence.attach(room);
     presence.onTransition(listener);
 
-    presence.register(room);
+    presence.attach(room);
 
     expect(listener).not.toHaveBeenCalled();
   });
@@ -30,14 +30,14 @@ describe("InMemoryRoomPresence", () => {
   it("最終接続の切断で `empty` を配信する", () => {
     const presence = new InMemoryRoomPresence();
     const listener = vi.fn();
-    presence.register(room);
-    presence.register(room);
+    presence.attach(room);
+    presence.attach(room);
     presence.onTransition(listener);
 
-    presence.deregister(room);
+    presence.detach(room);
     expect(listener).not.toHaveBeenCalled();
 
-    presence.deregister(room);
+    presence.detach(room);
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "empty" });
   });
 
@@ -46,7 +46,7 @@ describe("InMemoryRoomPresence", () => {
     const listener = vi.fn();
     presence.onTransition(listener);
 
-    expect(() => presence.deregister(room)).not.toThrow();
+    expect(() => presence.detach(room)).not.toThrow();
     expect(listener).not.toHaveBeenCalled();
   });
 
@@ -55,9 +55,9 @@ describe("InMemoryRoomPresence", () => {
     const listener = vi.fn();
     presence.onTransition(listener);
 
-    presence.register(room);
-    presence.register(other);
-    presence.deregister(room);
+    presence.attach(room);
+    presence.attach(other);
+    presence.detach(room);
 
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "populated" });
     expect(listener).toHaveBeenCalledWith({ roomId: other, kind: "populated" });
@@ -68,11 +68,11 @@ describe("InMemoryRoomPresence", () => {
   it("空になった後に再び登録すると `populated` を再配信する", () => {
     const presence = new InMemoryRoomPresence();
     const listener = vi.fn();
-    presence.register(room);
-    presence.deregister(room);
+    presence.attach(room);
+    presence.detach(room);
     presence.onTransition(listener);
 
-    presence.register(room);
+    presence.attach(room);
 
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "populated" });
   });
@@ -83,7 +83,7 @@ describe("InMemoryRoomPresence", () => {
     const subscription = presence.onTransition(listener);
 
     subscription.unsubscribe();
-    presence.register(room);
+    presence.attach(room);
 
     expect(listener).not.toHaveBeenCalled();
   });
@@ -97,7 +97,7 @@ describe("InMemoryRoomPresence", () => {
     presence.onTransition(failing);
     presence.onTransition(healthy);
 
-    presence.register(room);
+    presence.attach(room);
 
     expect(failing).toHaveBeenCalledTimes(1);
     expect(healthy).toHaveBeenCalledWith({ roomId: room, kind: "populated" });
@@ -105,10 +105,10 @@ describe("InMemoryRoomPresence", () => {
 
   it("`countConnections` は現在の総接続数を返す", async () => {
     const presence = new InMemoryRoomPresence();
-    presence.register(room);
-    presence.register(room);
-    presence.register(room);
-    presence.deregister(room);
+    presence.attach(room);
+    presence.attach(room);
+    presence.attach(room);
+    presence.detach(room);
 
     expect(await presence.countConnections(room)).toBe(2);
   });

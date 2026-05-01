@@ -55,7 +55,7 @@ export class MurmursController {
     @Res() response: Response,
   ): void {
     const connection = new SseConnection(this.ids.connection(), member.id, roomId, response);
-    this.presence.register(roomId);
+    this.presence.attach(roomId);
     this.hub.attach(connection, {
       topic: Topic.room(roomId),
       onAttach: async (attached) => {
@@ -64,7 +64,7 @@ export class MurmursController {
       },
     });
     connection.onClose(() => {
-      this.presence.deregister(roomId);
+      this.presence.detach(roomId);
     });
   }
 }

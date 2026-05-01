@@ -20,18 +20,18 @@ export type PresenceSubscription = {
 
 /**
  * ルームごとの現在接続数をカウントして、`empty` と `populated` の遷移をリスナーへ通知するサービスの port 型
- * `register` と `deregister` は SSE と WebSocket の両方の transport 層から呼ばれる
+ * `attach` と `detach` は SSE と WebSocket の両方の transport 層から呼ばれる
  * `onTransition` の購読者は `RoomLifecycle` を主とする
  * 具体実装はインフラ層の `infrastructure/presence/` に置き、in-memory と Redis のどちらに倒すかは `STORAGE_DRIVER` 環境変数で切り替える
  */
 export type RoomPresence = {
   /** 新しい接続を記録し、無人からの復帰ならリスナーへ `populated` を配信する */
-  register: (roomId: RoomId) => void;
+  attach: (roomId: RoomId) => void;
   /**
    * 接続を 1 本減らし、最後の接続が切れたらリスナーへ `empty` を配信する
    * 二重解除は無視する
    * */
-  deregister: (roomId: RoomId) => void;
+  detach: (roomId: RoomId) => void;
   /** 現在のルーム接続数を取得する */
   countConnections: (roomId: RoomId) => Promise<number>;
   /**

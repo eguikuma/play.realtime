@@ -39,62 +39,62 @@ describe.skipIf(!REDIS_URL)("RedisRoomPresence", () => {
     presence.onTransition(listener);
     await settle();
 
-    presence.register(room);
+    presence.attach(room);
     await settle();
 
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "populated" });
   });
 
   it("同じルームの 2 本目の接続では `populated` を配信しない", async () => {
-    presence.register(room);
+    presence.attach(room);
     await settle();
     const listener = vi.fn();
     presence.onTransition(listener);
     await settle();
 
-    presence.register(room);
+    presence.attach(room);
     await settle();
 
     expect(listener).not.toHaveBeenCalled();
   });
 
   it("最終接続の切断で `empty` を配信する", async () => {
-    presence.register(room);
-    presence.register(room);
+    presence.attach(room);
+    presence.attach(room);
     await settle();
     const listener = vi.fn();
     presence.onTransition(listener);
     await settle();
 
-    presence.deregister(room);
+    presence.detach(room);
     await settle();
     expect(listener).not.toHaveBeenCalled();
 
-    presence.deregister(room);
+    presence.detach(room);
     await settle();
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "empty" });
   });
 
   it("`countConnections` は現在の総接続数を返す", async () => {
-    presence.register(room);
-    presence.register(room);
-    presence.register(room);
-    presence.deregister(room);
+    presence.attach(room);
+    presence.attach(room);
+    presence.attach(room);
+    presence.detach(room);
     await settle();
 
     expect(await presence.countConnections(room)).toBe(2);
   });
 
   it("空になった後に再び登録すると `populated` を再配信する", async () => {
-    presence.register(room);
+    presence.attach(room);
     await settle();
-    presence.deregister(room);
+    presence.detach(room);
     await settle();
     const listener = vi.fn();
     presence.onTransition(listener);
     await settle();
 
-    presence.register(room);
+    presence.attach(room);
     await settle();
 
     expect(listener).toHaveBeenCalledWith({ roomId: room, kind: "populated" });
@@ -106,7 +106,7 @@ describe.skipIf(!REDIS_URL)("RedisRoomPresence", () => {
     await settle();
 
     subscription.unsubscribe();
-    presence.register(room);
+    presence.attach(room);
     await settle();
 
     expect(listener).not.toHaveBeenCalled();

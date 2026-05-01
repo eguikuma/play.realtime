@@ -38,8 +38,8 @@ describe("RoomLifecycle", () => {
     lifecycle.registerCleanup(failing);
     lifecycle.registerCleanup(healthy);
 
-    presence.register(room);
-    presence.deregister(room);
+    presence.attach(room);
+    presence.detach(room);
     await vi.advanceTimersByTimeAsync(1_000);
 
     expect(failing).toHaveBeenCalledTimes(1);
@@ -55,8 +55,8 @@ describe("RoomLifecycle", () => {
     const cleanup = vi.fn(async () => undefined);
     lifecycle.registerCleanup(cleanup);
 
-    presence.register(room);
-    presence.deregister(room);
+    presence.attach(room);
+    presence.detach(room);
     await lifecycle.destroy(room);
 
     expect(cleanup).toHaveBeenCalledWith(room);

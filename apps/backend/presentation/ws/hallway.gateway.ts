@@ -162,7 +162,7 @@ export class HallwayGateway implements OnModuleInit {
     const connectionId = this.ids.connection();
     const connection = new WsConnection(connectionId, memberId, roomId, ws);
 
-    this.presence.register(roomId);
+    this.presence.attach(roomId);
     this.hub.attach(connection, {
       topics: [Topic.room(roomId), Topic.message(roomId, memberId)],
       onAttach: async (attached) => {
@@ -177,7 +177,7 @@ export class HallwayGateway implements OnModuleInit {
     });
 
     connection.onClose(() => {
-      this.presence.deregister(roomId);
+      this.presence.detach(roomId);
       void this.counter
         .detach(roomId, memberId)
         .then(({ isLast }) => {

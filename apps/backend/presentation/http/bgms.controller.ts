@@ -43,7 +43,7 @@ export class BgmsController {
   ): void {
     const connectionId = this.ids.connection();
     const connection = new SseConnection(connectionId, member.id, roomId, response);
-    this.presence.register(roomId);
+    this.presence.attach(roomId);
     this.hub.attach(connection, {
       topic: Topic.room(roomId),
       onAttach: async (attached) => {
@@ -52,7 +52,7 @@ export class BgmsController {
       },
     });
     connection.onClose(() => {
-      this.presence.deregister(roomId);
+      this.presence.detach(roomId);
     });
   }
 

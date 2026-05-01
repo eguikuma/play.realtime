@@ -9,15 +9,15 @@ import type {
 
 /**
  * `RoomPresence` port の in-memory 実装、単一プロセスの `Map` でルーム別の接続数をカウントする
- * `register` で 0→1 へ遷移したら `populated` をリスナー全件に同期配信する
- * `deregister` で 1→0 へ遷移したら `empty` をリスナー全件に同期配信する
+ * `attach` で 0→1 へ遷移したら `populated` をリスナー全件に同期配信する
+ * `detach` で 1→0 へ遷移したら `empty` をリスナー全件に同期配信する
  */
 @Injectable()
 export class InMemoryRoomPresence implements RoomPresence {
   private readonly counts = new Map<RoomId, number>();
   private readonly listeners = new Set<PresenceListener>();
 
-  register(roomId: RoomId): void {
+  attach(roomId: RoomId): void {
     const before = this.counts.get(roomId) ?? 0;
     this.counts.set(roomId, before + 1);
     if (before === 0) {
@@ -25,7 +25,7 @@ export class InMemoryRoomPresence implements RoomPresence {
     }
   }
 
-  deregister(roomId: RoomId): void {
+  detach(roomId: RoomId): void {
     const before = this.counts.get(roomId) ?? 0;
     if (before <= 0) {
       return;

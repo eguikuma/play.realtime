@@ -48,7 +48,7 @@ export class RedisRoomPresence implements RoomPresence, OnModuleDestroy {
    * 戻り値が 1 でない場合は別接続が既に存在しており、遷移なしとして配信を抑止する
    * 戻り値の Promise は呼び出し側へ返さない fire-and-forget で、Redis 障害時はログのみで他処理を止めない
    */
-  register(roomId: RoomId): void {
+  attach(roomId: RoomId): void {
     this.client.incr(this.key(roomId)).then(
       (after) => {
         if (after === 1) {
@@ -67,10 +67,10 @@ export class RedisRoomPresence implements RoomPresence, OnModuleDestroy {
   /**
    * 接続数 counter を `DECR` で 1 減らし、戻り値が 0 なら 1→0 遷移とみなして `empty` を pub/sub 経由で配信する
    * 0 になった counter key はその場で `DEL` を別コマンドで投げて掃除する
-   * `DEL` 前に新規 register が来ても新しい遷移は次の `INCR` 戻り値で正しく判定される
-   * 戻り値が負なら deregister が register より多く呼ばれた状態で、warn ログを残しつつ counter を `0` に戻して整合を回復する
+   * `DEL` 前に新規 attach が来ても新しい遷移は次の `INCR` 戻り値で正しく判定される
+   * 戻り値が負なら detach が attach より多く呼ばれた状態で、warn ログを残しつつ counter を `0` に戻して整合を回復する
    */
-  deregister(roomId: RoomId): void {
+  detach(roomId: RoomId): void {
     this.client.decr(this.key(roomId)).then(
       (after) => {
         if (after === 0) {
