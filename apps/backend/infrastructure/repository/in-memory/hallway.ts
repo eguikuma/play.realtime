@@ -9,6 +9,12 @@ import type {
 } from "@play.realtime/contracts";
 import type { HallwayRepository } from "../../../domain/hallway";
 
+/**
+ * `HallwayRepository` の in-memory 実装
+ * 招待と通話の両集約を、ID の主マップと複数の二次インデックスで保持する
+ * 主マップは招待 / 通話本体、二次インデックスは発信者 / 受信者 / 参加者 / ルーム別の高速検索用で、全削除はルーム別インデックス経由で辿る
+ * 不変条件として「メンバー 1 人が同時に持てる発信中招待は 1 件、着信中招待は 1 件、通話は 1 件」を仮定し、上書き保存は意図的に許容する
+ */
 @Injectable()
 export class InMemoryHallwayRepository implements HallwayRepository {
   private readonly invitations = new Map<InvitationId, Invitation>();
@@ -69,6 +75,10 @@ export class InMemoryHallwayRepository implements HallwayRepository {
     return result;
   }
 
+  /**
+   * 主マップと全二次インデックスから同じ招待を整合的に削除する
+   * ルーム別インデックスは最後の要素が消えた時点で空 `Set` を取り除き、古いキーが残らないようにする
+   */
   async deleteInvitation(id: InvitationId): Promise<void> {
     const invitation = this.invitations.get(id);
     if (!invitation) {
@@ -141,6 +151,10 @@ export class InMemoryHallwayRepository implements HallwayRepository {
     }
   }
 
+  /**
+   * 指定ルームに紐づく全招待と全通話を削除する、ルーム閉鎖時の一括クリーンアップで呼ばれる
+   * 主マップと二次インデックスの両方から同時に落とし、残骸を残さないようにする
+   */
   async remove(roomId: RoomId): Promise<void> {
     const invitationIds = this.invitationsByRoom.get(roomId);
     if (invitationIds) {

@@ -2,6 +2,9 @@ import { Injectable } from "@nestjs/common";
 import type { Room, RoomId } from "@play.realtime/contracts";
 import type { RoomRepository } from "../../../domain/room";
 
+/**
+ * `RoomRepository` の in-memory 実装、単一プロセスの `Map` に `Room` を ID キーで保持する
+ */
 @Injectable()
 export class InMemoryRoomRepository implements RoomRepository {
   private readonly store = new Map<RoomId, Room>();

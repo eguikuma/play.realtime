@@ -3,6 +3,10 @@ import type { ConnectionId, MemberId, RoomId, Vibe, VibeStatus } from "@play.rea
 import type { VibeRepository } from "../../../domain/vibe";
 import { aggregate } from "../../../domain/vibe";
 
+/**
+ * `VibeRepository` の in-memory 実装、ルーム メンバー 接続の 3 段マップで接続単位の状態を保持する
+ * メンバー単位の集約は毎回ドメイン関数 `aggregate` で動的に導出し、集約結果を別途キャッシュしないことで一貫性を確保する
+ */
 @Injectable()
 export class InMemoryVibeRepository implements VibeRepository {
   private readonly store = new Map<RoomId, Map<MemberId, Map<ConnectionId, VibeStatus>>>();
@@ -23,6 +27,9 @@ export class InMemoryVibeRepository implements VibeRepository {
     return { isFirst, aggregated };
   }
 
+  /**
+   * 既存の接続だけを更新する、対象接続が未登録なら `updated` を `false` で返して呼び出し側の配信を止める
+   */
   async update(
     roomId: RoomId,
     memberId: MemberId,
@@ -37,6 +44,10 @@ export class InMemoryVibeRepository implements VibeRepository {
     return { updated: true, aggregated: aggregate([...connections.values()]) };
   }
 
+  /**
+   * 接続 1 本を削除し、そのメンバー最後の接続だった場合はメンバー単位マップからも除去する
+   * 既に全接続が落ちているケースでも `isLast: true` を返して、呼び出し側の通知判定を統一する
+   */
   async delete(
     roomId: RoomId,
     memberId: MemberId,

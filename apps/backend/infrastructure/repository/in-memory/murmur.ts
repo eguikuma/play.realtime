@@ -2,6 +2,10 @@ import { Injectable } from "@nestjs/common";
 import type { Murmur, RoomId } from "@play.realtime/contracts";
 import type { MurmurRepository } from "../../../domain/murmur";
 
+/**
+ * `MurmurRepository` の in-memory 実装、ルーム単位で投稿を配列として push で追加する
+ * 投稿順序は配列のインデックスに依存し、`latest` は末尾から指定件数を切り出して古い順で返す
+ */
 @Injectable()
 export class InMemoryMurmurRepository implements MurmurRepository {
   private readonly store = new Map<RoomId, Murmur[]>();
