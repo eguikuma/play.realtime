@@ -1,6 +1,6 @@
 "use client";
 
-import { Backdrop, Shell } from "../layout";
+import { Backdrop, Shell } from "@/components/layout";
 import { Create } from "./create";
 import { Join } from "./join";
 import { Tabs } from "./tabs";

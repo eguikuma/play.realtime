@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Backdrop, Notice } from "@/features/room/layout";
+import { Backdrop, Notice } from "@/components/layout";
 
 /**
  * どのルートにも一致しないアクセスを受けたときに表示する 404 画面

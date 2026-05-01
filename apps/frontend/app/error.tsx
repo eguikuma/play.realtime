@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { Backdrop, Notice } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Backdrop, Notice } from "@/features/room/layout";
 
 /**
  * Next.js App Router の既定エラーバウンダリ

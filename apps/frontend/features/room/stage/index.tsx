@@ -2,12 +2,12 @@
 
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { useMemo } from "react";
+import { BrandMark } from "@/components/layout";
 import { BgmStrip } from "@/features/bgm";
 import { HallwayOverlays, useHallway } from "@/features/hallway";
 import { Compose, MurmurBody } from "@/features/murmur";
 import { useVibe, VibeRow } from "@/features/vibe";
 import { useSession } from "@/stores/session";
-import { BrandMark } from "../layout";
 import { useLeave } from "../use-leave";
 import { MeBadge } from "./me-badge";
 
