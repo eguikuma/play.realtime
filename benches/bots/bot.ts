@@ -62,12 +62,23 @@ export class Bot {
 
   async openBgmPanel(): Promise<void> {
     await this.page.getByRole("button", { name: "作業音を開く" }).click();
+    await this.page.getByText("ライブラリ").waitFor({ state: "visible" });
   }
 
-  async pickFirstBgm(): Promise<void> {
+  async pickBgm(title: string): Promise<void> {
     await this.openBgmPanel();
-    const firstTrack = this.page.getByRole("button").filter({ hasText: /^.+$/ }).nth(0);
-    await firstTrack.click();
+    await this.page.getByRole("button").filter({ hasText: title }).first().click();
+    await this.page.getByText("ライブラリ").waitFor({ state: "hidden" });
+  }
+
+  async stopBgm(): Promise<void> {
+    await this.openBgmPanel();
+    await this.page.getByRole("button", { name: "作業音を止める" }).click();
+    await this.page.getByText("ライブラリ").waitFor({ state: "hidden" });
+  }
+
+  async undoBgm(): Promise<void> {
+    await this.page.getByRole("button", { name: "元に戻す" }).click();
   }
 
   async pauseBgm(): Promise<void> {

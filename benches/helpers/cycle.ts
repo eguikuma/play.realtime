@@ -9,12 +9,14 @@ import { type CommandTally, RedisMonitor } from "./monitor.js";
  * 1 サイクル分の調整つまみ
  * `visibilitySchedule` は各メンバーの集中・離席パターンを区間配列で表す、bot ごとに開始位相をずらして使う
  * `murmurRounds` は全メンバーが順に投稿する周回数、`hallwayMessageRounds` は通話中の往復回数
+ * `bgmRounds` はホスト 1 人が選曲と停止と取り消しを 1 セットで回す周回数、0 のときは BGM サイクルを実行しない
  * `graceMs` は退室後に room close grace の経過を待つ余白、ライフサイクル後始末の Redis コマンドまで MONITOR で拾う目的
  */
 export type CycleKnobs = {
   visibilitySchedule: VisibilityWindow[];
   murmurRounds: number;
   hallwayMessageRounds: number;
+  bgmRounds: number;
   graceMs: number;
 };
 
@@ -85,8 +87,16 @@ export const defaultKnobs: CycleKnobs = {
   visibilitySchedule: readScheduleFromEnv(process.env.BENCH_VISIBILITY_SCHEDULE),
   murmurRounds: Number(process.env.BENCH_MURMUR_ROUNDS ?? 5),
   hallwayMessageRounds: Number(process.env.BENCH_HALLWAY_MSG_ROUNDS ?? 5),
+  bgmRounds: Number(process.env.BENCH_BGM_ROUNDS ?? 0),
   graceMs: Number(process.env.BENCH_GRACE_MS ?? 32_000),
 };
+
+/**
+ * BGM サイクルでホストが循環的に選ぶ曲タイトル
+ * stop と undo を経るとひとつ前の選曲に戻るので、ラウンドごとに別タイトルを当てて選曲 → 停止 → 取消 のコマンドを毎回新規発火させる
+ * `apps/frontend/features/bgm/tracks.ts` のタイトルを採取しており、UI 改名時はここも揃える
+ */
+const bgmTitleRotation = ["ブルースバラード", "夜のダンス", "ドラマティック", "ドラムストンプ"];
 
 const redisUrl = process.env.BENCH_REDIS_URL ?? "redis://localhost:6379";
 const reportDirectory = resolve(import.meta.dirname, "../report");
@@ -161,6 +171,27 @@ export const runCycle = async (
     }
 
     await inviter.endHallwayCall();
+
+    if (knobs.bgmRounds > 0) {
+      const aide = bots[1];
+      if (!aide) {
+        throw new Error("BGM サイクルには副の bot が必要、memberCount を 2 以上にする");
+      }
+
+      for (let round = 0; round < knobs.bgmRounds; round += 1) {
+        const title = bgmTitleRotation[round % bgmTitleRotation.length];
+        if (!title) {
+          continue;
+        }
+
+        await host.pickBgm(title);
+        await host.page.waitForTimeout(3_000);
+        await aide.stopBgm();
+        await host.page.waitForTimeout(1_000);
+        await host.undoBgm();
+        await host.page.waitForTimeout(4_000);
+      }
+    }
 
     for (const bot of bots) {
       await bot.stopVisibility();
