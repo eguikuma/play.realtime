@@ -3,7 +3,6 @@ import type { ConnectionId, Member, RoomId } from "@play.realtime/contracts";
 import { VibeRepository } from "../../domain/vibe";
 import { VibeBroadcaster } from "./broadcaster";
 import { VibePresenceGrace } from "./presence-grace";
-import { topic } from "./topic";
 
 /**
  * Vibe SSE 接続確立時に呼ばれ、メンバーの入室を接続単位で記録してから他メンバーへ通知する usecase
@@ -35,13 +34,13 @@ export class NotifyVibeJoined {
     );
     const rejoined = this.grace.cancel(input.roomId, input.member.id);
     if (isFirst && !rejoined) {
-      await this.broadcaster.broadcast(topic(input.roomId), "Joined", {
+      await this.broadcaster.joined(input.roomId, {
         member: input.member,
         status: aggregated,
       });
       return;
     }
-    await this.broadcaster.broadcast(topic(input.roomId), "Updated", {
+    await this.broadcaster.updated(input.roomId, {
       memberId: input.member.id,
       status: aggregated,
     });

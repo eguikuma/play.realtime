@@ -33,8 +33,15 @@ const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => 
   ...overrides,
 });
 
-const buildBroadcaster = (broadcast = vi.fn()): VibeBroadcaster =>
-  ({ broadcast }) as unknown as VibeBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof VibeBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): VibeBroadcaster =>
+  ({
+    joined: vi.fn(),
+    left: vi.fn(),
+    updated: vi.fn(),
+    ...overrides,
+  }) as unknown as VibeBroadcaster;
 
 describe("ChangeVibeStatus", () => {
   it("存在しないルームへの変更は RoomNotFound を投げる", async () => {
@@ -59,14 +66,14 @@ describe("ChangeVibeStatus", () => {
     const vibes = buildVibes({
       update: vi.fn(async () => ({ updated: true, aggregated: "present" as VibeStatus })),
     });
-    const broadcast = vi.fn();
-    const usecase = new ChangeVibeStatus(rooms, vibes, buildBroadcaster(broadcast));
+    const broadcaster = buildBroadcaster();
+    const usecase = new ChangeVibeStatus(rooms, vibes, broadcaster);
 
     await usecase.execute({ roomId, memberId, connectionId, status: "focused" });
 
     expect(vibes.update).toHaveBeenCalledWith(roomId, memberId, connectionId, "focused");
     expect(vibes.save).not.toHaveBeenCalled();
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Updated", {
+    expect(broadcaster.updated).toHaveBeenCalledWith(roomId, {
       memberId,
       status: "present",
     });
@@ -81,13 +88,13 @@ describe("ChangeVibeStatus", () => {
     const vibes = buildVibes({
       update: vi.fn(async () => ({ updated: false, aggregated: null })),
     });
-    const broadcast = vi.fn();
-    const usecase = new ChangeVibeStatus(rooms, vibes, buildBroadcaster(broadcast));
+    const broadcaster = buildBroadcaster();
+    const usecase = new ChangeVibeStatus(rooms, vibes, broadcaster);
 
     await usecase.execute({ roomId, memberId, connectionId, status: "focused" });
 
     expect(vibes.update).toHaveBeenCalledWith(roomId, memberId, connectionId, "focused");
     expect(vibes.save).not.toHaveBeenCalled();
-    expect(broadcast).not.toHaveBeenCalled();
+    expect(broadcaster.updated).not.toHaveBeenCalled();
   });
 });

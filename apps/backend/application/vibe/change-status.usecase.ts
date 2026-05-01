@@ -3,7 +3,6 @@ import type { ConnectionId, MemberId, RoomId, VibeStatus } from "@play.realtime/
 import { RoomNotFound, RoomRepository } from "../../domain/room";
 import { VibeRepository } from "../../domain/vibe";
 import { VibeBroadcaster } from "./broadcaster";
-import { topic } from "./topic";
 
 /**
  * クライアントからのタブ可視状態変化を受けて接続単位の Vibe を更新し、集約結果が変わった場合だけ `Updated` を配信する usecase
@@ -40,7 +39,7 @@ export class ChangeVibeStatus {
     if (!updated || aggregated === null) {
       return;
     }
-    await this.broadcaster.broadcast(topic(input.roomId), "Updated", {
+    await this.broadcaster.updated(input.roomId, {
       memberId: input.memberId,
       status: aggregated,
     });

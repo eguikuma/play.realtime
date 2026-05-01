@@ -19,8 +19,15 @@ const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => 
   ...overrides,
 });
 
-const buildBroadcaster = (broadcast = vi.fn()): VibeBroadcaster =>
-  ({ broadcast }) as unknown as VibeBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof VibeBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): VibeBroadcaster =>
+  ({
+    joined: vi.fn(),
+    left: vi.fn(),
+    updated: vi.fn(),
+    ...overrides,
+  }) as unknown as VibeBroadcaster;
 
 const buildGrace = (): VibePresenceGrace =>
   ({ cancel: vi.fn(), schedule: vi.fn() }) as unknown as VibePresenceGrace;
@@ -28,40 +35,38 @@ const buildGrace = (): VibePresenceGrace =>
 describe("NotifyVibeLeft", () => {
   it("最後の接続が消えると grace 経由で Left を購読者全員に配信する", async () => {
     const vibes = buildVibes();
-    const broadcast = vi.fn();
+    const broadcaster = buildBroadcaster();
     const grace = buildGrace();
-    const usecase = new NotifyVibeLeft(vibes, buildBroadcaster(broadcast), grace);
+    const usecase = new NotifyVibeLeft(vibes, broadcaster, grace);
 
     await usecase.execute({ roomId, memberId, connectionId });
 
     expect(vibes.delete).toHaveBeenCalledWith(roomId, memberId, connectionId);
     expect(grace.schedule).toHaveBeenCalledWith(roomId, memberId, expect.any(Function));
-    expect(broadcast).not.toHaveBeenCalled();
+    expect(broadcaster.left).not.toHaveBeenCalled();
 
     const call = (grace.schedule as ReturnType<typeof vi.fn>).mock.calls[0];
     const fire = call?.[2] as (() => Promise<void>) | undefined;
     await fire?.();
 
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Left", {
-      memberId,
-    });
+    expect(broadcaster.left).toHaveBeenCalledWith(roomId, { memberId });
   });
 
   it("他の接続が残るときは集約結果を Updated として即時配信し grace には積まない", async () => {
     const vibes = buildVibes({
       delete: vi.fn(async () => ({ isLast: false, aggregated: "focused" as VibeStatus })),
     });
-    const broadcast = vi.fn();
+    const broadcaster = buildBroadcaster();
     const grace = buildGrace();
-    const usecase = new NotifyVibeLeft(vibes, buildBroadcaster(broadcast), grace);
+    const usecase = new NotifyVibeLeft(vibes, broadcaster, grace);
 
     await usecase.execute({ roomId, memberId, connectionId });
 
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Updated", {
+    expect(broadcaster.updated).toHaveBeenCalledWith(roomId, {
       memberId,
       status: "focused",
     });
-    expect(broadcast).not.toHaveBeenCalledWith(`room:${roomId}:vibe`, "Left", expect.anything());
+    expect(broadcaster.left).not.toHaveBeenCalled();
     expect(grace.schedule).not.toHaveBeenCalled();
   });
 });

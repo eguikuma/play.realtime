@@ -3,7 +3,6 @@ import type { ConnectionId, MemberId, RoomId } from "@play.realtime/contracts";
 import { VibeRepository } from "../../domain/vibe";
 import { VibeBroadcaster } from "./broadcaster";
 import { VibePresenceGrace } from "./presence-grace";
-import { topic } from "./topic";
 
 /**
  * SSE 接続切断時に呼ばれ、接続単位の Vibe を削除してから他メンバーへ通知する usecase
@@ -33,13 +32,13 @@ export class NotifyVibeLeft {
     );
     if (isLast || aggregated === null) {
       this.grace.schedule(input.roomId, input.memberId, async () => {
-        await this.broadcaster.broadcast(topic(input.roomId), "Left", {
+        await this.broadcaster.left(input.roomId, {
           memberId: input.memberId,
         });
       });
       return;
     }
-    await this.broadcaster.broadcast(topic(input.roomId), "Updated", {
+    await this.broadcaster.updated(input.roomId, {
       memberId: input.memberId,
       status: aggregated,
     });
