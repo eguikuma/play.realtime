@@ -3,6 +3,8 @@
 import { Volume2 } from "lucide-react";
 import type { ChangeEvent } from "react";
 
+import { useIsIos } from "@/libraries/use-is-ios";
+
 type Slider = {
   /** 現在の音量、0 から 100 の整数で受け取る */
   value: number;
@@ -15,13 +17,18 @@ type Slider = {
 /**
  * BGM の音量調節用スライダー
  * ネイティブの `input[type=range]` を使いつつ、トラックと塗りつぶしを独自の span で重ねてデザインを揃える
+ * iOS Safari は WebKit の制約で `audio.volume` が読み取り専用、操作しても音量が変わらないため、当該環境では表示自体を抑止して停止ボタンに集約する
  */
 export const Slider = ({ value, onValue, disabled }: Slider) => {
+  const isIos = useIsIos();
+
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     onValue(Number(event.target.value));
   };
 
   const fill = `${value}%`;
+
+  if (isIos) return null;
 
   return (
     <label className="flex min-w-0 items-center gap-2">
