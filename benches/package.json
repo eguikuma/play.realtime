@@ -13,6 +13,7 @@
     "report": "tsx report.ts",
     "snapshot:baseline": "tsx variants/baseline.ts",
     "snapshot:throttle": "tsx variants/throttle.ts",
+    "snapshot:no-hexists": "tsx variants/no-hexists.ts",
     "verify": "tsc --noEmit"
   },
   "dependencies": {
