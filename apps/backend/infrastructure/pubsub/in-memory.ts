@@ -70,4 +70,17 @@ export class InMemoryPubSub implements PubSub {
       },
     };
   }
+
+  /**
+   * 指定プレフィックスに一致するトピック行を購読者ごと取り除く
+   * 通常は接続閉じの購読解除で自己整合するが 念のための最終防衛線として残留を掃除する
+   * 取り除かれたハンドラはそれ以降の配信で呼ばれなくなるが 配信中に掴んだスナップショットからは届くことがある
+   */
+  closeByPrefix(prefix: string): void {
+    for (const topic of [...this.subscribers.keys()]) {
+      if (topic.startsWith(prefix)) {
+        this.subscribers.delete(topic);
+      }
+    }
+  }
 }

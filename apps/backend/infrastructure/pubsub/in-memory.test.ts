@@ -110,4 +110,29 @@ describe("InMemoryPubSub", () => {
 
     expect(() => subscription.unsubscribe()).not.toThrow();
   });
+
+  it("プレフィックス一括クローズで一致するトピックの購読者に配信が届かなくなる", async () => {
+    const pubsub = new InMemoryPubSub();
+    const vibe = vi.fn();
+    const bgm = vi.fn();
+    const otherRoom = vi.fn();
+    pubsub.subscribe("room:abc:vibe", vibe);
+    pubsub.subscribe("room:abc:bgm", bgm);
+    pubsub.subscribe("room:zzz:vibe", otherRoom);
+
+    pubsub.closeByPrefix("room:abc:");
+    await pubsub.publish("room:abc:vibe", 1);
+    await pubsub.publish("room:abc:bgm", 1);
+    await pubsub.publish("room:zzz:vibe", 2);
+
+    expect(vibe).not.toHaveBeenCalled();
+    expect(bgm).not.toHaveBeenCalled();
+    expect(otherRoom).toHaveBeenCalledWith(2);
+  });
+
+  it("プレフィックスに一致するトピックが無ければ何もせず例外を投げない", () => {
+    const pubsub = new InMemoryPubSub();
+
+    expect(() => pubsub.closeByPrefix("room:none:")).not.toThrow();
+  });
 });
