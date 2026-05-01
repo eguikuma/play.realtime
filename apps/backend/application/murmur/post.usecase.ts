@@ -6,6 +6,9 @@ import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { SseHub } from "../../infrastructure/transport/sse";
 import { topic } from "./topic";
 
+/**
+ * ひとこと投稿を受け付けて永続化し、購読中の全クライアントへ `Posted` を配信する usecase
+ */
 @Injectable()
 export class PostMurmur {
   constructor(
@@ -15,6 +18,11 @@ export class PostMurmur {
     private readonly hub: SseHub,
   ) {}
 
+  /**
+   * ルームの存在を確認し、ドメイン関数 `post` で投稿を組み立てて保存した後に SSE 配信する
+   * 配信時の SSE ID を `murmur.id` に揃えることで、クライアントのリトライ時に `Last-Event-ID` で再配信起点が決まる
+   * ルームが見つからなければ `RoomNotFound` を投げる
+   */
   async execute(input: { roomId: RoomId; memberId: MemberId; text: string }): Promise<Murmur> {
     const room = await this.rooms.find(input.roomId);
     if (!room) {
