@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Injectable, Logger, type OnModuleDestroy } from "@nestjs/common";
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { Redis, type RedisOptions } from "ioredis";
@@ -11,29 +12,30 @@ import type { RedisExpiredListener } from "./expired-listener";
 const GRACE_MS = 1500;
 
 /**
- * SETNX 短期ロックの TTL
- * `handleExpired` の実処理時間を十分上回り、かつ次回 schedule の TTL と重ならない値で固定する
+ * オーナー印キーの TTL
+ * `GRACE_MS` 経過後の expired notification 処理中にオーナー印が消えないよう余裕を持たせる
+ * cancel または handleExpired 内で明示的に DEL するため、自然消滅は孤児キーの掃除目的
  */
-const DONE_LOCK_MS = 5000;
+const OWNER_TTL_MS = 6500;
 
 const PREFIX = "vibe:grace:";
-const DONE_PREFIX = "vibe:gracedone:";
+const OWNER_PREFIX = "vibe:graceowner:";
 
 const keyOf = (roomId: RoomId, memberId: MemberId) => `${PREFIX}${roomId}:${memberId}`;
-const doneKeyOf = (key: string) => `${DONE_PREFIX}${key.slice(PREFIX.length)}`;
+const ownerKeyOf = (key: string) => `${OWNER_PREFIX}${key.slice(PREFIX.length)}`;
 
 /**
  * `VibePresenceGrace` port の Redis 実装
- * Redis TTL key + キースペース通知 + SETNX 短期ロックで複数 backend 間の二重配信を防ぐ
- * `schedule` で `SET PX 1500 NX` を打ち、TTL 切れの expired notification を受けた instance のうち SETNX done lock を取れた 1 instance だけが fire を担当する
- * fire は schedule した instance のローカル `Map` に保持するため、同 instance で expired を受けたときだけ実際に fire される
- * 別 instance に飛んだ場合は done key を即 DEL して譲る fail-safe で、Map 不一致による fire 抜けを最小化する
+ * Redis TTL key + キースペース通知 + オーナー印サイドキーで複数 backend 間の二重配信を防ぐ
+ * `schedule` で TTL key とオーナー印を同時に書き、TTL 切れの expired notification を受けた各 instance がオーナー印を GET して自身の instanceId と一致した 1 instance だけが fire を担当する
+ * fire は schedule した instance のローカル `Map` に保持するため、オーナー印と Map は必ず同 instance に揃う
  */
 @Injectable()
 export class RedisVibePresenceGrace implements VibePresenceGrace, OnModuleDestroy {
   private readonly client: Redis;
   private readonly fires = new Map<string, () => void | Promise<void>>();
   private readonly logger = new Logger(RedisVibePresenceGrace.name);
+  private readonly instanceId = randomUUID();
 
   constructor(redisUrl: string, listener: RedisExpiredListener, options: RedisOptions = {}) {
     this.client = new Redis(redisUrl, options);
@@ -43,14 +45,14 @@ export class RedisVibePresenceGrace implements VibePresenceGrace, OnModuleDestro
   }
 
   /**
-   * 指定メンバー宛の TTL key を `SET PX 1500 NX` で発行し、fire callback はローカル Map に持つ
-   * 同 key の既存 TTL があれば NX で書き込みを諦める
-   * 既存 TTL の expired notification と Map 上書きで semantics は維持される
+   * 指定メンバー宛の TTL key を `SET PX 1500 NX` で発行し、同時にオーナー印キーへ自身の instanceId を書く
+   * fire callback はローカル Map に持ち、オーナー印と同期させる
+   * TTL key は既存の expired notification を温存するため NX で衝突回避し、オーナー印は再 schedule で上書きするため NX を付けない
    * Redis 障害時はログのみで他処理を止めず fire-and-forget で進める
-   * Map には fire を残しておくため復帰後の同 key 再 schedule で上書き解消する
    */
   schedule(roomId: RoomId, memberId: MemberId, fire: () => void | Promise<void>): void {
     const key = keyOf(roomId, memberId);
+    const ownerKey = ownerKeyOf(key);
     this.fires.set(key, fire);
     this.client.set(key, "1", "PX", GRACE_MS, "NX").catch((error: unknown) => {
       this.logger.error(
@@ -58,19 +60,32 @@ export class RedisVibePresenceGrace implements VibePresenceGrace, OnModuleDestro
         error instanceof Error ? error.stack : String(error),
       );
     });
+    this.client.set(ownerKey, this.instanceId, "PX", OWNER_TTL_MS).catch((error: unknown) => {
+      this.logger.error(
+        `redis SET owner failed for key "${ownerKey}"`,
+        error instanceof Error ? error.stack : String(error),
+      );
+    });
   }
 
   /**
-   * ローカル Map から fire を消し、Redis 側の TTL key も `DEL` で打ち切る
-   * 戻り値は「この instance が fire を保持していたか」で、in-memory 実装の同期 boolean と semantics 互換にする
-   * cross-instance の cancel は DEL が原子的に他 instance の expired を抑止するため、ゴースト fire は構造的に発生しない
+   * ローカル Map から fire を消し、Redis 側の TTL key とオーナー印の両方を `DEL` で打ち切る
+   * 戻り値は「この instance が fire を保持していたか」で in-memory 実装の同期 boolean と semantics 互換にする
+   * cross-instance の cancel は TTL key DEL が原子的に他 instance の expired を抑止し、オーナー印 DEL が孤児キーを残さない
    */
   cancel(roomId: RoomId, memberId: MemberId): boolean {
     const key = keyOf(roomId, memberId);
+    const ownerKey = ownerKeyOf(key);
     const hadFire = this.fires.delete(key);
     void this.client.del(key).catch((error: unknown) => {
       this.logger.error(
         `redis DEL failed for key "${key}"`,
+        error instanceof Error ? error.stack : String(error),
+      );
+    });
+    void this.client.del(ownerKey).catch((error: unknown) => {
+      this.logger.error(
+        `redis DEL owner failed for key "${ownerKey}"`,
         error instanceof Error ? error.stack : String(error),
       );
     });
@@ -90,30 +105,31 @@ export class RedisVibePresenceGrace implements VibePresenceGrace, OnModuleDestro
 
   /**
    * expired notification 受信時の本体処理
-   * SETNX done lock を取れた instance のうち、自分のローカル Map に fire を持つ instance だけが実際に fire する
-   * Map 未保持で done lock を取ってしまった場合は done key を即 DEL し、別 instance が再取得できる余地を残す fail-safe を残す
+   * オーナー印を GET して自身の instanceId と一致する 1 instance だけが fire を担当する
+   * オーナー印が取れない (= 既に消去済) または別 instance のものなら静かに skip し、SETNX 競合を一切起こさない
+   * Map 不在で自身がオーナーの edge case は instance 再起動跨ぎ等のみで、オーナー印を DEL して終了する
    */
   private async handleExpired(key: string): Promise<void> {
-    const doneKey = doneKeyOf(key);
-    let acquired: "OK" | null;
+    const ownerKey = ownerKeyOf(key);
+    let owner: string | null;
     try {
-      acquired = await this.client.set(doneKey, "1", "PX", DONE_LOCK_MS, "NX");
+      owner = await this.client.get(ownerKey);
     } catch (error) {
       this.logger.error(
-        `redis SETNX done lock failed for key "${key}"`,
+        `redis GET owner failed for key "${ownerKey}"`,
         error instanceof Error ? error.stack : String(error),
       );
       return;
     }
-    if (acquired !== "OK") {
+    if (owner !== this.instanceId) {
       return;
     }
 
     const fire = this.fires.get(key);
     if (!fire) {
-      void this.client.del(doneKey).catch((error: unknown) => {
+      void this.client.del(ownerKey).catch((error: unknown) => {
         this.logger.error(
-          `redis DEL done lock fail-safe failed for key "${key}"`,
+          `redis DEL owner stale failed for key "${ownerKey}"`,
           error instanceof Error ? error.stack : String(error),
         );
       });
@@ -121,6 +137,12 @@ export class RedisVibePresenceGrace implements VibePresenceGrace, OnModuleDestro
     }
 
     this.fires.delete(key);
+    void this.client.del(ownerKey).catch((error: unknown) => {
+      this.logger.error(
+        `redis DEL owner failed for key "${ownerKey}"`,
+        error instanceof Error ? error.stack : String(error),
+      );
+    });
     try {
       await fire();
     } catch (error) {

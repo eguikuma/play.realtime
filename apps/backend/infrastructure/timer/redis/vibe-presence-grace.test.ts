@@ -13,7 +13,7 @@ const newMemberId = () => `member-${randomUUID().replace(/-/g, "")}` as MemberId
 
 /**
  * 実 Redis に接続して `RedisVibePresenceGrace` の挙動を検証する
- * `REDIS_URL` 未設定なら丸ごと skip し、`SET PX 1500 NX` と expired notification + SETNX done lock の往復が in-memory と等価な fire 配信を生むことを確認する
+ * `REDIS_URL` 未設定なら丸ごと skip し、`SET PX 1500 NX` と expired notification + オーナー印 GET の往復が in-memory と等価な fire 配信を生むことを確認する
  * 1500ms TTL に対して安全側に余裕をもった実時間 sleep で fire 検出する
  */
 describe.skipIf(!REDIS_URL)("RedisVibePresenceGrace", () => {
@@ -74,6 +74,27 @@ describe.skipIf(!REDIS_URL)("RedisVibePresenceGrace", () => {
       await sleep(2200);
 
       expect(fireA.mock.calls.length + fireB.mock.calls.length).toBe(1);
+    } finally {
+      await otherGrace.onModuleDestroy();
+      await otherListener.onModuleDestroy();
+    }
+  });
+
+  it("片側だけ予約しても両 instance のリスナーが受信し予約した側が必ず発火する", async () => {
+    const otherListener = new RedisExpiredListener(REDIS_URL as string);
+    await otherListener.onModuleInit();
+    const otherGrace = new RedisVibePresenceGrace(REDIS_URL as string, otherListener);
+
+    try {
+      const roomId = newRoomId();
+      const memberId = newMemberId();
+      const fire = vi.fn();
+
+      grace.schedule(roomId, memberId, fire);
+
+      await sleep(2200);
+
+      expect(fire).toHaveBeenCalledTimes(1);
     } finally {
       await otherGrace.onModuleDestroy();
       await otherListener.onModuleDestroy();
