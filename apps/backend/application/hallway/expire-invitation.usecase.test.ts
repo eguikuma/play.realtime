@@ -6,6 +6,7 @@ import { ExpireHallwayInvitation } from "./expire-invitation.usecase";
 
 const roomId = "room-abc-1234" as RoomId;
 const invitationId = "inv-1" as InvitationId;
+
 const invitation: Invitation = {
   id: invitationId,
   roomId,

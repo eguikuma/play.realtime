@@ -28,6 +28,7 @@ export class HallwayInvitationTimers {
     if (timeout === undefined) {
       return;
     }
+
     clearTimeout(timeout);
     this.timers.delete(id);
   }

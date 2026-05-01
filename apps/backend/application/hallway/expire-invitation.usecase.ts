@@ -19,7 +19,9 @@ export class ExpireHallwayInvitation {
     if (!invitation) {
       return;
     }
+
     await this.hallway.deleteInvitation(input.invitationId);
+
     await this.broadcaster.invitationEnded(input.roomId, {
       invitationId: input.invitationId,
       reason: "expired" as const,

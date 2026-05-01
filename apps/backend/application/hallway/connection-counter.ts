@@ -31,6 +31,7 @@ export class HallwayConnectionCounter {
       this.counts.delete(key);
       return { isLast: true };
     }
+
     this.counts.set(key, next);
     return { isLast: false };
   }
