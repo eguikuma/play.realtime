@@ -1,5 +1,5 @@
 import { Injectable, Logger, type OnModuleDestroy } from "@nestjs/common";
-import type { PresenceTopic, RoomId } from "@play.realtime/contracts";
+import type { RoomId } from "@play.realtime/contracts";
 import { Redis, type RedisOptions } from "ioredis";
 import type { PubSub } from "../../application/ports/pubsub";
 import type {
@@ -8,12 +8,7 @@ import type {
   PresenceTransition,
   RoomPresence,
 } from "../../application/room/presence";
-
-/**
- * Redis pub/sub で複数インスタンス間に在室遷移を配信する固定トピック
- * 全ルーム共通の単一チャネルで `{ roomId, kind }` を流し、購読側でルーム別に振り分ける構造にして、ルームごとの subscribe を増やさない
- */
-const PRESENCE_TRANSITION_TOPIC = "presence:transition" as PresenceTopic;
+import { GlobalTopic } from "../../application/topic";
 
 /**
  * 在室遷移配信時の payload、購読側はルーム ID と遷移種別だけで自分の処理対象を判定できる
@@ -45,7 +40,7 @@ export class RedisRoomPresence implements RoomPresence, OnModuleDestroy {
     this.client = new Redis(redisUrl, options);
     this.pubsub = pubsub;
     this.transitionSubscription = pubsub.subscribe<PresencePayload>(
-      PRESENCE_TRANSITION_TOPIC,
+      GlobalTopic.PresenceTransition,
       (payload) => {
         this.fan(payload);
       },
@@ -143,7 +138,7 @@ export class RedisRoomPresence implements RoomPresence, OnModuleDestroy {
    */
   private publish(roomId: RoomId, kind: PresenceTransition): void {
     this.pubsub
-      .publish<PresencePayload>(PRESENCE_TRANSITION_TOPIC, { roomId, kind })
+      .publish<PresencePayload>(GlobalTopic.PresenceTransition, { roomId, kind })
       .catch((error: unknown) => {
         this.logger.error(
           `presence transition publish failed for room ${roomId}`,

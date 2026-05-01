@@ -1,11 +1,14 @@
-import type { MurmurTopic } from "@play.realtime/contracts";
+import type { MemberId, MurmurTopic, RoomId } from "@play.realtime/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PubSub, Subscription } from "../../../application/ports/pubsub";
+import { GlobalTopic } from "../../../application/topic";
 import type { SseConnection } from "./connection";
 import { SseHeartbeat } from "./heartbeat";
 import { SseHub } from "./hub";
 
 const testTopic = "room:abc:murmur" as MurmurTopic;
+const testRoomId = "test-room-1" as RoomId;
+const testMemberId = "test-member-1" as MemberId;
 
 type Handler = (payload: unknown) => void;
 
@@ -36,9 +39,11 @@ const buildPubSub = () => {
   return { pubsub, subscribers };
 };
 
-const buildConnection = () => {
+const buildConnection = (roomId: RoomId = testRoomId, memberId: MemberId = testMemberId) => {
   const closeHandlers: Array<() => void> = [];
   const connection = {
+    roomId,
+    memberId,
     open: vi.fn(),
     emit: vi.fn(),
     comment: vi.fn(),
@@ -115,5 +120,56 @@ describe("SseHub", () => {
     await new Promise((resolve) => setImmediate(resolve));
 
     expect(onAttach).toHaveBeenCalledWith(connection);
+  });
+
+  it("起動時に member-leave トピックを購読する", () => {
+    const { pubsub, subscribers } = buildPubSub();
+    const hub = new SseHub(pubsub, buildHeartbeat());
+
+    hub.onModuleInit();
+
+    expect(subscribers.get(GlobalTopic.MemberLeft)?.length).toBe(1);
+  });
+
+  it("closeByMember は同一 roomId と memberId の接続だけを閉じる", () => {
+    const { pubsub } = buildPubSub();
+    const hub = new SseHub(pubsub, buildHeartbeat());
+    const target = buildConnection(testRoomId, testMemberId);
+    const otherMember = buildConnection(testRoomId, "another-member" as MemberId);
+    const otherRoom = buildConnection("another-room" as RoomId, testMemberId);
+
+    hub.attach(target.connection, { topic: testTopic });
+    hub.attach(otherMember.connection, { topic: testTopic });
+    hub.attach(otherRoom.connection, { topic: testTopic });
+
+    hub.closeByMember(testRoomId, testMemberId);
+
+    expect(target.connection.close).toHaveBeenCalledOnce();
+    expect(otherMember.connection.close).not.toHaveBeenCalled();
+    expect(otherRoom.connection.close).not.toHaveBeenCalled();
+  });
+
+  it("member-leave 配信を受けると同一メンバーの接続を閉じる", () => {
+    const { pubsub } = buildPubSub();
+    const hub = new SseHub(pubsub, buildHeartbeat());
+    const { connection } = buildConnection(testRoomId, testMemberId);
+
+    hub.onModuleInit();
+    hub.attach(connection, { topic: testTopic });
+    void pubsub.publish(GlobalTopic.MemberLeft, { roomId: testRoomId, memberId: testMemberId });
+
+    expect(connection.close).toHaveBeenCalledOnce();
+  });
+
+  it("member-leave のペイロードが不正なら何もしない", () => {
+    const { pubsub } = buildPubSub();
+    const hub = new SseHub(pubsub, buildHeartbeat());
+    const { connection } = buildConnection(testRoomId, testMemberId);
+
+    hub.onModuleInit();
+    hub.attach(connection, { topic: testTopic });
+    void pubsub.publish(GlobalTopic.MemberLeft, { broken: "payload" });
+
+    expect(connection.close).not.toHaveBeenCalled();
   });
 });

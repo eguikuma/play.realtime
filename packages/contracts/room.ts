@@ -61,6 +61,18 @@ export const RoomMembership = z.object({
 export type RoomMembership = z.infer<typeof RoomMembership>;
 
 /**
+ * `POST /rooms/{roomId}/leave` の PubSub 配信ペイロード契約
+ * モバイルタブ消去時の `pagehide` で sendBeacon された退出シグナルを、SSE と WebSocket の両 Hub に対して横断 fanout するときに使う
+ */
+export const MemberLeftPayload = z.object({
+  /** 退出対象のルーム ID */
+  roomId: RoomId,
+  /** 退出対象のメンバー ID、当該ルーム内の自分のすべての接続が強制クローズされる */
+  memberId: MemberId,
+});
+export type MemberLeftPayload = z.infer<typeof MemberLeftPayload>;
+
+/**
  * ルーム関連 HTTP エンドポイントの URL を組み立てる定数
  * フロントエンドの呼び出し側とバックエンドの Controller 側で URL の食い違いを起こさないよう、両者がこの定数を経由する前提で配置する
  */
@@ -73,4 +85,9 @@ export const RoomEndpoint = {
   me: (roomId: RoomId) => `/rooms/${roomId}/me`,
   /** `GET /rooms/{roomId}` ルーム集約の取得 */
   get: (roomId: RoomId) => `/rooms/${roomId}`,
+  /**
+   * `POST /rooms/{roomId}/leave` 明示退出シグナルの送信先
+   * ブラウザの `pagehide` から `navigator.sendBeacon` で叩かれ、サーバ側で当該メンバーの全接続を強制クローズする
+   */
+  leave: (roomId: RoomId) => `/rooms/${roomId}/leave`,
 } as const;

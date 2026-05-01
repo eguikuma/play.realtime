@@ -29,7 +29,13 @@ export type HallwayTopic = string & { readonly __brand: "HallwayTopic" };
 export type PresenceTopic = string & { readonly __brand: "PresenceTopic" };
 
 /**
+ * ルーム横断の管理シグナル用 PubSub トピックを表す branded type
+ * `room:member-leave` のような全ルーム共通の固定文字列を持ち、複数インスタンス間で member 単位の強制退出指示を fanout する
+ */
+export type RoomTopic = string & { readonly __brand: "RoomTopic" };
+
+/**
  * 全機能の PubSub トピックを網羅する union
  * `PubSub.publish` や `SseHub.broadcast`、`WsHub.broadcast` の引数型として使い、素の文字列や別機能のトピックを渡せないようにする
  */
-export type Topic = VibeTopic | MurmurTopic | BgmTopic | HallwayTopic | PresenceTopic;
+export type Topic = VibeTopic | MurmurTopic | BgmTopic | HallwayTopic | PresenceTopic | RoomTopic;

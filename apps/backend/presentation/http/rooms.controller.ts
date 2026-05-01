@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
 import {
   CreateRoomRequest,
   JoinRoomRequest,
@@ -12,6 +12,7 @@ import { CreateRoom } from "../../application/room/create.usecase";
 import { GetRoom } from "../../application/room/get.usecase";
 import { GetRoomMembership } from "../../application/room/get-membership.usecase";
 import { JoinRoom } from "../../application/room/join.usecase";
+import { LeaveRoom } from "../../application/room/leave.usecase";
 import { CurrentMember } from "../../shared/decorators/current-member.decorator";
 import { RequireMember } from "../../shared/guards/require-member.guard";
 import { ZodValidationPipe } from "../../shared/pipes/zod-validation.pipe";
@@ -28,6 +29,7 @@ export class RoomsController {
     private readonly joinRoom: JoinRoom,
     private readonly getRoom: GetRoom,
     private readonly getMembership: GetRoomMembership,
+    private readonly leaveRoom: LeaveRoom,
   ) {}
 
   /**
@@ -86,5 +88,20 @@ export class RoomsController {
   @Get(":id")
   async get(@Param("id", new ZodValidationPipe(RoomId)) id: RoomId): Promise<Room> {
     return this.getRoom.execute({ id });
+  }
+
+  /**
+   * `POST /rooms/{roomId}/leave` ブラウザの `pagehide` から `navigator.sendBeacon` で叩かれる明示退出シグナル
+   * iOS Safari のタブ swipe-away で TCP `close` が発火しないケースを補うため、当該メンバーの SSE と WebSocket 接続を強制クローズして幽霊メンバー化を防ぐ
+   * sendBeacon はレスポンス body を待たないので 204 で即時返す
+   */
+  @Post(":roomId/leave")
+  @HttpCode(204)
+  @UseGuards(RequireMember)
+  async leave(
+    @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
+    @CurrentMember() current: { id: MemberId },
+  ): Promise<void> {
+    await this.leaveRoom.execute({ roomId, memberId: current.id });
   }
 }

@@ -4,6 +4,7 @@ import { CreateRoom } from "../../application/room/create.usecase";
 import { GetRoom } from "../../application/room/get.usecase";
 import { GetRoomMembership } from "../../application/room/get-membership.usecase";
 import { JoinRoom } from "../../application/room/join.usecase";
+import { LeaveRoom } from "../../application/room/leave.usecase";
 import { MemberNotFoundFilter } from "./filters/member-not-found.filter";
 import { RoomNotFoundFilter } from "./filters/room-not-found.filter";
 import { RoomsController } from "./rooms.controller";
@@ -20,6 +21,7 @@ import { RoomsController } from "./rooms.controller";
     GetRoom,
     GetRoomMembership,
     JoinRoom,
+    LeaveRoom,
     {
       provide: APP_FILTER,
       useClass: RoomNotFoundFilter,

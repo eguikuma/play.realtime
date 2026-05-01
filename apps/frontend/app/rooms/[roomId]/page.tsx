@@ -6,7 +6,7 @@ import { use } from "react";
 import { BgmStrip } from "@/features/bgm";
 import { HallwayOverlays } from "@/features/hallway";
 import { Compose, MurmurBody } from "@/features/murmur";
-import { Entrance, useLoad, useRoom } from "@/features/room";
+import { Entrance, useLeave, useLoad, useRoom } from "@/features/room";
 import { useVibe, VibeRow } from "@/features/vibe";
 
 /**
@@ -19,6 +19,7 @@ import { useVibe, VibeRow } from "@/features/vibe";
 const RoomStage = ({ roomId }: { roomId: RoomId }) => {
   const me = useRoom((state) => state.me);
   const presentCount = useVibe((state) => Object.keys(state.statuses).length);
+  useLeave(roomId);
 
   return (
     <div className="relative h-dvh overflow-hidden">
