@@ -4,16 +4,13 @@ import { Injectable, Logger, type OnModuleInit } from "@nestjs/common";
 import { HttpAdapterHost } from "@nestjs/core";
 import {
   type ConnectionId,
-  HallwayAcceptRequest,
-  HallwayCancelRequest,
-  HallwayDeclineRequest,
-  HallwayInviteRequest,
-  HallwayLeaveCallRequest,
-  HallwaySendMessageRequest,
+  HallwayClientMessages,
+  type HallwayCommandName,
   MemberId,
   RoomId,
 } from "@play.realtime/contracts";
 import { type WebSocket, WebSocketServer } from "ws";
+import type { z } from "zod";
 import { AcceptHallwayInvitation } from "../../application/hallway/accept-invitation.usecase";
 import { CancelHallwayInvitation } from "../../application/hallway/cancel-invitation.usecase";
 import { HallwayConnectionCounter } from "../../application/hallway/connection-counter";
@@ -31,6 +28,72 @@ import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { WsConnection, WsHub } from "../../infrastructure/transport/ws";
 import { MEMBER_COOKIE } from "../http/cookies";
 import { hallwayErrorCodeOf, isHallwayCommand } from "./hallway-errors";
+
+/**
+ * ハンドラが参照する接続ごとの文脈
+ * ルーム ID と操作主体のメンバー ID を 1 箱に束ねて渡す
+ */
+type HallwayHandlerContext = { roomId: RoomId; memberId: MemberId };
+
+/**
+ * クライアント命令名ごとに対応するハンドラ関数の対応表
+ * `satisfies` で列挙の完全性を型で担保し 命令追加時に未実装のハンドラをコンパイル時点で検出できるようにする
+ */
+export type HallwayCommandHandlers = {
+  [K in HallwayCommandName]: (input: {
+    context: HallwayHandlerContext;
+    data: z.infer<(typeof HallwayClientMessages)[K]>;
+  }) => Promise<void>;
+};
+
+/**
+ * ゲートウェイの dispatch で利用するロガーの最小面
+ */
+type HallwayDispatchLogger = {
+  debug: (message: string) => void;
+  warn: (message: string) => void;
+};
+
+/**
+ * 受信した包みの名前で分岐し 対応するハンドラへ橋渡しする純粋関数
+ * 未知の名前は debug ログへ逃がし ドメイン例外は操作本人の接続だけへ `CommandFailed` を直送する
+ * 非ドメイン例外は握りつぶして警告ログに流し 接続自体はいずれの場合も維持する
+ */
+export const dispatchHallwayCommand = async (params: {
+  connection: WsConnection;
+  envelope: { name: string; data: unknown };
+  context: HallwayHandlerContext;
+  handlers: HallwayCommandHandlers;
+  logger: HallwayDispatchLogger;
+}): Promise<void> => {
+  const { connection, envelope, context, handlers, logger } = params;
+
+  if (!isHallwayCommand(envelope.name)) {
+    logger.debug(`unknown message ${envelope.name}`);
+    return;
+  }
+
+  try {
+    const schema = HallwayClientMessages[envelope.name];
+    const data = schema.parse(envelope.data);
+    const handler = handlers[envelope.name] as (input: {
+      context: HallwayHandlerContext;
+      data: unknown;
+    }) => Promise<void>;
+    await handler({ context, data });
+  } catch (error: unknown) {
+    const code = hallwayErrorCodeOf(error);
+    if (code !== null) {
+      connection.send("CommandFailed", {
+        code,
+        command: envelope.name,
+        message: (error as Error).message,
+      });
+      return;
+    }
+    logger.warn(`dispatch ${envelope.name} failed ${String(error)}`);
+  }
+};
 
 /**
  * 廊下トーク用の WebSocket エンドポイントを提供するゲートウェイ
@@ -74,6 +137,52 @@ export class HallwayGateway implements OnModuleInit {
     private readonly leave: LeaveHallwayCall,
     private readonly handleDisconnect: HandleHallwayDisconnect,
   ) {}
+
+  /**
+   * クライアント命令名ごとのハンドラ対応表
+   * アロー関数のフィールド初期化で `this` を束縛し 各命令から対応するユースケースへ入力を橋渡しする
+   */
+  private readonly handlers = {
+    Invite: async ({ context, data }) => {
+      await this.invite.execute({
+        roomId: context.roomId,
+        inviterId: context.memberId,
+        inviteeId: data.inviteeId,
+      });
+    },
+    Accept: async ({ context, data }) => {
+      await this.accept.execute({
+        roomId: context.roomId,
+        memberId: context.memberId,
+        invitationId: data.invitationId,
+      });
+    },
+    Decline: ({ context, data }) =>
+      this.decline.execute({
+        roomId: context.roomId,
+        memberId: context.memberId,
+        invitationId: data.invitationId,
+      }),
+    Cancel: ({ context, data }) =>
+      this.cancel.execute({
+        roomId: context.roomId,
+        memberId: context.memberId,
+        invitationId: data.invitationId,
+      }),
+    Send: ({ context, data }) =>
+      this.send.execute({
+        roomId: context.roomId,
+        callId: data.callId,
+        memberId: context.memberId,
+        text: data.text,
+      }),
+    Leave: ({ context, data }) =>
+      this.leave.execute({
+        roomId: context.roomId,
+        callId: data.callId,
+        memberId: context.memberId,
+      }),
+  } satisfies HallwayCommandHandlers;
 
   /**
    * NestJS 起動時に HTTP サーバーの昇格イベントへフックを張る
@@ -164,69 +273,22 @@ export class HallwayGateway implements OnModuleInit {
   }
 
   /**
-   * 受信した包みを名前で分岐させ 各ユースケースへ橋渡しする
-   * ドメイン例外は操作本人の接続だけに `CommandFailed` として返し それ以外の例外は警告ログで握りつぶす
-   * 接続自体はいずれの場合も維持する
+   * 受信した包みを名前で分岐させ 各ハンドラへ橋渡しする
+   * 分岐本体は純粋関数の `dispatchHallwayCommand` に委ね クラス側はハンドラ対応表と文脈の合成だけを担う
    */
-  private async dispatch(
+  private dispatch(
     connection: WsConnection,
     envelope: { name: string; data: unknown },
     roomId: RoomId,
     memberId: MemberId,
   ): Promise<void> {
-    try {
-      switch (envelope.name) {
-        case "Invite": {
-          const data = HallwayInviteRequest.parse(envelope.data);
-          await this.invite.execute({
-            roomId,
-            inviterId: memberId,
-            inviteeId: data.inviteeId,
-          });
-          return;
-        }
-        case "Accept": {
-          const data = HallwayAcceptRequest.parse(envelope.data);
-          await this.accept.execute({ roomId, memberId, invitationId: data.invitationId });
-          return;
-        }
-        case "Decline": {
-          const data = HallwayDeclineRequest.parse(envelope.data);
-          await this.decline.execute({ roomId, memberId, invitationId: data.invitationId });
-          return;
-        }
-        case "Cancel": {
-          const data = HallwayCancelRequest.parse(envelope.data);
-          await this.cancel.execute({ roomId, memberId, invitationId: data.invitationId });
-          return;
-        }
-        case "Send": {
-          const data = HallwaySendMessageRequest.parse(envelope.data);
-          await this.send.execute({ roomId, callId: data.callId, memberId, text: data.text });
-          return;
-        }
-        case "Leave": {
-          const data = HallwayLeaveCallRequest.parse(envelope.data);
-          await this.leave.execute({ roomId, callId: data.callId, memberId });
-          return;
-        }
-        default: {
-          this.logger.debug(`unknown message ${envelope.name}`);
-          return;
-        }
-      }
-    } catch (error: unknown) {
-      const code = hallwayErrorCodeOf(error);
-      if (code !== null && isHallwayCommand(envelope.name)) {
-        connection.send("CommandFailed", {
-          code,
-          command: envelope.name,
-          message: (error as Error).message,
-        });
-        return;
-      }
-      this.logger.warn(`dispatch ${envelope.name} failed ${String(error)}`);
-    }
+    return dispatchHallwayCommand({
+      connection,
+      envelope,
+      context: { roomId, memberId },
+      handlers: this.handlers,
+      logger: this.logger,
+    });
   }
 }
 
