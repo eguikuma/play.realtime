@@ -3,6 +3,8 @@ import type { WsClient, WsConnection } from "./port";
 import { WsState } from "./port";
 import { createResilientWsClient } from "./resilient";
 
+const TEST_WS_URL = "ws://test/room";
+
 type StubConnection = WsConnection & {
   emit: (state: WsState) => void;
   sent: Array<{ name: string; data: unknown }>;
@@ -43,7 +45,7 @@ describe("createResilientWsClient", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
-    resilient.connect({ url: "ws://test/r1", events: {}, onEvent: vi.fn() });
+    resilient.connect({ url: TEST_WS_URL, events: {}, onEvent: vi.fn() });
 
     expect(connections).toHaveLength(1);
   });
@@ -52,7 +54,7 @@ describe("createResilientWsClient", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
-    resilient.connect({ url: "ws://test/r1", events: {}, onEvent: vi.fn() });
+    resilient.connect({ url: TEST_WS_URL, events: {}, onEvent: vi.fn() });
     connections[0]?.emit(WsState.Open);
     connections[0]?.emit(WsState.Closed);
 
@@ -65,7 +67,7 @@ describe("createResilientWsClient", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
-    resilient.connect({ url: "ws://test/r1", events: {}, onEvent: vi.fn() });
+    resilient.connect({ url: TEST_WS_URL, events: {}, onEvent: vi.fn() });
     connections[0]?.emit(WsState.Open);
     connections[0]?.emit(WsState.Error);
     connections[0]?.emit(WsState.Closed);
@@ -78,7 +80,7 @@ describe("createResilientWsClient", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
-    resilient.connect({ url: "ws://test/r1", events: {}, onEvent: vi.fn() });
+    resilient.connect({ url: TEST_WS_URL, events: {}, onEvent: vi.fn() });
     connections[0]?.emit(WsState.Open);
     connections[0]?.emit(WsState.Closed);
     vi.advanceTimersByTime(1_000);
@@ -95,7 +97,7 @@ describe("createResilientWsClient", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
-    resilient.connect({ url: "ws://test/r1", events: {}, onEvent: vi.fn() });
+    resilient.connect({ url: TEST_WS_URL, events: {}, onEvent: vi.fn() });
     connections[0]?.emit(WsState.Open);
     connections[0]?.emit(WsState.Closed);
     vi.advanceTimersByTime(1_000);
@@ -111,7 +113,7 @@ describe("createResilientWsClient", () => {
     const resilient = createResilientWsClient(client);
 
     const handle = resilient.connect({
-      url: "ws://test/r1",
+      url: TEST_WS_URL,
       events: {},
       onEvent: vi.fn(),
     });
@@ -128,7 +130,7 @@ describe("createResilientWsClient", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
-    resilient.connect({ url: "ws://test/r1", events: {}, onEvent: vi.fn() });
+    resilient.connect({ url: TEST_WS_URL, events: {}, onEvent: vi.fn() });
     connections[0]?.emit(WsState.Open);
     connections[0]?.emit(WsState.Closed);
     document.dispatchEvent(new Event("visibilitychange"));
@@ -141,7 +143,7 @@ describe("createResilientWsClient", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
-    resilient.connect({ url: "ws://test/r1", events: {}, onEvent: vi.fn() });
+    resilient.connect({ url: TEST_WS_URL, events: {}, onEvent: vi.fn() });
     connections[0]?.emit(WsState.Open);
     connections[0]?.emit(WsState.Closed);
     window.dispatchEvent(new Event("online"));
@@ -154,7 +156,7 @@ describe("createResilientWsClient", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
-    resilient.connect({ url: "ws://test/r1", events: {}, onEvent: vi.fn() });
+    resilient.connect({ url: TEST_WS_URL, events: {}, onEvent: vi.fn() });
     connections[0]?.emit(WsState.Open);
     document.dispatchEvent(new Event("visibilitychange"));
 
@@ -168,7 +170,7 @@ describe("createResilientWsClient", () => {
     const resilient = createResilientWsClient(client);
 
     resilient.connect({
-      url: "ws://test/r1",
+      url: TEST_WS_URL,
       events: {},
       onEvent: vi.fn(),
       onStateChange,
@@ -183,7 +185,7 @@ describe("createResilientWsClient", () => {
     const { client, connections } = createStubClient();
     const resilient = createResilientWsClient(client);
 
-    const handle = resilient.connect({ url: "ws://test/r1", events: {}, onEvent: vi.fn() });
+    const handle = resilient.connect({ url: TEST_WS_URL, events: {}, onEvent: vi.fn() });
     connections[0]?.emit(WsState.Open);
     handle.send("First", { value: 1 });
     connections[0]?.emit(WsState.Closed);
