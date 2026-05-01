@@ -19,6 +19,10 @@ import { CurrentMember } from "../../shared/decorators/current-member.decorator"
 import { RequireMember } from "../../shared/guards/require-member.guard";
 import { ZodValidationPipe } from "../../shared/pipes/zod-validation.pipe";
 
+/**
+ * `/rooms/{roomId}/bgm` Controller、BGM の SSE 購読と再生 / 停止 / undo 操作を提供する
+ * `RequireMember` ガードが全経路に掛かるため、未入室セッションは 401 で入室フォームに誘導される
+ */
 @Controller("rooms/:roomId/bgm")
 @UseGuards(RequireMember)
 export class BgmsController {
@@ -32,6 +36,11 @@ export class BgmsController {
     private readonly ids: NanoidIdGenerator,
   ) {}
 
+  /**
+   * `GET /rooms/{roomId}/bgm/stream` BGM の SSE 購読経路
+   * 購読成立直後に `Snapshot` を送り、以降は `Changed` イベントで操作反映を逐次配信する
+   * 接続数は `RoomPresence` に register して、無人遷移の判定に参加させる
+   */
   @Get("stream")
   stream(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
@@ -53,6 +62,9 @@ export class BgmsController {
     });
   }
 
+  /**
+   * `POST /rooms/{roomId}/bgm` 指定トラックへ切り替える、`SetBgm` usecase が undo 窓を開いて `Changed` を配信する
+   */
   @Post()
   async set(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
@@ -67,6 +79,9 @@ export class BgmsController {
     });
   }
 
+  /**
+   * `POST /rooms/{roomId}/bgm/stop` 再生を停止して無音にする、`StopBgm` usecase が undo 窓を開いて `Changed` を配信する
+   */
   @Post("stop")
   async stop(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
@@ -75,6 +90,9 @@ export class BgmsController {
     return this.stopper.execute({ roomId, memberId: member.id, now: new Date() });
   }
 
+  /**
+   * `POST /rooms/{roomId}/bgm/undo` 直前操作を取り消す、undo 窓が開いている間だけ他メンバーが呼べる
+   */
   @Post("undo")
   async undo(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,

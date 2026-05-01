@@ -11,6 +11,10 @@ import { CurrentMember } from "../../shared/decorators/current-member.decorator"
 import { RequireMember } from "../../shared/guards/require-member.guard";
 import { ZodValidationPipe } from "../../shared/pipes/zod-validation.pipe";
 
+/**
+ * `/rooms/{roomId}/murmurs` Controller、投稿作成と SSE 配信を提供する
+ * `RequireMember` ガードが全経路に掛かるため、未入室セッションは 401 で入室フォームに誘導される
+ */
 @Controller("rooms/:roomId/murmurs")
 @UseGuards(RequireMember)
 export class MurmursController {
@@ -22,6 +26,9 @@ export class MurmursController {
     private readonly ids: NanoidIdGenerator,
   ) {}
 
+  /**
+   * `POST /rooms/{roomId}/murmurs` ひとことを投稿する、本文のみを受けて usecase 側が永続化と `Posted` 配信を行う
+   */
   @Post()
   async create(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
@@ -35,6 +42,11 @@ export class MurmursController {
     });
   }
 
+  /**
+   * `GET /rooms/{roomId}/murmurs/stream` ひとことの SSE 購読経路
+   * 接続成立時に `RoomPresence` へ 1 接続として記録し、切断時に `deregister` を呼ぶ
+   * `onAttach` で購読成立直後に `Snapshot` を送出して、遅れて参加したクライアントも過去の流れを再構築できる
+   */
   @Get("stream")
   stream(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,

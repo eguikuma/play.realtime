@@ -19,6 +19,10 @@ import { CurrentMember } from "../../shared/decorators/current-member.decorator"
 import { RequireMember } from "../../shared/guards/require-member.guard";
 import { ZodValidationPipe } from "../../shared/pipes/zod-validation.pipe";
 
+/**
+ * `/rooms/{roomId}/vibe` Controller、SSE 購読と可視状態変更 POST を提供する
+ * `RequireMember` ガードが全経路に掛かるため、未入室セッションは 401 で入室フォームに誘導される
+ */
 @Controller("rooms/:roomId/vibe")
 @UseGuards(RequireMember)
 export class VibesController {
@@ -33,6 +37,11 @@ export class VibesController {
     private readonly ids: NanoidIdGenerator,
   ) {}
 
+  /**
+   * `GET /rooms/{roomId}/vibe/stream` Vibe の SSE 購読経路
+   * 接続ごとに `connectionId` を採番し、購読成立直後に `Welcome` と `Snapshot` を送ってから `NotifyVibeJoined` を走らせる
+   * 切断時は `RoomPresence.deregister` と `NotifyVibeLeft` を呼び、猶予タイマーで他メンバーの画面点滅を防ぐ
+   */
   @Get("stream")
   stream(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
@@ -61,6 +70,9 @@ export class VibesController {
     });
   }
 
+  /**
+   * `POST /rooms/{roomId}/vibe` クライアントの可視状態変化を受ける、ボディで `connectionId` と新しい `status` を渡す
+   */
   @Post()
   async change(
     @Param("roomId", new ZodValidationPipe(RoomId)) roomId: RoomId,
