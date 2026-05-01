@@ -23,7 +23,7 @@ export class InviteHallway {
     @Inject(VibeRepository) private readonly vibes: VibeRepository,
     private readonly broadcaster: HallwayBroadcaster,
     private readonly ids: NanoidIdGenerator,
-    private readonly timers: HallwayInvitationTimers,
+    @Inject(HallwayInvitationTimers) private readonly timers: HallwayInvitationTimers,
     private readonly expirer: ExpireHallwayInvitation,
   ) {}
 

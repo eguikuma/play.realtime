@@ -15,7 +15,7 @@ export class AcceptHallwayInvitation {
     @Inject(HallwayRepository) private readonly hallway: HallwayRepository,
     private readonly broadcaster: HallwayBroadcaster,
     private readonly ids: NanoidIdGenerator,
-    private readonly timers: HallwayInvitationTimers,
+    @Inject(HallwayInvitationTimers) private readonly timers: HallwayInvitationTimers,
   ) {}
 
   /**

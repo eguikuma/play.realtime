@@ -13,7 +13,7 @@ export class CancelHallwayInvitation {
   constructor(
     @Inject(HallwayRepository) private readonly hallway: HallwayRepository,
     private readonly broadcaster: HallwayBroadcaster,
-    private readonly timers: HallwayInvitationTimers,
+    @Inject(HallwayInvitationTimers) private readonly timers: HallwayInvitationTimers,
   ) {}
 
   /**

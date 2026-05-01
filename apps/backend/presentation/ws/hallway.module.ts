@@ -7,7 +7,6 @@ import { HallwayConnectionCounter } from "../../application/hallway/connection-c
 import { DeclineHallwayInvitation } from "../../application/hallway/decline-invitation.usecase";
 import { ExpireHallwayInvitation } from "../../application/hallway/expire-invitation.usecase";
 import { GetHallwaySnapshot } from "../../application/hallway/get-snapshot.usecase";
-import { HallwayInvitationTimers } from "../../application/hallway/invitation-timers";
 import { InviteHallway } from "../../application/hallway/invite.usecase";
 import { LeaveHallwayCall } from "../../application/hallway/leave-call.usecase";
 import { SendHallwayMessage } from "../../application/hallway/send-message.usecase";
@@ -17,8 +16,8 @@ import { HallwayGateway } from "./hallway.gateway";
 
 /**
  * 廊下トーク機能を組み立てる Module
- * Hallway 固有の usecase、broadcaster、counter、timers を束ね、`RoomsModule` から `GetRoomMembership` を取り込む
- * `RoomRepository`、`VibeRepository`、`HallwayRepository` 実装は Global の `RepositoryModule` から注入される
+ * Hallway 固有の usecase、broadcaster、counter を束ね、`RoomsModule` から `GetRoomMembership` を取り込む
+ * `RoomRepository`、`VibeRepository`、`HallwayRepository` 実装は Global の `RepositoryModule` から注入され、`HallwayInvitationTimers` は Global の `TimerModule` から注入される
  */
 @Module({
   imports: [RoomsModule, WsModule],
@@ -26,7 +25,6 @@ import { HallwayGateway } from "./hallway.gateway";
     HallwayGateway,
     HallwayBroadcaster,
     HallwayConnectionCounter,
-    HallwayInvitationTimers,
     InviteHallway,
     AcceptHallwayInvitation,
     DeclineHallwayInvitation,
