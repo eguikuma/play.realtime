@@ -25,7 +25,7 @@ export const Call = ({ callId, peerName }: Call) => {
   return (
     <div className="pointer-events-auto mx-auto flex w-full max-w-[480px] flex-col overflow-hidden rounded-xl border border-rule bg-paper/95 shadow-[0_32px_64px_-24px_oklch(from_var(--ink)_l_c_h/0.35)] backdrop-blur-xl">
       <Head peerName={peerName} onLeave={call.onLeave} />
-      <Log logRef={call.logRef} empty={call.empty} entries={call.entries} />
+      <Log ref={call.ref} empty={call.empty} entries={call.entries} />
       <Composer {...call.composer} />
     </div>
   );

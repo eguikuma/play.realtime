@@ -25,10 +25,10 @@ export const useStrip = (roomId: RoomId) => {
   useStream(me ? roomId : null);
 
   const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const close = useCallback(() => setOpen(false), []);
   const toggle = useCallback(() => setOpen((prev) => !prev), []);
-  useDismiss(rootRef, open, close);
+  useDismiss(ref, open, close);
 
   const current = state.current;
   const track = useMemo(() => (current ? Tracks[current.trackId] : null), [current]);
@@ -54,12 +54,12 @@ export const useStrip = (roomId: RoomId) => {
 
   return {
     roomId,
-    rootRef,
+    ref,
     open,
     toggle,
     close,
     audio: {
-      ref: player.audioRef,
+      ref: player.ref,
       src,
       onPlaying: player.handlers.onPlaying,
       onCanPlay: player.handlers.onCanPlay,

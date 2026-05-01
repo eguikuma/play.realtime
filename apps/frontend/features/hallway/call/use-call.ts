@@ -35,8 +35,8 @@ export const useCall = ({ callId }: Call) => {
   const actions = useActions();
 
   const [text, setText] = useState("");
-  const logRef = useRef<HTMLDivElement | null>(null);
-  useAutoscroll(logRef, messages.length);
+  const ref = useRef<HTMLDivElement | null>(null);
+  useAutoscroll(ref, messages.length);
 
   const nameOf = (id: MemberId) => members.find((member) => member.id === id)?.name ?? "unknown";
 
@@ -65,7 +65,7 @@ export const useCall = ({ callId }: Call) => {
   });
 
   return {
-    logRef,
+    ref,
     empty: messages.length === 0,
     entries,
     onLeave: () => actions.leave(callId),

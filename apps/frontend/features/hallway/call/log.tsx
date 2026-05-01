@@ -22,7 +22,7 @@ type Entry = {
  */
 type Log = {
   /** 自動スクロール用の参照 */
-  logRef: RefObject<HTMLDivElement | null>;
+  ref: RefObject<HTMLDivElement | null>;
   /** 1 件も無いときの案内文を出すかの判定 */
   empty: boolean;
   /** 表示対象の行一覧 */
@@ -33,9 +33,9 @@ type Log = {
  * 通話ウィンドウ中央の 縦方向にスクロールする会話ログ
  * 空のときは静かな文言だけを表示し 新着到着は自動スクロールフックが末尾まで追従させる
  */
-export const Log = ({ logRef, empty, entries }: Log) => (
+export const Log = ({ ref, empty, entries }: Log) => (
   <div
-    ref={logRef}
+    ref={ref}
     className="scrollable flex max-h-[280px] min-h-[120px] flex-col gap-3 overflow-y-auto px-4 py-4 [mask-image:linear-gradient(to_bottom,transparent,var(--paper)_24px)]"
   >
     {empty && <p className="self-center py-6 font-display text-ink-mute">なんでも、どうぞ</p>}

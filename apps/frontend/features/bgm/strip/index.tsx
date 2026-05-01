@@ -21,7 +21,7 @@ export const BgmStrip = ({ roomId }: { roomId: RoomId }) => {
   const strip = useStrip(roomId);
 
   return (
-    <div ref={strip.rootRef} className="relative mt-4">
+    <div ref={strip.ref} className="relative mt-4">
       <div
         className={cn(
           "relative flex items-center gap-3 overflow-hidden rounded-md border border-rule py-2.5 pr-3 pl-4 transition-colors",

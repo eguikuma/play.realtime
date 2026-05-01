@@ -24,7 +24,7 @@ const DEFAULT_VOLUME = 5;
  * 一時停止の意思と音量はブラウザ単位で localStorage に保存し 再入室やリロード越しに復元する
  */
 export const usePlayer = (src: string | null, gain: number) => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const ref = useRef<HTMLAudioElement | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [paused, setPausedState] = useState<boolean>(() => {
@@ -46,13 +46,13 @@ export const usePlayer = (src: string | null, gain: number) => {
   }, []);
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = (volume / 100) * gain;
+    if (ref.current) {
+      ref.current.volume = (volume / 100) * gain;
     }
   }, [volume, gain]);
 
   useEffect(() => {
-    const audio = audioRef.current;
+    const audio = ref.current;
     if (!audio) return;
 
     if (!src || paused) {
@@ -75,8 +75,8 @@ export const usePlayer = (src: string | null, gain: number) => {
       if (typeof window !== "undefined") {
         window.localStorage.setItem(VOLUME_STORAGE_KEY, String(clamped));
       }
-      if (audioRef.current) {
-        audioRef.current.volume = (clamped / 100) * gain;
+      if (ref.current) {
+        ref.current.volume = (clamped / 100) * gain;
       }
     },
     [gain],
@@ -100,5 +100,5 @@ export const usePlayer = (src: string | null, gain: number) => {
     },
   };
 
-  return { audioRef, paused, loading, volume, setVolume, play, pause, handlers };
+  return { ref, paused, loading, volume, setVolume, play, pause, handlers };
 };
