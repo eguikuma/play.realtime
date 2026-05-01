@@ -10,11 +10,19 @@ import { HttpFailure } from "@/libraries/transport/http";
 import { isMissing } from "./errors";
 import { useRoom } from "./store";
 
+/**
+ * ルーム画面の初期表示文脈
+ * `joined` は入室済み (自分の Member あり)、`guest` は未入室で入室フォームを出す、`missing` はルームが存在せず `notFound` に流す
+ */
 type RoomContext =
   | { kind: "joined"; room: Room; me: Member }
   | { kind: "guest"; room: Room }
   | { kind: "missing" };
 
+/**
+ * GET `/rooms/{roomId}/me` を最初に試し、401 (未入室) なら GET `/rooms/{roomId}` に降格する 2 段フェッチ
+ * 404 / 400 は `missing`、401 以外の 4xx / 5xx は上位の `catch` に re-throw する
+ */
 const fetchRoomContext = async (roomId: RoomId): Promise<RoomContext> => {
   try {
     const { room, me } = await http.get({
@@ -35,6 +43,11 @@ const fetchRoomContext = async (roomId: RoomId): Promise<RoomContext> => {
   }
 };
 
+/**
+ * ルーム画面のマウント時に 2 段フェッチを走らせ、`useRoom` ストアへ結果を転写するフック
+ * `missing` は即 `notFound()` で Next.js の 404 に流し、コンポーネント側は描画されずに 404 画面へ遷移する
+ * ネットワーク失敗など致命的エラーは `error` state に残し、UI 側で再試行操作を提供できるようにする
+ */
 export const useLoad = (roomId: RoomId) => {
   const setRoom = useRoom((state) => state.setRoom);
   const setMe = useRoom((state) => state.setMe);

@@ -4,6 +4,10 @@ import { useRouter } from "next/navigation";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * 既存ルームの URL 貼り付けから `RoomId` を取り出して遷移させるフォームのフック
+ * URL まるごと貼っても機能するよう `/` `?` `#` で分割した末尾を候補とし、`RoomId` の書式に合わなければ toast で貼り直しを促す
+ */
 export const useJoin = () => {
   const router = useRouter();
 

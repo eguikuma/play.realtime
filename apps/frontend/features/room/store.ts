@@ -11,6 +11,11 @@ type RoomState = {
   addMember: (member: Member) => void;
 };
 
+/**
+ * ルーム全景と自分自身のメンバー情報を束ねる zustand ストア
+ * `setRoom` は GET / POST 応答での全置換、`setMe` は入室完了時に呼ぶ、`addMember` は Vibe SSE の `Joined` 受信で冪等追加する
+ * addMember は同一 ID の重複追加を弾き、サーバ側の在室配列との整合を崩さない
+ */
 export const useRoom = create<RoomState>()((set) => ({
   room: null,
   me: null,

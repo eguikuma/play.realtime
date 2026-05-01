@@ -8,6 +8,11 @@ import { toast } from "sonner";
 import { useRoom } from "@/features/room/store";
 import { http } from "@/libraries/http-client";
 
+/**
+ * ルーム新規作成フォームの状態と送信処理をまとめたフック
+ * POST 成功で `useRoom` を更新し、`router.push` で作成したルーム画面へ遷移する
+ * 失敗は toast で通知して、ユーザの入力値は保ったまま再試行できるようにする
+ */
 export const useCreate = () => {
   const router = useRouter();
   const setRoom = useRoom((state) => state.setRoom);
