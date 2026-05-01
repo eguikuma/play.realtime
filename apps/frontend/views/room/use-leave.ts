@@ -48,6 +48,8 @@ const otherTabsAlive = (roomId: RoomId, ownTabId: string): boolean => {
  * iOS Safari のタブ swipe-away では SSE と WebSocket の `close` イベントが発火せずサーバ側でメンバー幽霊化が起きる
  * 一方で Chrome 等で同メンバーの別タブが残っているときに beacon を投げると、サーバの `MemberLeft` 配信が他タブの接続まで強制クローズしてフリッカーになる
  * そこで localStorage 上のハートビートで「自タブ以外に生存中の同メンバータブがあるか」を判定し、最終タブのときだけ beacon を投げて両ケースを両立させる
+ * モバイル系ブラウザでは別タブ移動 / ホーム遷移 / アプリ切替でも `pagehide` が発火するが、これは BFCache 入りで戻ってくる経路なので退出扱いせず、`useVisibility` の `focused` 送信に任せる
+ * 区別は `PageTransitionEvent.persisted` で行い、`true` (BFCache 入り) では beacon を投げず、`false` (実アンロード) のときだけ最終タブ判定の上で `/leave` ビーコンを投げる
  * `roomId` が `null` のときは購読しないので、入室前の状態で空送信しない
  */
 export const useLeave = (roomId: RoomId | null): void => {
@@ -71,7 +73,11 @@ export const useLeave = (roomId: RoomId | null): void => {
     heartbeat();
     const interval = window.setInterval(heartbeat, HEARTBEAT_INTERVAL_MS);
 
-    const beacon = (): void => {
+    const beacon = (event: PageTransitionEvent): void => {
+      if (event.persisted) {
+        return;
+      }
+
       try {
         localStorage.removeItem(ownStorageKey);
       } catch {

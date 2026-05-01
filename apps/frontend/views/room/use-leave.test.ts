@@ -14,6 +14,12 @@ const roomId = "room-abc-1234" as RoomId;
 
 const otherTabKey = (suffix: string): string => `rimodoki:tab:${roomId}:${suffix}`;
 
+const dispatchPagehide = (persisted: boolean): void => {
+  const event = new Event("pagehide") as Event & { persisted: boolean };
+  Object.defineProperty(event, "persisted", { value: persisted });
+  window.dispatchEvent(event);
+};
+
 describe("useLeave", () => {
   let sendBeacon: ReturnType<typeof vi.fn>;
 
@@ -39,7 +45,7 @@ describe("useLeave", () => {
     renderHook(() => useLeave(roomId));
 
     act(() => {
-      window.dispatchEvent(new Event("pagehide"));
+      dispatchPagehide(false);
     });
 
     expect(sendBeacon).toHaveBeenCalledOnce();
@@ -47,11 +53,21 @@ describe("useLeave", () => {
     expect(url.endsWith(`/rooms/${roomId}/leave`)).toBe(true);
   });
 
+  it("`pagehide` の `persisted` が `true` の BFCache 経路では `sendBeacon` を呼ばない", () => {
+    renderHook(() => useLeave(roomId));
+
+    act(() => {
+      dispatchPagehide(true);
+    });
+
+    expect(sendBeacon).not.toHaveBeenCalled();
+  });
+
   it("`roomId` が `null` のときは `pagehide` でも `sendBeacon` を呼ばない", () => {
     renderHook(() => useLeave(null));
 
     act(() => {
-      window.dispatchEvent(new Event("pagehide"));
+      dispatchPagehide(false);
     });
 
     expect(sendBeacon).not.toHaveBeenCalled();
@@ -62,7 +78,7 @@ describe("useLeave", () => {
 
     unmount();
     act(() => {
-      window.dispatchEvent(new Event("pagehide"));
+      dispatchPagehide(false);
     });
 
     expect(sendBeacon).not.toHaveBeenCalled();
@@ -74,7 +90,7 @@ describe("useLeave", () => {
     renderHook(() => useLeave(roomId));
 
     act(() => {
-      window.dispatchEvent(new Event("pagehide"));
+      dispatchPagehide(false);
     });
 
     expect(sendBeacon).not.toHaveBeenCalled();
@@ -86,7 +102,7 @@ describe("useLeave", () => {
     renderHook(() => useLeave(roomId));
 
     act(() => {
-      window.dispatchEvent(new Event("pagehide"));
+      dispatchPagehide(false);
     });
 
     expect(sendBeacon).toHaveBeenCalledOnce();
@@ -98,7 +114,7 @@ describe("useLeave", () => {
     renderHook(() => useLeave(roomId));
 
     act(() => {
-      window.dispatchEvent(new Event("pagehide"));
+      dispatchPagehide(false);
     });
 
     expect(sendBeacon).toHaveBeenCalledOnce();
