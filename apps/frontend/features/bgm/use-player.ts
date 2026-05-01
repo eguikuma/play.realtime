@@ -7,7 +7,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * キー名はプロダクト固有の接頭辞を付けて、同一ドメインに同居する他アプリとの衝突を避ける
  */
 const VOLUME_STORAGE_KEY = "remodoki:bgm:volume";
-
 const PAUSED_STORAGE_KEY = "remodoki:bgm:paused";
 
 /**

@@ -2,9 +2,7 @@
 
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { useCallback, useMemo, useRef, useState } from "react";
-
 import { useRoom } from "@/features/room/store";
-
 import { useBgm } from "../store";
 import { Tracks } from "../tracks";
 import { useDismiss } from "../use-dismiss";

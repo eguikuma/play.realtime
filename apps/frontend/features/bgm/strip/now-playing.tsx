@@ -1,7 +1,6 @@
 "use client";
 
 import type { BgmCurrent } from "@play.realtime/contracts";
-
 import type { Track } from "../tracks";
 
 type NowPlaying = {

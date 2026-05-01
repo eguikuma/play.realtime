@@ -2,7 +2,6 @@
 
 import { Volume2 } from "lucide-react";
 import type { ChangeEvent } from "react";
-
 import { useIsIos } from "@/libraries/use-is-ios";
 
 type Slider = {

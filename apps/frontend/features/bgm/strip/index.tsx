@@ -1,9 +1,7 @@
 "use client";
 
 import type { RoomId } from "@play.realtime/contracts";
-
 import { cn } from "@/libraries/classname";
-
 import { Panel } from "../panel";
 import { Controls } from "./controls";
 import { Lead } from "./lead";

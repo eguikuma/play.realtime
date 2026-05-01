@@ -7,7 +7,6 @@ import { useConnectionStatus } from "@/libraries/connection-status/store";
 import { origin } from "@/libraries/environment";
 import { sse } from "@/libraries/sse-client";
 import { useSse } from "@/libraries/transport";
-
 import { useBgm } from "./store";
 
 /**

@@ -2,7 +2,6 @@
 
 import type { BgmCurrent } from "@play.realtime/contracts";
 import { AudioLines, Power, Radio } from "lucide-react";
-
 import type { Track } from "../tracks";
 
 type NowPlaying = {

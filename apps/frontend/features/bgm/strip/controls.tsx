@@ -1,9 +1,7 @@
 "use client";
 
 import { Pause, Play } from "lucide-react";
-
 import { cn } from "@/libraries/classname";
-
 import { Slider } from "../slider";
 
 type Controls = {

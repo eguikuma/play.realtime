@@ -7,7 +7,6 @@ import {
   SetBgmRequest,
   type TrackId,
 } from "@play.realtime/contracts";
-
 import { http } from "@/libraries/http-client";
 
 /**

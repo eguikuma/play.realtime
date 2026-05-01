@@ -1,7 +1,6 @@
 "use client";
 
 import { Plus } from "lucide-react";
-
 import { cn } from "@/libraries/classname";
 
 type Trigger = {
