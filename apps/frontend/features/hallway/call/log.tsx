@@ -38,7 +38,7 @@ export const Log = ({ ref, empty, entries }: Log) => (
     ref={ref}
     className="scrollable flex max-h-[280px] min-h-[120px] flex-col gap-3 overflow-y-auto px-4 py-4 [mask-image:linear-gradient(to_bottom,transparent,var(--paper)_24px)]"
   >
-    {empty && <p className="self-center py-6 font-display text-ink-mute">なんでも、どうぞ</p>}
+    {empty && <p className="m-auto text-center font-display text-ink-mute">なんでも、どうぞ</p>}
     {entries.map((entry) => (
       <Message
         key={entry.key}
