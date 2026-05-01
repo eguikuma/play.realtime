@@ -5,6 +5,10 @@ import { RoomNotFound, RoomRepository } from "../../domain/room";
 import { SseHub } from "../../infrastructure/transport/sse";
 import { topic } from "./topic";
 
+/**
+ * BGM の再生トラックを切り替える usecase
+ * 現在状態を取得、ドメイン関数 `set` で undo 窓付きの新状態を組み立て、保存後に `Changed` を配信する
+ */
 @Injectable()
 export class SetBgm {
   constructor(
@@ -13,6 +17,10 @@ export class SetBgm {
     private readonly hub: SseHub,
   ) {}
 
+  /**
+   * ルーム存在確認 現在状態取得 ドメイン `set` 適用 保存 SSE 配信の順で流れる
+   * 保存済み状態が `null` の初回は `empty()` を起点にする
+   */
   async execute(input: {
     roomId: RoomId;
     memberId: MemberId;

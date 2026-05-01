@@ -5,6 +5,10 @@ import { RoomNotFound, RoomRepository } from "../../domain/room";
 import { SseHub } from "../../infrastructure/transport/sse";
 import { topic } from "./topic";
 
+/**
+ * BGM を停止して無音状態にする usecase
+ * ドメイン関数 `stop` で `current` を `null` に落とし、直前状態を undo 窓に退避してから保存して `Changed` を配信する
+ */
 @Injectable()
 export class StopBgm {
   constructor(
