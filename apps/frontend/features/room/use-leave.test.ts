@@ -28,7 +28,7 @@ describe("useLeave", () => {
     vi.restoreAllMocks();
   });
 
-  it("pagehide で sendBeacon を `/rooms/:roomId/leave` に投げる", () => {
+  it("`pagehide` で `/rooms/:roomId/leave` に `sendBeacon` を投げる", () => {
     renderHook(() => useLeave(roomId));
 
     act(() => {
@@ -40,7 +40,7 @@ describe("useLeave", () => {
     expect(url.endsWith(`/rooms/${roomId}/leave`)).toBe(true);
   });
 
-  it("roomId が null のときは pagehide でも sendBeacon を呼ばない", () => {
+  it("`roomId` が `null` のときは `pagehide` でも `sendBeacon` を呼ばない", () => {
     renderHook(() => useLeave(null));
 
     act(() => {
@@ -50,7 +50,7 @@ describe("useLeave", () => {
     expect(sendBeacon).not.toHaveBeenCalled();
   });
 
-  it("アンマウント後の pagehide では sendBeacon を呼ばない", () => {
+  it("アンマウント後の `pagehide` では `sendBeacon` を呼ばない", () => {
     const { unmount } = renderHook(() => useLeave(roomId));
 
     unmount();
