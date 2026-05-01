@@ -2,14 +2,14 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from "node
 import { resolve } from "node:path";
 
 /**
- * 直近のシナリオ実行 (`report/*.json`) を `variants/baseline/` にコピーして基準値として保管する
- * フェーズ A の最後に 1 回叩いて、フェーズ B の改善後計測 (`variants/throttle/`) と比較するための土台を作る
- * 既存の baseline は上書きする想定、複数世代を取りたいなら本スクリプトを複製して別名にする
+ * 直近のシナリオ実行 (`report/*.json`) を `variants/throttle/` にコピーして Phase B 改善後の数値として保管する
+ * フェーズ A の baseline と比較して frontend visibilitychange デバウンス導入の削減率を `report.ts` で並べる
+ * 既存の throttle は上書きする想定、複数世代を取りたいなら本スクリプトを複製して別名にする
  */
 
 const root = resolve(import.meta.dirname, "..");
 const sourceDirectory = resolve(root, "report");
-const snapshotDirectory = resolve(root, "variants", "baseline");
+const snapshotDirectory = resolve(root, "variants", "throttle");
 
 const main = (): void => {
   if (!existsSync(sourceDirectory)) {

@@ -12,6 +12,7 @@
     "bench:room-10": "playwright test scenarios/room-10.spec.ts",
     "report": "tsx report.ts",
     "snapshot:baseline": "tsx variants/baseline.ts",
+    "snapshot:throttle": "tsx variants/throttle.ts",
     "verify": "tsc --noEmit"
   },
   "dependencies": {
