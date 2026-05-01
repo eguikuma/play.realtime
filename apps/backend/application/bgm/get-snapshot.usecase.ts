@@ -20,6 +20,7 @@ export class GetBgmSnapshot {
     if (!room) {
       throw new RoomNotFound(input.roomId);
     }
+
     const state = (await this.bgms.get(input.roomId)) ?? empty();
     return { state };
   }

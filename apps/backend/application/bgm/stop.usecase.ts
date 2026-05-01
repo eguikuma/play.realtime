@@ -21,10 +21,13 @@ export class StopBgm {
     if (!room) {
       throw new RoomNotFound(input.roomId);
     }
+
     const current = (await this.bgms.get(input.roomId)) ?? empty();
     const next = stop(current, { memberId: input.memberId, now: input.now });
     await this.bgms.save(input.roomId, next);
+
     await this.broadcaster.changed(input.roomId, { state: next });
+
     return next;
   }
 }
