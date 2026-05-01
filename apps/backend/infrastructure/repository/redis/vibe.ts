@@ -12,7 +12,7 @@ import { aggregate, type VibeRepository } from "../../../domain/vibe";
 /**
  * `VibeRepository` の Redis 実装、メンバー 1 人あたりの状態を `vibe:{roomId}:member:{memberId}` Hash に `connectionId → VibeStatus` で保持し、ルームに属するメンバー集合を `vibe:{roomId}:members` Set で別管理する
  * メンバー単位の集約は毎回 `HVALS` で取得して `aggregate` を通すことでキャッシュ無しの一貫性を保ち、in-memory 実装と同じセマンティクスを再現する
- * `save` と `delete` は MULTI/EXEC で原子化し、`isFirst` `isLast` を Hash サイズ変化から確定させる
+ * `save` `update` `delete` は MULTI/EXEC を使わず素のコマンド列で分解する、`HSET` の戻り値と直後 `HVALS` の長さを併用して `isFirst` `isLast` を確定し、members set への `SADD` `SREM` は最後段で自己修復的に発火する
  */
 @Injectable()
 export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
@@ -23,6 +23,10 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
     this.client = new Redis(redisUrl, options);
   }
 
+  /**
+   * `HSET` の新規/上書き戻り値と直後の `HVALS` 長を合わせて `isFirst` を確定し、members set への `SADD` は常時発火させて欠落自己修復の余地を残すことで MULTI/EXEC を撤廃する
+   * 並列 save が同一メンバーで交錯しても `HSET` → `HVALS` がクライアント単位で順序保存されるため aggregate 入力の欠落は出ない、`SADD` の二重発火はコスト 1 cmd の無害な再投入に収まる
+   */
   async save(
     roomId: RoomId,
     memberId: MemberId,
@@ -31,17 +35,13 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
   ): Promise<{ isFirst: boolean; aggregated: VibeStatus }> {
     const memberKey = this.memberKey(roomId, memberId);
     const membersKey = this.membersKey(roomId);
-    const results = await this.client
-      .multi()
-      .hset(memberKey, connectionId, JSON.stringify(status))
-      .hlen(memberKey)
-      .hvals(memberKey)
-      .sadd(membersKey, memberId)
-      .exec();
-    const sizeAfter = this.coerceNumber(results, 1);
-    const rawValues = this.coerceArray(results, 2);
+    const created = await this.client.hset(memberKey, connectionId, JSON.stringify(status));
+    const rawValues = await this.client.hvals(memberKey);
+    await this.client.sadd(membersKey, memberId);
+
     const aggregated = aggregate(rawValues.map((raw) => VibeStatus.parse(JSON.parse(raw))));
-    return { isFirst: sizeAfter === 1, aggregated };
+    const isFirst = created === 1 && rawValues.length === 1;
+    return { isFirst, aggregated };
   }
 
   /**
@@ -66,6 +66,10 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
     return { updated: true, aggregated };
   }
 
+  /**
+   * `HDEL` 後の `HVALS` 長を正として最後の接続を判定し、`isLast` のときだけ `SREM` で members set から取り除く、Redis hash は全 field 削除で自動消滅するため `DEL` は省く
+   * 並列 delete が最後の 1 本を奪い合っても両者の `SREM` は idempotent で無害、members set の自己修復は次回 save の `SADD` に委ねる
+   */
   async delete(
     roomId: RoomId,
     memberId: MemberId,
@@ -73,19 +77,14 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
   ): Promise<{ isLast: boolean; aggregated: VibeStatus | null }> {
     const memberKey = this.memberKey(roomId, memberId);
     const membersKey = this.membersKey(roomId);
-    const results = await this.client
-      .multi()
-      .hdel(memberKey, connectionId)
-      .hlen(memberKey)
-      .hvals(memberKey)
-      .exec();
-    const sizeAfter = this.coerceNumber(results, 1);
-    if (sizeAfter === 0) {
-      await this.client.multi().srem(membersKey, memberId).del(memberKey).exec();
+    await this.client.hdel(memberKey, connectionId);
+    const rawValues = await this.client.hvals(memberKey);
+
+    if (rawValues.length === 0) {
+      await this.client.srem(membersKey, memberId);
       return { isLast: true, aggregated: null };
     }
 
-    const rawValues = this.coerceArray(results, 2);
     const aggregated = aggregate(rawValues.map((raw) => VibeStatus.parse(JSON.parse(raw))));
     return { isLast: false, aggregated };
   }
@@ -151,23 +150,7 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
   }
 
   /**
-   * MULTI/EXEC や pipeline の `[error, value][]` 結果から指定インデックスの数値を取り出す
-   * Redis 側のエラーは throw に変換し、後続の Zod パースが意味不明な値で落ちないようにする
-   */
-  private coerceNumber(results: [Error | null, unknown][] | null, index: number): number {
-    const entry = results?.[index];
-    if (!entry) {
-      throw new Error(`redis MULTI returned no result at index ${index}`);
-    }
-    const [error, value] = entry;
-    if (error) {
-      throw error;
-    }
-    return Number(value);
-  }
-
-  /**
-   * MULTI/EXEC や pipeline の `[error, value][]` 結果から指定インデックスの string 配列を取り出す
+   * pipeline の `[error, value][]` 結果から指定インデックスの string 配列を取り出す
    * `HVALS` の戻り値型に合わせ、Redis エラーは throw に変換する
    */
   private coerceArray(results: [Error | null, unknown][] | null, index: number): string[] {
