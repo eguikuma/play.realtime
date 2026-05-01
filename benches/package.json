@@ -19,6 +19,7 @@
     "snapshot:with-bgm-cycle": "tsx variants/with-bgm-cycle.ts",
     "stats:snapshot": "tsx observations/snapshot.ts",
     "stats:calibrate": "tsx observations/snapshot.ts --calibrate",
+    "stats:session": "tsx observations/session.ts",
     "verify": "tsc --noEmit"
   },
   "dependencies": {
