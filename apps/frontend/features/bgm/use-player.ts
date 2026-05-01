@@ -6,9 +6,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * 音量と停止状態を永続化する `localStorage` キー群
  * キー名はプロダクト固有の接頭辞を付けて、同一ドメインに同居する他アプリとの衝突を避ける
  */
-const VOLUME_STORAGE_KEY = "rimodoki:bgm:volume";
+const VOLUME_STORAGE_KEY = "remodoki:bgm:volume";
 
-const PAUSED_STORAGE_KEY = "rimodoki:bgm:paused";
+const PAUSED_STORAGE_KEY = "remodoki:bgm:paused";
 
 /**
  * 音量スライダーの初期値、0 〜 100 のスケール、控えめな 5 を選ぶ
