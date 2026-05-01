@@ -8,7 +8,7 @@ export const Environment = z.object({
   /** HTTP リッスンポート、既定 4000 */
   PORT: z.coerce.number().int().positive().default(4000),
   /** フロントエンド Origin、CORS と WebSocket Origin 検証で使う */
-  WEB_ORIGIN: z.url().default("http://localhost:3000"),
+  FRONTEND_ORIGIN: z.url().default("http://localhost:3000"),
   /** ルーム無人から自動閉鎖までの猶予、テストでは短縮値を渡して検証する */
   ROOM_GRACE_MS: z.coerce.number().int().positive().default(30_000),
   /**

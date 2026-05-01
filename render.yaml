@@ -13,7 +13,7 @@ services:
         value: production
       - key: PORT
         value: 10000
-      - key: WEB_ORIGIN
+      - key: FRONTEND_ORIGIN
         sync: false
       - key: COOKIE_SAME_SITE
         value: none

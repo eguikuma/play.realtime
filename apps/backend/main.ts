@@ -24,7 +24,7 @@ const main = async (): Promise<void> => {
 
   application.use(cookieParser());
   application.enableCors({
-    origin: environment.WEB_ORIGIN,
+    origin: environment.FRONTEND_ORIGIN,
     credentials: true,
   });
   application.enableShutdownHooks();

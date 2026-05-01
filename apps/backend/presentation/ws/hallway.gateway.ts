@@ -113,7 +113,7 @@ export class HallwayGateway implements OnModuleInit {
 
   /**
    * upgrade リクエストの認可を 4 段で実施する
-   * URL が `/rooms/{roomId}/hallway` に一致、Origin が `WEB_ORIGIN` と一致、Cookie の `MemberId` が妥当、ルーム内にそのメンバーが存在、の順で検証する
+   * URL が `/rooms/{roomId}/hallway` に一致、Origin が `FRONTEND_ORIGIN` と一致、Cookie の `MemberId` が妥当、ルーム内にそのメンバーが存在、の順で検証する
    * どこかで落ちれば `socket.destroy` でハンドシェイクを閉じ、それ以上のレスポンスは返さない
    */
   private async onUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): Promise<void> {
@@ -123,7 +123,7 @@ export class HallwayGateway implements OnModuleInit {
       return;
     }
 
-    if (request.headers.origin !== this.environment.WEB_ORIGIN) {
+    if (request.headers.origin !== this.environment.FRONTEND_ORIGIN) {
       socket.destroy();
       return;
     }
