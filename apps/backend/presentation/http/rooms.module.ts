@@ -10,6 +10,11 @@ import { MemberNotFoundFilter } from "./filters/member-not-found.filter";
 import { RoomNotFoundFilter } from "./filters/room-not-found.filter";
 import { RoomsController } from "./rooms.controller";
 
+/**
+ * ルーム機能を組み立てる Module
+ * `RoomRepository` の in-memory 実装と、RoomNotFound / MemberNotFound の ExceptionFilter を APP_FILTER として登録する
+ * `RoomRepository` と `GetRoomMembership` は他モジュールの Guard / usecase から再利用されるため export する
+ */
 @Module({
   controllers: [RoomsController],
   providers: [
