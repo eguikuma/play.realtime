@@ -29,7 +29,7 @@ export const Invitation = ({ fromName, expiresAt, onAccept, onDecline }: Invitat
       style={{ transform: "rotate(-1.2deg)" }}
     >
       <div
-        className="relative max-w-[320px] rounded-md border border-rule bg-paper-2/95 p-5 shadow-[0_24px_48px_-20px_oklch(from_var(--ink)_l_c_h/0.3),0_2px_0_var(--rule)] backdrop-blur-md"
+        className="relative max-w-[min(320px,calc(100vw-3rem))] rounded-md border border-rule bg-paper-2/95 p-5 shadow-[0_24px_48px_-20px_oklch(from_var(--ink)_l_c_h/0.3),0_2px_0_var(--rule)] backdrop-blur-md"
         style={{
           animation: `invitation-slip-tail ${INVITATION_TTL_MS}ms linear forwards`,
           animationDelay: `-${elapsed}ms`,
