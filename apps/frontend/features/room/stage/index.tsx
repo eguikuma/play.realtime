@@ -1,7 +1,6 @@
 "use client";
 
 import type { RoomId } from "@play.realtime/contracts";
-import { Monogram } from "@/components/monogram";
 import { BgmStrip } from "@/features/bgm";
 import { HallwayOverlays } from "@/features/hallway";
 import { Compose, MurmurBody } from "@/features/murmur";
@@ -9,6 +8,7 @@ import { useVibe, VibeRow } from "@/features/vibe";
 import { BrandMark } from "../layout";
 import { useRoom } from "../store";
 import { useLeave } from "../use-leave";
+import { MeBadge } from "./me-badge";
 
 type Stage = {
   /** 描画対象のルーム ID、子コンポーネントへ渡して各機能の購読先を確定させる */
@@ -43,19 +43,7 @@ export const RoomStage = ({ roomId }: Stage) => {
             <span className="hidden font-sans text-[12px] text-ink-mute sm:inline">
               {presentCount}人が部屋にいます
             </span>
-            {me && (
-              <span className="flex items-center gap-2 rounded-pill border border-rule bg-paper-2/70 px-3 py-1.5 backdrop-blur-sm">
-                <Monogram
-                  name={me.name}
-                  className="size-6 bg-paper text-[11px] text-lamp"
-                  style={{
-                    boxShadow:
-                      "inset 0 0 0 1.5px var(--lamp), 0 0 0 3px oklch(from var(--lamp) l c h / 0.18)",
-                  }}
-                />
-                <span className="max-w-[9ch] truncate font-sans text-ink text-sm">{me.name}</span>
-              </span>
-            )}
+            {me && <MeBadge name={me.name} />}
           </div>
         </header>
 
