@@ -14,7 +14,7 @@ import type { RedisExpiredListener } from "./expired-listener";
 const OWNER_TTL_MS = 300_000;
 
 const PREFIX = "room:grace:";
-const OWNER_PREFIX = "room:graceowner:";
+const OWNER_PREFIX = "room:grace:owner:";
 
 const keyOf = (roomId: RoomId) => `${PREFIX}${roomId}`;
 const ownerKeyOf = (key: string) => `${OWNER_PREFIX}${key.slice(PREFIX.length)}`;

@@ -19,7 +19,7 @@ const GRACE_MS = 1500;
 const OWNER_TTL_MS = 6500;
 
 const PREFIX = "vibe:grace:";
-const OWNER_PREFIX = "vibe:graceowner:";
+const OWNER_PREFIX = "vibe:grace:owner:";
 
 const keyOf = (roomId: RoomId, memberId: MemberId) => `${PREFIX}${roomId}:${memberId}`;
 const ownerKeyOf = (key: string) => `${OWNER_PREFIX}${key.slice(PREFIX.length)}`;
