@@ -1,0 +1,89 @@
+"use client";
+
+import type {
+  Call,
+  CallId,
+  CallMessage,
+  ConnectionId,
+  HallwaySnapshot,
+  Invitation,
+  InvitationId,
+} from "@play.realtime/contracts";
+import { create } from "zustand";
+
+/**
+ * WebSocket の送信関数を指す短い型
+ * ストアに格納した送信関数を 機能側の操作層から呼び出すための窓口として使う
+ */
+type Sender = <TData>(name: string, data: TData) => void;
+
+/**
+ * 廊下トークのクライアント側ストアが持つ形
+ * 招待 通話 メッセージは ID を鍵にした辞書で 定数時間の検索を確保する
+ * 接続 ID と送信関数は WebSocket 接続の一生に合わせてなしと値を行き来する
+ */
+type HallwayState = {
+  connectionId: ConnectionId | null;
+  invitations: Record<string, Invitation>;
+  calls: Record<string, Call>;
+  messages: Record<string, CallMessage[]>;
+  send: Sender | null;
+  setConnectionId: (connectionId: ConnectionId | null) => void;
+  setSend: (send: Sender | null) => void;
+  setSnapshot: (snapshot: HallwaySnapshot) => void;
+  addInvitation: (invitation: Invitation) => void;
+  removeInvitation: (invitationId: InvitationId) => void;
+  addCall: (call: Call) => void;
+  removeCall: (callId: CallId) => void;
+  appendMessage: (message: CallMessage) => void;
+};
+
+/**
+ * 廊下トークのクライアント側ストア
+ * 購読フックが受信した 7 種類のサーバーメッセージを 対応する更新関数で反映する
+ */
+export const useHallway = create<HallwayState>()((set) => ({
+  connectionId: null,
+  invitations: {},
+  calls: {},
+  messages: {},
+  send: null,
+  setConnectionId: (connectionId) => set({ connectionId }),
+  setSend: (send) => set({ send }),
+  setSnapshot: (snapshot) =>
+    set({
+      invitations: Object.fromEntries(snapshot.invitations.map((entry) => [entry.id, entry])),
+      calls: Object.fromEntries(snapshot.calls.map((entry) => [entry.id, entry])),
+      messages: {},
+    }),
+  addInvitation: (invitation) =>
+    set((state) => ({
+      invitations: { ...state.invitations, [invitation.id]: invitation },
+    })),
+  removeInvitation: (invitationId) =>
+    set((state) => {
+      const next = { ...state.invitations };
+      delete next[invitationId];
+      return { invitations: next };
+    }),
+  addCall: (call) =>
+    set((state) => ({
+      calls: { ...state.calls, [call.id]: call },
+      messages: { ...state.messages, [call.id]: [] },
+    })),
+  removeCall: (callId) =>
+    set((state) => {
+      const nextCalls = { ...state.calls };
+      delete nextCalls[callId];
+      const nextMessages = { ...state.messages };
+      delete nextMessages[callId];
+      return { calls: nextCalls, messages: nextMessages };
+    }),
+  appendMessage: (message) =>
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [message.callId]: [...(state.messages[message.callId] ?? []), message],
+      },
+    })),
+}));
