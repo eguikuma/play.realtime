@@ -30,7 +30,7 @@ export const BgmStrip = ({ roomId }: BgmStrip) => {
     <div ref={strip.ref} className="relative">
       <div
         className={cn(
-          "relative flex items-center gap-3 overflow-hidden rounded-md border border-rule py-2.5 short:py-1.5 pr-3 pl-4 transition-colors",
+          "relative flex items-center gap-2 overflow-hidden rounded-md border border-rule py-2.5 short:py-1.5 pr-2 pl-3 transition-colors sm:gap-3 sm:pr-3 sm:pl-4",
           strip.shell.active ? "bg-paper-2" : "bg-paper/60",
         )}
       >
