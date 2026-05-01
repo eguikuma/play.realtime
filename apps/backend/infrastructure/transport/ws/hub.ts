@@ -3,11 +3,18 @@ import { PubSub } from "../../../application/ports/pubsub";
 import type { WsConnection } from "./connection";
 import { WsHeartbeat } from "./heartbeat";
 
+/**
+ * サーバ / クライアント双方向で使う共通封筒、`name` でメッセージ種別、`data` は種別別の Zod schema で後段 parse する
+ */
 type Envelope = {
   name: string;
   data: unknown;
 };
 
+/**
+ * WebSocket 接続を PubSub トピックへ紐付け、双方向メッセージングを集約するサービス
+ * usecase 層は `broadcast(topic, name, data)` の片方向だけ知ればよく、Ping / Pong と受信パースは hub 側に閉じ込めている
+ */
 @Injectable()
 export class WsHub {
   constructor(
@@ -15,6 +22,11 @@ export class WsHub {
     private readonly heartbeat: WsHeartbeat,
   ) {}
 
+  /**
+   * 接続にトピック購読と Ping / Pong を張り、クライアント発のメッセージを `onMessage` へ受け渡す
+   * `Pong` 種別のメッセージは heartbeat 側が吸収して、usecase 側 `onMessage` には届けない
+   * 切断時は購読解除と heartbeat 停止を自動で行う
+   */
   attach(
     connection: WsConnection,
     options: {
@@ -55,6 +67,10 @@ export class WsHub {
   }
 }
 
+/**
+ * 受信文字列を `Envelope` 形状に緩くパースする
+ * JSON パース失敗、オブジェクトでない、`name` が `string` でないいずれかで `null` を返し、不正フレームを usecase に届けない
+ */
 const parse = (raw: string): Envelope | null => {
   try {
     const parsed: unknown = JSON.parse(raw);
