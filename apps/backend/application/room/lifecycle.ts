@@ -23,7 +23,7 @@ export class RoomLifecycle {
   private graceMs = 30_000;
 
   constructor(
-    private readonly presence: RoomPresence,
+    @Inject(RoomPresence) private readonly presence: RoomPresence,
     @Inject(PubSub) private readonly pubsub: PubSub,
   ) {
     this.presence.onTransition((event) => {

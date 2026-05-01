@@ -3,8 +3,9 @@ import type { Response } from "express";
 import { describe, expect, it, vi } from "vitest";
 import type { GetMurmurSnapshot } from "../../application/murmur/get-snapshot.usecase";
 import type { PostMurmur } from "../../application/murmur/post.usecase";
-import { RoomPresence } from "../../application/room/presence";
+import type { RoomPresence } from "../../application/room/presence";
 import type { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
+import { InMemoryRoomPresence } from "../../infrastructure/presence/in-memory";
 import { SseConnection, type SseHub } from "../../infrastructure/transport/sse";
 import { MurmursController } from "./murmurs.controller";
 
@@ -37,7 +38,7 @@ const buildController = (
     execute: vi.fn(async () => []),
     ...overrides.snapshot,
   } as unknown as GetMurmurSnapshot;
-  const presence = overrides.presence ?? new RoomPresence();
+  const presence = overrides.presence ?? new InMemoryRoomPresence();
   const hub = {
     attach: vi.fn(),
     broadcast: vi.fn(),

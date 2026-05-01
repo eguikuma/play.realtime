@@ -1,8 +1,8 @@
 import type { RoomId } from "@play.realtime/contracts";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { InMemoryRoomPresence } from "../../infrastructure/presence/in-memory";
 import type { PubSub } from "../ports/pubsub";
 import { RoomLifecycle } from "./lifecycle";
-import { RoomPresence } from "./presence";
 
 const room = "room-abc-1234" as RoomId;
 
@@ -26,7 +26,7 @@ describe("RoomLifecycle", () => {
   });
 
   it("最終接続が抜けてから猶予経過後に登録された全後片付けが走る", async () => {
-    const presence = new RoomPresence();
+    const presence = new InMemoryRoomPresence();
     const pubsub = createPubSubStub();
     const lifecycle = new RoomLifecycle(presence, pubsub);
     lifecycle.overrideGracePeriod(1_000);
@@ -47,7 +47,7 @@ describe("RoomLifecycle", () => {
   });
 
   it("猶予中に新規接続が入ると後片付けは走らない", async () => {
-    const presence = new RoomPresence();
+    const presence = new InMemoryRoomPresence();
     const lifecycle = new RoomLifecycle(presence, createPubSubStub());
     lifecycle.overrideGracePeriod(1_000);
     const cleanup = vi.fn(async () => undefined);
@@ -63,7 +63,7 @@ describe("RoomLifecycle", () => {
   });
 
   it("復帰後にまた最終接続が抜けると猶予は再起動する", async () => {
-    const presence = new RoomPresence();
+    const presence = new InMemoryRoomPresence();
     const lifecycle = new RoomLifecycle(presence, createPubSubStub());
     lifecycle.overrideGracePeriod(1_000);
     const cleanup = vi.fn(async () => undefined);
@@ -82,7 +82,7 @@ describe("RoomLifecycle", () => {
   });
 
   it("ある後片付けが例外を投げても残りの後片付けは呼ばれる", async () => {
-    const presence = new RoomPresence();
+    const presence = new InMemoryRoomPresence();
     const lifecycle = new RoomLifecycle(presence, createPubSubStub());
     lifecycle.overrideGracePeriod(1_000);
     const failing = vi.fn(async () => {
@@ -101,7 +101,7 @@ describe("RoomLifecycle", () => {
   });
 
   it("destroy を直接呼べば即時に後片付けが走りタイマーも打ち切られる", async () => {
-    const presence = new RoomPresence();
+    const presence = new InMemoryRoomPresence();
     const pubsub = createPubSubStub();
     const lifecycle = new RoomLifecycle(presence, pubsub);
     lifecycle.overrideGracePeriod(10_000);

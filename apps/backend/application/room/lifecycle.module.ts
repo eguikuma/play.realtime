@@ -5,13 +5,13 @@ import { RoomLifecycle } from "./lifecycle";
 import { RoomPresence } from "./presence";
 
 /**
- * `RoomPresence` と `RoomLifecycle` をアプリ全体へ提供する Global モジュール
+ * `RoomLifecycle` をアプリ全体へ提供する Global モジュール
+ * `RoomPresence` 実装は Global の `PresenceModule` から注入され、ここでは grace timer を持つ Lifecycle 本体だけを組み立てる
  * `useFactory` で生成し、`ROOM_GRACE_MS` が既定値と異なる場合のみ `overrideGracePeriod` で差し替える
  */
 @Global()
 @Module({
   providers: [
-    RoomPresence,
     {
       provide: RoomLifecycle,
       useFactory: (presence: RoomPresence, pubsub: PubSub) => {
@@ -25,6 +25,6 @@ import { RoomPresence } from "./presence";
       inject: [RoomPresence, PubSub],
     },
   ],
-  exports: [RoomPresence, RoomLifecycle],
+  exports: [RoomLifecycle],
 })
 export class RoomLifecycleModule {}

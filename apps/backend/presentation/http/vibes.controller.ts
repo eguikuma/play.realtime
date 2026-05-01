@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, Post, Res, UseGuards } from "@nestjs/common";
 import {
   ChangeVibeStatusRequest,
   type ConnectionId,
@@ -32,7 +32,7 @@ export class VibesController {
     private readonly notifyLeft: NotifyVibeLeft,
     private readonly changeStatus: ChangeVibeStatus,
     private readonly membership: GetRoomMembership,
-    private readonly presence: RoomPresence,
+    @Inject(RoomPresence) private readonly presence: RoomPresence,
     private readonly hub: SseHub,
     private readonly ids: NanoidIdGenerator,
   ) {}

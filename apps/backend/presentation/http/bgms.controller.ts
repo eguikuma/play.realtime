@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, Post, Res, UseGuards } from "@nestjs/common";
 import {
   type BgmState,
   type ConnectionId,
@@ -31,7 +31,7 @@ export class BgmsController {
     private readonly stopper: StopBgm,
     private readonly undoer: UndoBgm,
     private readonly snapshot: GetBgmSnapshot,
-    private readonly presence: RoomPresence,
+    @Inject(RoomPresence) private readonly presence: RoomPresence,
     private readonly hub: SseHub,
     private readonly ids: NanoidIdGenerator,
   ) {}

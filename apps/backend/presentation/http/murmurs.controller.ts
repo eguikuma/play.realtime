@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, Post, Res, UseGuards } from "@nestjs/common";
 import { type MemberId, type Murmur, PostMurmurRequest, RoomId } from "@play.realtime/contracts";
 import type { Response } from "express";
 import { GetMurmurSnapshot } from "../../application/murmur/get-snapshot.usecase";
@@ -21,7 +21,7 @@ export class MurmursController {
   constructor(
     private readonly posting: PostMurmur,
     private readonly snapshot: GetMurmurSnapshot,
-    private readonly presence: RoomPresence,
+    @Inject(RoomPresence) private readonly presence: RoomPresence,
     private readonly hub: SseHub,
     private readonly ids: NanoidIdGenerator,
   ) {}

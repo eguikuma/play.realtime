@@ -5,8 +5,9 @@ import type { GetBgmSnapshot } from "../../application/bgm/get-snapshot.usecase"
 import type { SetBgm } from "../../application/bgm/set.usecase";
 import type { StopBgm } from "../../application/bgm/stop.usecase";
 import type { UndoBgm } from "../../application/bgm/undo.usecase";
-import { RoomPresence } from "../../application/room/presence";
+import type { RoomPresence } from "../../application/room/presence";
 import type { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
+import { InMemoryRoomPresence } from "../../infrastructure/presence/in-memory";
 import { SseConnection, type SseHub } from "../../infrastructure/transport/sse";
 import { BgmsController } from "./bgms.controller";
 
@@ -43,7 +44,7 @@ const buildController = (
     execute: vi.fn(async () => ({ state: emptyState })),
     ...overrides.snapshot,
   } as unknown as GetBgmSnapshot;
-  const presence = overrides.presence ?? new RoomPresence();
+  const presence = overrides.presence ?? new InMemoryRoomPresence();
   const hub = {
     attach: vi.fn(),
     broadcast: vi.fn(),

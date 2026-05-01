@@ -23,7 +23,13 @@ export type BgmTopic = string & { readonly __brand: "BgmTopic" };
 export type HallwayTopic = string & { readonly __brand: "HallwayTopic" };
 
 /**
+ * 在室遷移配信用の PubSub トピックを表す branded type
+ * 全ルーム共通の `presence:transition` 固定文字列を使い、複数インスタンス間でルームの populated/empty 遷移を共有する
+ */
+export type PresenceTopic = string & { readonly __brand: "PresenceTopic" };
+
+/**
  * 全機能の PubSub トピックを網羅する union
  * `PubSub.publish` や `SseHub.broadcast`、`WsHub.broadcast` の引数型として使い、素の文字列や別機能のトピックを渡せないようにする
  */
-export type Topic = VibeTopic | MurmurTopic | BgmTopic | HallwayTopic;
+export type Topic = VibeTopic | MurmurTopic | BgmTopic | HallwayTopic | PresenceTopic;

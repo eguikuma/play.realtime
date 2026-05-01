@@ -1,6 +1,6 @@
 import type { IncomingMessage } from "node:http";
 import type { Duplex } from "node:stream";
-import { Injectable, Logger, type OnModuleInit } from "@nestjs/common";
+import { Inject, Injectable, Logger, type OnModuleInit } from "@nestjs/common";
 import { HttpAdapterHost } from "@nestjs/core";
 import { type ConnectionId, MemberId, RoomId } from "@play.realtime/contracts";
 import { type WebSocket, WebSocketServer } from "ws";
@@ -42,7 +42,7 @@ export class HallwayGateway implements OnModuleInit {
     private readonly hub: WsHub,
     private readonly ids: NanoidIdGenerator,
     private readonly counter: HallwayConnectionCounter,
-    private readonly presence: RoomPresence,
+    @Inject(RoomPresence) private readonly presence: RoomPresence,
     private readonly membership: GetRoomMembership,
     private readonly getSnapshot: GetHallwaySnapshot,
     private readonly invite: InviteHallway,
