@@ -103,7 +103,7 @@ describe.skipIf(!REDIS_URL)("RedisPubSub", () => {
     expect(otherRoom).toHaveBeenCalledWith(2);
   });
 
-  it("オブジェクト型 payload も JSON 経由で型を保ったまま受け取れる", async () => {
+  it("オブジェクト型ペイロードも JSON 経由で型を保ったまま受け取れる", async () => {
     const listener = vi.fn();
     pubsub.subscribe<{ id: number; meta: { ok: boolean } }>(`${prefix}structured`, listener);
     await settle();
