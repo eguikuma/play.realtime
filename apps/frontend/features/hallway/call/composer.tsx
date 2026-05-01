@@ -6,12 +6,20 @@ import type { SyntheticEvent } from "react";
 import { Input } from "@/components/ui/input";
 
 type Composer = {
+  /** 現在の入力文字列 */
   text: string;
+  /** 送信可能かどうか、空白のみの入力などで false にして送信ボタンを無効化する */
   canSubmit: boolean;
+  /** 入力値が変わったときに親へ通知するコールバック */
   onChange: (value: string) => void;
+  /** フォーム送信時に親へ通知するコールバック、preventDefault はコンポーネント側で処理する想定 */
   onSubmit: (event: SyntheticEvent<HTMLFormElement>) => void;
 };
 
+/**
+ * 通話窓下部のメッセージ入力欄
+ * テキスト入力と送信ボタンを 1 行に並べ、500 文字を上限にする
+ */
 export const Composer = ({ text, canSubmit, onChange, onSubmit }: Composer) => (
   <form
     onSubmit={onSubmit}

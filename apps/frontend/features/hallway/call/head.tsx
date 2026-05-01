@@ -3,11 +3,18 @@
 import { ChevronDown, PhoneOff } from "lucide-react";
 
 type Head = {
+  /** 通話相手の表示名、頭文字アバターと名前ラベルに使う */
   peerName: string;
+  /** 通話終了ボタンを押したときに親へ通知するコールバック */
   onLeave: () => void;
+  /** 最小化ボタンを押したときに親へ通知するコールバック */
   onMinimize: () => void;
 };
 
+/**
+ * 通話窓のヘッダ
+ * 相手のアバターと名前、最小化ボタン、通話終了ボタンを 1 行に並べる
+ */
 export const Head = ({ peerName, onLeave, onMinimize }: Head) => (
   <header className="flex items-center gap-3 border-rule/70 border-b px-4 py-3">
     <span

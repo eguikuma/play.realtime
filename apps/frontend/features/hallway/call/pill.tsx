@@ -3,11 +3,18 @@
 import { ChevronUp, PhoneOff } from "lucide-react";
 
 type Pill = {
+  /** 通話相手の表示名、アバターと名前ラベルに使う */
   peerName: string;
+  /** ピルを展開して通話窓に戻すときに親へ通知するコールバック */
   onExpand: () => void;
+  /** 通話終了ボタンを押したときに親へ通知するコールバック */
   onLeave: () => void;
 };
 
+/**
+ * 最小化された通話窓のピル形状
+ * 展開ボタンと通話終了ボタンだけを残し、通話を閉じずに他の画面操作に集中できる状態を提供する
+ */
 export const Pill = ({ peerName, onExpand, onLeave }: Pill) => (
   <div className="pointer-events-auto mx-auto flex w-fit items-center gap-2 rounded-pill border border-rule bg-paper/95 py-1.5 pr-2 pl-3 shadow-[0_16px_32px_-20px_oklch(from_var(--ink)_l_c_h/0.32)] backdrop-blur-md">
     <span

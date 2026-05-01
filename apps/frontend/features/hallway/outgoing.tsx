@@ -3,10 +3,16 @@
 import { X } from "lucide-react";
 
 type Outgoing = {
+  /** 呼んでいる相手の表示名 */
   toName: string;
+  /** 呼び出しをキャンセルするときに親へ通知するコールバック */
   onCancel: () => void;
 };
 
+/**
+ * 自分が誰かに話しかけている最中に画面左下に出す発信中バナー
+ * 自分側からは呼び出しをやめる操作だけ提供する、応答待ちの状態を柔らかく伝える
+ */
 export const Outgoing = ({ toName, onCancel }: Outgoing) => (
   <div
     role="status"

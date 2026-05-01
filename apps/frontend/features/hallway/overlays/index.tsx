@@ -7,7 +7,17 @@ import { Invitation } from "../invitation";
 import { Outgoing } from "../outgoing";
 import { useOverlays } from "./use-overlays";
 
-export const HallwayOverlays = ({ roomId }: { roomId: RoomId }) => {
+type HallwayOverlays = {
+  /** オーバーレイを表示する対象のルーム ID、WebSocket 購読と招待 / 通話の API 送信先に使う */
+  roomId: RoomId;
+};
+
+/**
+ * ルーム画面に重ねて表示する廊下トーク関連のオーバーレイ群
+ * 右上に受信中の招待、左下に自分が出している呼び出し、下端に通話中の窓を配置する
+ * フック側が未入室のときに null を返すのに合わせて、ここでも早期 return で何も描かない
+ */
+export const HallwayOverlays = ({ roomId }: HallwayOverlays) => {
   const overlays = useOverlays(roomId);
 
   if (!overlays) return null;

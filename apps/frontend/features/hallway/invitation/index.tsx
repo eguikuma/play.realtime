@@ -4,12 +4,20 @@ import { Countdown } from "./countdown";
 import { INVITATION_TTL_MS } from "./ttl";
 
 type Invitation = {
+  /** 呼びかけている相手の表示名、カードの主語として使う */
   fromName: string;
+  /** この招待が失効する時刻、ISO 8601 文字列、残り時間の計算とアニメーションの基準にする */
   expiresAt: string;
+  /** 応じるボタンを押したときに親へ通知するコールバック */
   onAccept: () => void;
+  /** いまは無理ボタンを押したときに親へ通知するコールバック */
   onDecline: () => void;
 };
 
+/**
+ * 画面右上に差し込まれる着信招待カード
+ * 経過時間ぶんマイナス方向に `animationDelay` を設定することで、カードが途中からマウントされたときも CSS animation を残り時間に合わせて進行させる
+ */
 export const Invitation = ({ fromName, expiresAt, onAccept, onDecline }: Invitation) => {
   const elapsed = INVITATION_TTL_MS - Math.max(0, new Date(expiresAt).getTime() - Date.now());
 

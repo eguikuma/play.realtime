@@ -10,10 +10,17 @@ import { Pill } from "./pill";
 import { useCall } from "./use-call";
 
 type Call = {
+  /** 通話セッションを識別する ID、メッセージ送受信と退出の宛先に使う */
   callId: CallId;
+  /** 通話相手の表示名、ヘッダと最小化時のピルに表示する */
   peerName: string;
 };
 
+/**
+ * 廊下トークの通話窓
+ * ヘッダ / メッセージログ / 入力欄を縦に並べ、最小化ボタンでピル形状の小さな表示へ切り替える
+ * 最小化状態だけはこのコンポーネントのローカル state で持つ、メッセージ履歴や退出操作は `useCall` 経由でストアに寄せる
+ */
 export const Call = ({ callId, peerName }: Call) => {
   const call = useCall({ callId });
   const [minimized, setMinimized] = useState(false);
