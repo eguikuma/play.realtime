@@ -25,7 +25,7 @@ export const HallwayOverlays = ({ roomId }: HallwayOverlays) => {
   return (
     <>
       {overlays.incoming.length > 0 && (
-        <div className="pointer-events-none fixed short:top-4 top-24 right-6 short:right-4 z-40 flex max-h-[calc(100dvh-7rem)] short:max-h-[calc(100dvh-2rem)] flex-col gap-3 overflow-y-auto md:right-10">
+        <div className="pointer-events-none fixed short:top-4 top-24 right-6 short:right-4 z-40 flex max-h-[calc(100dvh-7rem)] short:max-h-[calc(100dvh-2rem)] flex-col gap-3 overflow-y-auto [scrollbar-width:none] md:right-10 [&::-webkit-scrollbar]:hidden">
           {overlays.incoming.map((invitation) => (
             <Invitation
               key={invitation.id}
@@ -39,7 +39,7 @@ export const HallwayOverlays = ({ roomId }: HallwayOverlays) => {
       )}
 
       {overlays.outgoing.length > 0 && (
-        <div className="pointer-events-none fixed bottom-6 short:bottom-2 left-6 short:left-2 z-40 flex max-h-[calc(100dvh-3rem)] short:max-h-[calc(100dvh-1rem)] flex-col gap-2 overflow-y-auto md:left-10">
+        <div className="pointer-events-none fixed bottom-6 short:bottom-2 left-6 short:left-2 z-40 flex max-h-[calc(100dvh-3rem)] short:max-h-[calc(100dvh-1rem)] flex-col gap-2 overflow-y-auto [scrollbar-width:none] md:left-10 [&::-webkit-scrollbar]:hidden">
           {overlays.outgoing.map((invitation) => (
             <Outgoing
               key={invitation.id}
