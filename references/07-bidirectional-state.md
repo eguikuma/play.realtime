@@ -132,8 +132,8 @@ WS 切断時のロールバックは 双方向状態同期で 最も気を使う
 
 ## 実装の踏み込み先
 
-- 招待の状態遷移 — backend の application 層 Hallway、招待の usecase 群と broadcaster
-- 通話の状態遷移 — backend の application 層 Hallway、通話開始と終了の usecase 群
-- WS 接続管理 — backend の infrastructure 層 transport の WS 部分、切断時のロールバック呼び出し
-- 招待タイマー — backend の infrastructure 層 timer、図 04 の dispatch と同じ owner side key 方式を採用
-- frontend 側の状態保持 — frontend の features 層 Hallway、招待と通話の状態を別々に持って描画
+- 招待の状態遷移（backend の application 層 Hallway、招待の usecase 群と broadcaster）
+- 通話の状態遷移（backend の application 層 Hallway、通話開始と終了の usecase 群）
+- WS 接続管理（backend の infrastructure 層 transport の WS 部分、切断時のロールバック呼び出し）
+- 招待タイマー（backend の infrastructure 層 timer、図 04 の dispatch と同じ owner side key 方式を採用）
+- frontend 側の状態保持（frontend の features 層 Hallway、招待と通話の状態を別々に持って描画）

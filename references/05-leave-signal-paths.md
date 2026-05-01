@@ -115,6 +115,6 @@ BFCache から戻ったら SSE の再接続が走り、接続単位 tracking の
 
 ## 実装の踏み込み先
 
-- 退室経路の集約 — backend の application 層 ルーム生命サイクル、最終接続切れを 1 経路に寄せる
-- 接続単位 tracking — backend の infrastructure 層 presence、SSE close と beacon を同じ抽象に乗せる
-- frontend 側の最終タブ判定 — frontend の features 層 ルーム退室、pagehide で localStorage を見る処理
+- 退室経路の集約（backend の application 層 ルーム生命サイクル、最終接続切れを 1 経路に寄せる）
+- 接続単位 tracking（backend の infrastructure 層 presence、SSE close と beacon を同じ抽象に乗せる）
+- frontend 側の最終タブ判定（frontend の features 層 ルーム退室、pagehide で localStorage を見る処理）

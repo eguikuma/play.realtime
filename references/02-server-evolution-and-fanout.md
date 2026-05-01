@@ -87,6 +87,6 @@ sticky session も要らない、ロードバランサは クライアント を
 
 ## 実装の踏み込み先
 
-- 機能 broadcaster — backend の application 層、Vibe と Murmur と BGM と Hallway の各 broadcaster
-- 抽象化 — backend の infrastructure 層 pubsub、in-memory 実装と Redis 実装が ports に揃う
-- 各サーバの in-memory ハブ — backend の infrastructure 層 transport、SSE と WS で別々のハブを持つ
+- 機能 broadcaster（backend の application 層、Vibe と Murmur と BGM と Hallway の各 broadcaster）
+- 抽象化（backend の infrastructure 層 pubsub、in-memory 実装と Redis 実装が ports に揃う）
+- 各サーバの in-memory ハブ（backend の infrastructure 層 transport、SSE と WS で別々のハブを持つ）

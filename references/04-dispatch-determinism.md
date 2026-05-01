@@ -111,5 +111,5 @@ re schedule への耐性も自然に出る
 
 ## 実装の踏み込み先
 
-- 採用箇所 — backend の infrastructure 層 timer、Vibe の grace timer、Hallway の招待タイマー、ルーム生命サイクルの grace timer の 3 つに同じ owner side key 方式を適用
-- 抽象化 — backend の infrastructure 層 timer、in-memory 実装と Redis 実装が ports に揃う、in-memory では owner key 概念は省略してよい
+- 採用箇所（backend の infrastructure 層 timer、Vibe の grace timer、Hallway の招待タイマー、ルーム生命サイクルの grace timer の 3 つに同じ owner side key 方式を適用）
+- 抽象化（backend の infrastructure 層 timer、in-memory 実装と Redis 実装が ports に揃う、in-memory では owner key 概念は省略してよい）
