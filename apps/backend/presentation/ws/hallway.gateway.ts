@@ -10,10 +10,8 @@ import {
   HallwayInviteRequest,
   HallwayLeaveCallRequest,
   HallwaySendMessageRequest,
-  type MemberId,
-  MemberId as MemberIdSchema,
-  type RoomId,
-  RoomId as RoomIdSchema,
+  MemberId,
+  RoomId,
 } from "@play.realtime/contracts";
 import { type WebSocket, WebSocketServer } from "ws";
 import { AcceptHallwayInvitation } from "../../application/hallway/accept-invitation.usecase";
@@ -103,14 +101,14 @@ export class HallwayGateway implements OnModuleInit {
       return;
     }
 
-    const roomIdResult = RoomIdSchema.safeParse(match[1]);
+    const roomIdResult = RoomId.safeParse(match[1]);
     if (!roomIdResult.success) {
       socket.destroy();
       return;
     }
 
     const cookies = parseCookies(request.headers.cookie ?? "");
-    const memberIdResult = MemberIdSchema.safeParse(cookies[MEMBER_COOKIE]);
+    const memberIdResult = MemberId.safeParse(cookies[MEMBER_COOKIE]);
     if (!memberIdResult.success) {
       socket.destroy();
       return;
