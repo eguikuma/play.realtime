@@ -15,7 +15,7 @@ export class CreateRoom {
 
   /**
    * 受け取ったホスト名で `Member` と `Room` を生成し、永続化してから両方を返す
-   * ID 採番と `joinedAt` / `createdAt` は usecase 側で確定させ、ドメイン層には完成した値だけを渡す
+   * ID 採番と `joinedAt`、`createdAt` は usecase 側で確定させ、ドメイン層には完成した値だけを渡す
    */
   async execute(input: { hostName: string }): Promise<{ room: Room; member: Member }> {
     const now = new Date().toISOString();

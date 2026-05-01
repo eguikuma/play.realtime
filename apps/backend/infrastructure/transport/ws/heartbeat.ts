@@ -7,7 +7,7 @@ import {
 import type { WsConnection } from "./connection";
 
 /**
- * WebSocket の Ping / Pong 応答を追跡してゾンビ接続を切るサービス
+ * WebSocket の Ping Pong 応答を追跡してゾンビ接続を切るサービス
  * ブラウザ側タブが休眠状態になって反応が止まった接続を、サーバ側から能動的に落として他メンバーの取り込み中表示を早めに解除する
  */
 @Injectable()

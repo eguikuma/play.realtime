@@ -12,7 +12,7 @@ import { useRoom } from "./store";
 
 /**
  * ルーム画面の初期表示文脈
- * `joined` は入室済み (自分の Member あり)、`guest` は未入室で入室フォームを出す、`missing` はルームが存在せず `notFound` に流す
+ * `joined` は入室済みで自分の Member がある状態、`guest` は未入室で入室フォームを出す、`missing` はルームが存在せず `notFound` に流す
  */
 type RoomContext =
   | { kind: "joined"; room: Room; me: Member }
@@ -20,8 +20,8 @@ type RoomContext =
   | { kind: "missing" };
 
 /**
- * GET `/rooms/{roomId}/me` を最初に試し、401 (未入室) なら GET `/rooms/{roomId}` に降格する 2 段フェッチ
- * 404 / 400 は `missing`、401 以外の 4xx / 5xx は上位の `catch` に re-throw する
+ * GET `/rooms/{roomId}/me` を最初に試し、未入室を示す 401 なら GET `/rooms/{roomId}` に降格する 2 段フェッチ
+ * 404 と 400 は `missing` 扱い、401 以外の 4xx や 5xx は上位の `catch` に re-throw する
  */
 const fetchRoomContext = async (roomId: RoomId): Promise<RoomContext> => {
   try {

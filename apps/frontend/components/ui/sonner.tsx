@@ -11,10 +11,10 @@ import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
 /**
- * Sonner のトースト表示を プロジェクト側の見た目に寄せた wrapper
- * `next-themes` のテーマ値を `Sonner` に渡してライト / ダーク切り替えと同期させる
- * 既定のアイコンを lucide に差し替え、`richColors` を有効にして成功 / 警告 / エラーの色味を標準化する
- * 背景色と枠色は `--normal-*` CSS 変数を UI トークン (`--popover` など) に振り直し、他のサーフェスと同じ見た目に揃える
+ * Sonner のトースト表示をプロジェクト側の見た目に寄せた wrapper
+ * `next-themes` のテーマ値を `Sonner` に渡してライトとダークの切り替えと同期させる
+ * 既定のアイコンを lucide に差し替え、`richColors` を有効にして成功、警告、エラーの色味を標準化する
+ * 背景色と枠色は `--normal-*` CSS 変数を `--popover` 等の UI トークンへ振り直し、他のサーフェスと同じ見た目に揃える
  */
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme } = useTheme();

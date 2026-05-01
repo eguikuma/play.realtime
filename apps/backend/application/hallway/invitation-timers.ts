@@ -21,7 +21,7 @@ export class HallwayInvitationTimers {
   }
 
   /**
-   * 稼働中のタイマーを取り消す、既に発火済み / 未登録の場合は何もしない
+   * 稼働中のタイマーを取り消す、既に発火済み、または未登録の場合は何もしない
    */
   cancel(id: InvitationId): void {
     const timeout = this.timers.get(id);

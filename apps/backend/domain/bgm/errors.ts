@@ -37,7 +37,7 @@ export class UndoExpired extends Error {
 
 /**
  * 操作者本人が自分の操作を undo しようとしたときに投げる Domain Error
- * 自分でやり直す場合は undo ではなく再度 `set` / `stop` するよう誘導するため、意図的に弾く
+ * 自分でやり直す場合は undo ではなく再度 `set` や `stop` を呼ぶよう誘導するため、意図的に弾く
  */
 export class UndoBySelf extends Error {
   readonly memberId: MemberId;

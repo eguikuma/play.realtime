@@ -102,7 +102,7 @@ export class HallwayGateway implements OnModuleInit {
 
   /**
    * Nest 起動後に HTTP サーバの `upgrade` イベントへ直接フックする
-   * NestJS の `@WebSocketGateway` / Socket.io アダプタは使わず、生の `ws` ライブラリで学習目的の実装を保つ
+   * NestJS の `@WebSocketGateway` や Socket.io アダプタは使わず、生の `ws` ライブラリで学習目的の実装を保つ
    */
   onModuleInit(): void {
     const httpServer = this.adapter.httpAdapter.getHttpServer();

@@ -20,7 +20,7 @@ import { HallwayGateway } from "./hallway.gateway";
 
 /**
  * 廊下トーク機能を組み立てる Module
- * Hallway 固有の usecase / broadcaster / counter / timers に加えて、`VibesModule` から `VibeRepository` を取り込んで招待発行時の在室判定に使う
+ * Hallway 固有の usecase、broadcaster、counter、timers に加えて、`VibesModule` から `VibeRepository` を取り込んで招待発行時の在室判定に使う
  */
 @Module({
   imports: [RoomsModule, VibesModule, WsModule],

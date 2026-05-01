@@ -11,7 +11,7 @@ import { useSse } from "@/libraries/transport";
 import { useMurmur } from "./store";
 
 /**
- * ひとこと SSE の購読を張り、`Snapshot` / `Posted` をストアへ転写するフック
+ * ひとこと SSE の購読を張り、`Snapshot` と `Posted` をストアへ転写するフック
  * `roomId` が `null` のときは接続せず、入室が済んで初めて購読を開始する
  * `handlers` は `satisfies` で `MurmurEvents` 全件の網羅を型検査に委ねる
  */

@@ -9,7 +9,7 @@ import { create } from "zustand";
 export type ConnectionKey = "sse:vibe" | "sse:bgm" | "sse:murmur" | "ws:hallway";
 
 /**
- * 各接続のライフサイクル状態、`SseState` / `WsState` と同じ 4 値で UI バナーの出し分けを統一する
+ * 各接続のライフサイクル状態、`SseState` と `WsState` の 4 値と揃えて UI バナーの出し分けを統一する
  */
 export type ConnectionState = "connecting" | "open" | "closed" | "error";
 

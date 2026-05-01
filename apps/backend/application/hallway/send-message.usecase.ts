@@ -5,7 +5,7 @@ import { HallwayBroadcaster } from "./broadcaster";
 
 /**
  * 通話中のテキストメッセージを通話参加者 2 人へ配信する usecase
- * サーバ側が `sentAt` を採番して `CallMessage` に仕立て、`Message` を送信者 / 受信者の両方へ配信することで複数接続の表示を揃える
+ * サーバ側が `sentAt` を採番して `CallMessage` に仕立て、`Message` を送信者と受信者の両方へ配信することで複数接続の表示を揃える
  */
 @Injectable()
 export class SendHallwayMessage {

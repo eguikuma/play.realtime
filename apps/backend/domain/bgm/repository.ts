@@ -2,7 +2,7 @@ import type { BgmState, RoomId } from "@play.realtime/contracts";
 
 /**
  * BGM 永続化の port 型
- * 1 ルーム 1 状態で保持し、`set` / `stop` / `undo` のいずれも上書き保存で反映する
+ * 1 ルーム 1 状態で保持し、`set`、`stop`、`undo` のいずれも上書き保存で反映する
  */
 export type BgmRepository = {
   /** 指定ルームの現在状態を取得する、未保存なら `null` を返す */

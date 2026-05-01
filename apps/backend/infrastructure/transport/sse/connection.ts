@@ -4,7 +4,7 @@ import type { Response } from "express";
 
 /**
  * 生 Express `Response` を SSE ストリームとして扱うラッパ
- * 学習目的から NestJS の `@Sse()` デコレータを使わず、ヘッダ / `retry` / `id` / `event` / `data` の組み立てを自前で行う
+ * 学習目的から NestJS の `@Sse()` デコレータを使わず、ヘッダ、`retry`、`id`、`event`、`data` の組み立てを自前で行う
  * `close` が多重に走っても 2 回目以降は静かに no-op になるよう内部フラグで冪等性を確保する
  */
 export class SseConnection {
@@ -53,7 +53,7 @@ export class SseConnection {
   }
 
   /**
-   * 1 件のイベントを `id` / `event` / `data` の SSE フレームとして送る
+   * 1 件のイベントを `id`、`event`、`data` の SSE フレームとして送る
    * `data` は改行を含む JSON を複数 `data:` 行へ分割するためペイロード中の改行も安全に扱える
    */
   emit<T>(name: string, data: T, id?: string): void {

@@ -22,7 +22,7 @@ type Controls = {
 };
 
 /**
- * ストリップ右側に置く再生 / 一時停止トグルと音量スライダーのまとまり
+ * ストリップ右側に置く再生と一時停止のトグル、音量スライダーのまとまり
  * 無音のときは表示は残しつつ操作を止め、透過と `pointer-events-none` でそれを視覚的に伝える
  */
 export const Controls = ({ active, paused, volume, onPlay, onPause, onVolume }: Controls) => (

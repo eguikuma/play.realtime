@@ -4,7 +4,7 @@ import { RoomNotFound } from "../../../domain/room";
 
 /**
  * Domain Error `RoomNotFound` を HTTP 404 へ変換する ExceptionFilter
- * Controller に try / catch を書かずに、URL 共有先のルームが閉じていた場合の応答を横断的に揃える
+ * Controller に try catch を書かずに、URL 共有先のルームが閉じていた場合の応答を横断的に揃える
  */
 @Catch(RoomNotFound)
 export class RoomNotFoundFilter implements ExceptionFilter {

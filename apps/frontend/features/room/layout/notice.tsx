@@ -14,7 +14,7 @@ type Notice = {
 
 /**
  * ルートエラーや 404 など、単独メッセージを中央寄せで見せる案内レイアウト
- * ワードマーク / 見出し / 説明 / 操作導線の 4 段を縦に並べる
+ * ワードマーク、見出し、説明、操作導線の 4 段を縦に並べる
  */
 export const Notice = ({ headline, lede, children }: Notice) => (
   <div className="flex w-full max-w-md flex-col items-center gap-7 text-center">

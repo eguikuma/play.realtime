@@ -7,7 +7,7 @@ import { topic } from "./topic";
 
 /**
  * BGM の直前操作を取り消して、undo 窓に退避された `previous` へ戻す usecase
- * ドメイン関数 `undo` が UndoUnavailable / UndoExpired / UndoBySelf を投げるため、usecase 側では追加の検証を行わない
+ * ドメイン関数 `undo` が `UndoUnavailable`、`UndoExpired`、`UndoBySelf` を投げるため、usecase 側では追加の検証を行わない
  */
 @Injectable()
 export class UndoBgm {

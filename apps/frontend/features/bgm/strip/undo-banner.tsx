@@ -12,9 +12,9 @@ type UndoBanner = {
 };
 
 /**
- * 直前の選曲 / 停止操作を取り消すための undo バナー
+ * 直前の選曲や停止操作を取り消すための undo バナー
  * `useUndoWindow` で残り秒を計算し、猶予を過ぎたら自身で null を返して消える
- * 親側は常に JSX を描き続け、このコンポーネント自身が表示 / 非表示を決めるので親に `setTimeout` 管理は要らない
+ * 親側は常に JSX を描き続け、このコンポーネント自身が表示と非表示を決めるので親に `setTimeout` 管理は要らない
  */
 export const UndoBanner = ({ until, byName, onUndo }: UndoBanner) => {
   const { seconds, expired } = useUndoWindow(until);

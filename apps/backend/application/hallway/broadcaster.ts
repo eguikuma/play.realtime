@@ -16,7 +16,7 @@ export class HallwayBroadcaster {
   ) {}
 
   /**
-   * ルーム在室メンバー全員宛に配信する、`Invited` / `InvitationEnded` / `CallStarted` / `CallEnded` など全員の UI 整合が必要なメッセージで使う
+   * ルーム在室メンバー全員宛に配信する、`Invited`、`InvitationEnded`、`CallStarted`、`CallEnded` など全員の UI 整合が必要なメッセージで使う
    * ルームが既に消えていれば静かに何もしない
    */
   async toRoom<T>(roomId: RoomId, name: string, data: T): Promise<void> {

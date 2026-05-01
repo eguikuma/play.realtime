@@ -90,7 +90,7 @@ const send = <TData>(socket: WebSocket, name: string, data: TData): void => {
 };
 
 /**
- * 受信文字列を `Envelope` 形状に緩くパースする、JSON 失敗 / 非オブジェクト / `name` が string でないいずれかで `null` を返す
+ * 受信文字列を `Envelope` 形状に緩くパースする、JSON パース失敗、非オブジェクト、`name` が string でないいずれかで `null` を返す
  */
 const parse = (raw: string): Envelope | null => {
   try {

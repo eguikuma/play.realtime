@@ -13,7 +13,7 @@ type Shell = {
 };
 
 /**
- * Landing / Entrance の 2 段組レイアウト
+ * Landing と Entrance の 2 段組レイアウト
  * 左にワードマークと大きな見出し、右にフォームを並べ、スマートフォン幅では 1 列に畳む
  */
 export const Shell = ({ headline, lede, children }: Shell) => (

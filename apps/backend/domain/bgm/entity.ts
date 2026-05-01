@@ -68,7 +68,7 @@ export const undo = (state: BgmState, input: { memberId: MemberId; now: Date }):
 };
 
 /**
- * undo 窓を開いて、復元対象となる直前状態と操作者 / 失効時刻を束ねた `BgmUndoable` を作る
+ * undo 窓を開いて、復元対象となる直前状態に操作者と失効時刻を束ねた `BgmUndoable` を作る
  */
 const openWindow = (state: BgmState, memberId: MemberId, now: Date) => ({
   until: new Date(now.getTime() + UNDO_WINDOW_MS).toISOString(),

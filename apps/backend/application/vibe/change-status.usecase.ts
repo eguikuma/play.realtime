@@ -18,7 +18,7 @@ export class ChangeVibeStatus {
   ) {}
 
   /**
-   * ルーム存在確認 `Update` 適用 集約結果差分チェック SSE 配信の順で流れる
+   * ルーム存在確認、`Update` 適用、集約結果の差分チェック、SSE 配信の順で流れる
    * `updated` が `false`、または `aggregated` が `null` のときは配信しない
    */
   async execute(input: {

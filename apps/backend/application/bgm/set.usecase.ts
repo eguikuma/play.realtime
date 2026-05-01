@@ -18,7 +18,7 @@ export class SetBgm {
   ) {}
 
   /**
-   * ルーム存在確認 現在状態取得 ドメイン `set` 適用 保存 SSE 配信の順で流れる
+   * ルーム存在確認、現在状態取得、ドメイン `set` 適用、保存、SSE 配信の順で流れる
    * 保存済み状態が `null` の初回は `empty()` を起点にする
    */
   async execute(input: {

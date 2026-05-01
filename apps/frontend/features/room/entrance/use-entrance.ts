@@ -12,7 +12,7 @@ import { useRoom } from "../store";
 
 /**
  * URL 共有からやってきた未入室ユーザが名前を入れて入室する入室フォームのフック
- * POST 成功で `useRoom` を更新して画面を「入室済み」モードへ切り替え、404 / 400 では Next.js の `notFound()` に流す
+ * POST 成功で `useRoom` を更新して画面を「入室済み」モードへ切り替え、404 と 400 では Next.js の `notFound()` に流す
  * それ以外の失敗は toast で伝え、UI のフォームは入力内容を保って再試行できるようにする
  */
 export const useEntrance = (roomId: RoomId) => {

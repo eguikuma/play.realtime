@@ -20,7 +20,7 @@ import { RequireMember } from "../../shared/guards/require-member.guard";
 import { ZodValidationPipe } from "../../shared/pipes/zod-validation.pipe";
 
 /**
- * `/rooms/{roomId}/bgm` Controller、BGM の SSE 購読と再生 / 停止 / undo 操作を提供する
+ * `/rooms/{roomId}/bgm` Controller、BGM の SSE 購読と再生、停止、undo の操作を提供する
  * `RequireMember` ガードが全経路に掛かるため、未入室セッションは 401 で入室フォームに誘導される
  */
 @Controller("rooms/:roomId/bgm")

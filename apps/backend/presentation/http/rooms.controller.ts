@@ -18,7 +18,7 @@ import { ZodValidationPipe } from "../../shared/pipes/zod-validation.pipe";
 import { MEMBER_COOKIE, MEMBER_COOKIE_OPTIONS } from "./cookies";
 
 /**
- * `/rooms` 直下のルーム作成 / 参加 / 取得 / 自分情報取得 を束ねる Controller
+ * `/rooms` 直下のルーム作成、参加、取得、自分情報取得を束ねる Controller
  * 作成と参加では `MemberId` を Cookie に書き込み、以降の HTTP 経路が Cookie から呼び出し元を特定できるようにする
  */
 @Controller("rooms")

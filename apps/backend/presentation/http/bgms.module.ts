@@ -16,7 +16,7 @@ import { RoomsModule } from "./rooms.module";
 
 /**
  * BGM 機能を組み立てる Module
- * undo 関連 Domain Error を HTTP へ変換する 4 つの ExceptionFilter を APP_FILTER として登録し、Controller 側に try / catch を書かずに済ませる
+ * undo 関連の Domain Error を HTTP へ変換する 4 つの ExceptionFilter を `APP_FILTER` として登録し、Controller 側に try catch を書かずに済ませる
  */
 @Module({
   imports: [RoomsModule, SseModule],

@@ -8,7 +8,7 @@ type Backdrop = {
 };
 
 /**
- * Landing / Entrance / Notice の背景レイヤー
+ * Landing、Entrance、Notice の背景レイヤー
  * 画面全体に柔らかな lamp グラデーションを敷き、中央寄せの配置領域に子要素を置く
  */
 export const Backdrop = ({ children }: Backdrop) => (

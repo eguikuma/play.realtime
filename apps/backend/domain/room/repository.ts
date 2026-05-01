@@ -15,6 +15,6 @@ export type RoomRepository = {
 
 /**
  * `RoomRepository` 型と同名の DI トークン
- * NestJS が symbol / string を許容するため値空間でも同名を使って `@Inject(RoomRepository)` で注入できるようにしている
+ * NestJS が symbol と string を許容するため、値空間でも同名を使って `@Inject(RoomRepository)` で注入できるようにしている
  */
 export const RoomRepository = "RoomRepository" as const;

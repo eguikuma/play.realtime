@@ -11,7 +11,7 @@ import { useSse } from "@/libraries/transport";
 import { useBgm } from "./store";
 
 /**
- * BGM SSE の購読を張り、`Snapshot` / `Changed` をストアへ転写するフック
+ * BGM SSE の購読を張り、`Snapshot` と `Changed` をストアへ転写するフック
  * `roomId` が `null` のときは接続せず、入室完了後に購読を開始する
  */
 export const useStream = (roomId: RoomId | null) => {

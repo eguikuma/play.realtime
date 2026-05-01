@@ -16,7 +16,7 @@ type Entry = {
 
 /**
  * ひとこと一覧の 1 件分の表示
- * 頭文字アバター / 投稿者名 / 投稿時刻をヘッダに、本文を下段に置く
+ * 頭文字アバター、投稿者名、投稿時刻をヘッダに、本文を下段に置く
  */
 export const Entry = ({ murmur, authorName, fresh }: Entry) => (
   <article

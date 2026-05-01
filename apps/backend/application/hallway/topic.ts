@@ -10,7 +10,7 @@ export const topic = (roomId: RoomId, memberId: MemberId): string =>
 
 /**
  * 指定メンバー全員宛に並列で WebSocket 配信するヘルパ
- * 送信先メンバー数は通常 2 (通話参加者) またはルーム人数分で、直列配信では遅延が積み重なるため `Promise.all` で捌く
+ * 送信先メンバー数は通常 2 名の通話参加者、またはルーム人数分で、直列配信では遅延が積み重なるため `Promise.all` で捌く
  */
 export const broadcastToMembers = async <T>(
   hub: WsHub,

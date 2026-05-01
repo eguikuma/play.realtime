@@ -11,7 +11,7 @@ import { useVibe, VibeRow } from "@/features/vibe";
 
 /**
  * 入室済みルームの画面本体
- * BGM ストリップ / Vibe 行 / Murmur 本体を縦に積み、Hallway の招待 / 通話オーバーレイを最上位に重ねる
+ * BGM ストリップ、Vibe 行、Murmur 本体を縦に積み、Hallway の招待と通話オーバーレイを最上位に重ねる
  */
 const RoomStage = ({ roomId }: { roomId: RoomId }) => {
   const me = useRoom((state) => state.me);
@@ -70,8 +70,8 @@ const RoomStage = ({ roomId }: { roomId: RoomId }) => {
 
 /**
  * `/rooms/{roomId}` のエントリー
- * `useLoad` が読み込み中の間はローディングバッジだけを出し、未入室で成功したら `Entrance` (入室フォーム)、入室済みなら `RoomStage` を描画する
- * `useLoad` が 404 / 400 を検知すると内部で `notFound()` を呼ぶため、missing 時はこのコンポーネントは描画されずに `not-found.tsx` へ遷移する
+ * `useLoad` が読み込み中の間はローディングバッジだけを出し、未入室で成功したら入室フォームの `Entrance`、入室済みなら `RoomStage` を描画する
+ * `useLoad` が 404 や 400 を検知すると内部で `notFound()` を呼ぶため、missing 時はこのコンポーネントは描画されずに `not-found.tsx` へ遷移する
  */
 export default function RoomEntry({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params);

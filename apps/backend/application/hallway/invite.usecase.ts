@@ -28,7 +28,7 @@ export class InviteHallway {
   ) {}
 
   /**
-   * 招待者 / 被招待者の取り込み状況と被招待者の Vibe を並列取得し、`canInvite` で不成立ケースを弾く
+   * 招待者と被招待者の取り込み状況、被招待者の Vibe を並列取得し、`canInvite` で不成立ケースを弾く
    * 招待を保存した後に 10 秒の失効タイマーを登録し、`Invited` をルーム全体へ配信する
    */
   async execute(input: {
@@ -70,7 +70,7 @@ export class InviteHallway {
   }
 
   /**
-   * 対象メンバーが発信中招待 / 着信中招待 / 通話中のいずれかに該当すれば取り込み中と判定する
+   * 対象メンバーが発信中招待、着信中招待、通話中のいずれかに該当すれば取り込み中と判定する
    */
   private async isBusy(memberId: MemberId): Promise<boolean> {
     const [outgoing, incoming, call] = await Promise.all([

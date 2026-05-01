@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 import { cn } from "@/libraries/classname";
 
 /**
- * shadcn / Base UI 流儀のテキスト入力 wrapper
+ * shadcn と Base UI の流儀に揃えたテキスト入力 wrapper
  * `@base-ui/react` の `Input` に標準的な `<input>` のプロップスをそのまま転送し、共通スタイルを Tailwind クラスで重ねる
  */
 function Input({ className, type, ...props }: ComponentProps<"input">) {

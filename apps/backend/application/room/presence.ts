@@ -20,8 +20,8 @@ export type PresenceSubscription = {
 };
 
 /**
- * ルームごとの現在接続数をカウントして、`empty` / `populated` への遷移をリスナーへ通知するサービス
- * 接続遷移の検出は SSE / WebSocket 両方の transport 層から `register` / `deregister` で呼ばれる
+ * ルームごとの現在接続数をカウントして、`empty` と `populated` の遷移をリスナーへ通知するサービス
+ * 接続遷移の検出は SSE と WebSocket の両方の transport 層から `register` と `deregister` で呼ばれる
  */
 @Injectable()
 export class RoomPresence {

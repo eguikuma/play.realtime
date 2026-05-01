@@ -4,7 +4,7 @@ import type { VibeRepository } from "../../../domain/vibe";
 import { aggregate } from "../../../domain/vibe";
 
 /**
- * `VibeRepository` の in-memory 実装、ルーム メンバー 接続の 3 段マップで接続単位の状態を保持する
+ * `VibeRepository` の in-memory 実装、ルーム、メンバー、接続の 3 段マップで接続単位の状態を保持する
  * メンバー単位の集約は毎回ドメイン関数 `aggregate` で動的に導出し、集約結果を別途キャッシュしないことで一貫性を確保する
  */
 @Injectable()

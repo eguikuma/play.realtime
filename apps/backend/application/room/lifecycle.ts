@@ -12,7 +12,7 @@ export type RoomCleanup = (roomId: RoomId) => Promise<void>;
 /**
  * ルームの生涯を管理するサービス
  * 最後の接続が切れてから猶予 30 秒の間に再入室がなければ、登録済み全クリーンアップを走らせて PubSub の配信経路も閉じる
- * 猶予期間は再接続 / リロードによる一時離脱でルームが即消滅しないためのバッファ
+ * 猶予期間は再接続やリロードによる一時離脱でルームが即消滅しないためのバッファ
  */
 @Injectable()
 export class RoomLifecycle {

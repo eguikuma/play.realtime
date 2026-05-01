@@ -30,7 +30,7 @@ export class NanoidIdGenerator {
   }
 
   /**
-   * ブランド型ではなく素の `string` を返す接続 ID、SSE / WebSocket 接続単位の識別子として使う
+   * ブランド型ではなく素の `string` を返す接続 ID、SSE と WebSocket の接続単位の識別子として使う
    */
   connection(): string {
     return randomUUID().replace(/-/g, "");

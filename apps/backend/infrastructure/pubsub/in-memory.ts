@@ -15,7 +15,7 @@ export class InMemoryPubSub implements PubSub {
 
   /**
    * 購読者集合を配信時点でスナップショットしてから `queueMicrotask` で個別に呼び出す
-   * 同期ループ中に別 handler が `subscribe` / `unsubscribe` を呼んでも反復が壊れず、handler 内の throw も他購読者の配信を止めない
+   * 同期ループ中に別 handler が `subscribe` や `unsubscribe` を呼んでも反復が壊れず、handler 内の throw も他購読者の配信を止めない
    */
   async publish<T>(topic: string, payload: T): Promise<void> {
     const handlers = this.subscribers.get(topic);

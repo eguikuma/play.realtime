@@ -8,6 +8,6 @@ export const origin = z.url().parse(process.env.NEXT_PUBLIC_API_ORIGIN ?? "http:
 
 /**
  * WebSocket 接続先 Origin
- * `origin` の `http` / `https` を対応する `ws` / `wss` に置き換えた値、別変数を増やさずに HTTP 側と一貫させる
+ * `origin` の `http` や `https` を対応する `ws` や `wss` に置き換えた値、別変数を増やさずに HTTP 側と一貫させる
  */
 export const wsOrigin = origin.replace(/^http/, "ws");

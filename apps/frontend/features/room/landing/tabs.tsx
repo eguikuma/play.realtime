@@ -16,7 +16,7 @@ type Tabs = {
 };
 
 /**
- * Create / Join を切り替えるピル形のタブ
+ * Create と Join を切り替えるピル形のタブ
  * 選択中のタブはやや浮いた背景に、非選択のタブは薄色に寄せて状態を視覚的に分ける
  */
 export const Tabs = ({ tab, onTab }: Tabs) => (

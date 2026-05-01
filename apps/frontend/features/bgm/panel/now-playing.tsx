@@ -18,7 +18,7 @@ type NowPlaying = {
 
 /**
  * 選曲パネル上段の再生中情報
- * 曲が鳴っていれば曲名 / アーティスト / 選曲者名と停止ボタンを見せ、無音のときは無音である旨のテキストだけ置く
+ * 曲が鳴っていれば曲名、アーティスト、選曲者名と停止ボタンを見せ、無音のときは無音である旨のテキストだけ置く
  */
 export const NowPlaying = ({ current, track, byName, onStop }: NowPlaying) => (
   <section className="flex flex-col gap-3">
