@@ -32,7 +32,7 @@ const buildHandlers = (overrides: Partial<HallwayCommandHandlers> = {}): Hallway
 };
 
 describe("dispatchHallwayCommand", () => {
-  it("未知の命令名を受け取ると debug ログに流して CommandFailed は送らない", async () => {
+  it("未知の命令名は `debug` ログに記録して `CommandFailed` を直送しない", async () => {
     const connection = buildConnection();
     const logger = buildLogger();
     await dispatchHallwayCommand({
@@ -48,7 +48,7 @@ describe("dispatchHallwayCommand", () => {
     expect(connection.send).not.toHaveBeenCalled();
   });
 
-  it("ハンドラがドメイン例外を投げると操作本人の接続だけへ CommandFailed を直送する", async () => {
+  it("ハンドラがドメイン例外を投げると操作本人の接続だけへ `CommandFailed` を直送する", async () => {
     const connection = buildConnection();
     const logger = buildLogger();
     const handlers = buildHandlers({
@@ -73,7 +73,7 @@ describe("dispatchHallwayCommand", () => {
     expect(logger.warn).not.toHaveBeenCalled();
   });
 
-  it("ハンドラが非ドメイン例外を投げると CommandFailed は送らず警告ログに流す", async () => {
+  it("ハンドラが非ドメイン例外を投げると `CommandFailed` は直送せず警告ログに記録する", async () => {
     const connection = buildConnection();
     const logger = buildLogger();
     const handlers = buildHandlers({
@@ -93,7 +93,7 @@ describe("dispatchHallwayCommand", () => {
     expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining("dispatch Invite failed"));
   });
 
-  it("Zod スキーマに反する不正なペイロードも非ドメイン例外として警告ログに流す", async () => {
+  it("`Zod` スキーマに反する不正なペイロードも非ドメイン例外として警告ログに記録する", async () => {
     const connection = buildConnection();
     const logger = buildLogger();
     await dispatchHallwayCommand({

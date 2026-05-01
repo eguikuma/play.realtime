@@ -39,7 +39,7 @@ describe("hallwayErrorCodeOf", () => {
     expect(hallwayErrorCodeOf(new NotCallParticipant(callId, memberId))).toBe("NotCallParticipant");
   });
 
-  it("対応表に無い例外には null を返して従来の警告ログ経路へ任せる", () => {
+  it("対応表に無い例外には `null` を返して従来の警告ログ経路へ任せる", () => {
     expect(hallwayErrorCodeOf(new Error("想定外"))).toBeNull();
     expect(hallwayErrorCodeOf("文字列として飛んできた値")).toBeNull();
     expect(hallwayErrorCodeOf(null)).toBeNull();
