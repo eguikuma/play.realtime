@@ -14,7 +14,7 @@ const buildPubSub = (): PubSub => ({
 });
 
 describe("LeaveRoom", () => {
-  it("GlobalTopic.MemberLeft へ roomId と memberId を含むペイロードを配信する", async () => {
+  it("`GlobalTopic.MemberLeft` へルーム ID とメンバー ID を含むペイロードを配信する", async () => {
     const pubsub = buildPubSub();
     const usecase = new LeaveRoom(pubsub);
 

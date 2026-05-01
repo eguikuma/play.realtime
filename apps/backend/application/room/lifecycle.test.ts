@@ -100,7 +100,7 @@ describe("RoomLifecycle", () => {
     expect(healthy).toHaveBeenCalledWith(room);
   });
 
-  it("destroy を直接呼べば即時に後片付けが走りタイマーも打ち切られる", async () => {
+  it("破棄処理を直接呼べば即時に後片付けが走りタイマーも打ち切られる", async () => {
     const presence = new InMemoryRoomPresence();
     const pubsub = createPubSubStub();
     const lifecycle = new RoomLifecycle(presence, pubsub);
