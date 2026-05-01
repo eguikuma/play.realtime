@@ -17,9 +17,7 @@ export type RoomCleanup = (roomId: RoomId) => Promise<void>;
 @Injectable()
 export class RoomLifecycle {
   private readonly cleanups: RoomCleanup[] = [];
-
   private readonly graceTimers = new Map<RoomId, NodeJS.Timeout>();
-
   private graceMs = 30_000;
 
   constructor(
@@ -55,11 +53,13 @@ export class RoomLifecycle {
    */
   async destroy(roomId: RoomId): Promise<void> {
     this.cancelGrace(roomId);
+
     for (const cleanup of this.cleanups) {
       try {
         await cleanup(roomId);
       } catch {}
     }
+
     this.pubsub.closeByPrefix(`room:${roomId}:`);
   }
 
@@ -68,6 +68,7 @@ export class RoomLifecycle {
    */
   private startGrace(roomId: RoomId): void {
     this.cancelGrace(roomId);
+
     const timer = setTimeout(() => {
       this.graceTimers.delete(roomId);
       void this.destroy(roomId);

@@ -28,12 +28,14 @@ export class JoinRoom {
     if (!room) {
       throw new RoomNotFound(input.roomId);
     }
+
     if (input.existingMemberId) {
       const existing = room.members.find((each) => each.id === input.existingMemberId);
       if (existing) {
         return { room, member: existing };
       }
     }
+
     const member = Member.parse({
       id: this.ids.member(),
       name: input.name,
@@ -41,6 +43,7 @@ export class JoinRoom {
     });
     const updated = join(room, member);
     await this.rooms.save(updated);
+
     return { room: updated, member };
   }
 }

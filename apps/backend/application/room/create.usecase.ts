@@ -30,6 +30,7 @@ export class CreateRoom {
       createdAt: now,
     });
     await this.rooms.save(room);
+
     return { room, member: host };
   }
 }
