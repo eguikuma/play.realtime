@@ -5,6 +5,10 @@ import { VibeRepository } from "../../domain/vibe";
 import { SseHub } from "../../infrastructure/transport/sse";
 import { topic } from "./topic";
 
+/**
+ * クライアントからのタブ可視状態変化を受けて接続単位の Vibe を更新し、集約結果が変わった場合だけ `Update` を配信する usecase
+ * 同一メンバーの複数接続で他タブが `present` を保っている場合など、集約後の値が変わらないケースでは配信を抑制する
+ */
 @Injectable()
 export class ChangeVibeStatus {
   constructor(
@@ -13,6 +17,10 @@ export class ChangeVibeStatus {
     private readonly hub: SseHub,
   ) {}
 
+  /**
+   * ルーム存在確認 `Update` 適用 集約結果差分チェック SSE 配信の順で流れる
+   * `updated` が `false`、または `aggregated` が `null` のときは配信しない
+   */
   async execute(input: {
     roomId: RoomId;
     memberId: MemberId;

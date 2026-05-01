@@ -5,6 +5,10 @@ import { SseHub } from "../../infrastructure/transport/sse";
 import { VibePresenceGrace } from "./presence-grace";
 import { topic } from "./topic";
 
+/**
+ * Vibe SSE 接続確立時に呼ばれ、メンバーの入室を接続単位で記録してから他メンバーへ通知する usecase
+ * 猶予タイマーが張られている最中の再入室なら `Joined` ではなく `Update` を配信し、画面の点滅を防ぐ
+ */
 @Injectable()
 export class NotifyVibeJoined {
   constructor(
@@ -13,6 +17,11 @@ export class NotifyVibeJoined {
     private readonly grace: VibePresenceGrace,
   ) {}
 
+  /**
+   * 接続を `present` で登録し、猶予タイマーを取り消す
+   * そのメンバー初の接続かつ猶予タイマーが張られていなかった場合のみ `Joined` を配信する
+   * 猶予タイマーを取り消せた再入室ケースでは `Update` に切り替えて他メンバーの画面が点滅しないようにする
+   */
   async execute(input: {
     roomId: RoomId;
     member: Member;
