@@ -1,7 +1,7 @@
 import type { MemberId, MurmurTopic, RoomId } from "@play.realtime/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { PubSub, Subscription } from "../../../application/ports/pubsub";
-import { GlobalTopic } from "../../../application/topic";
+import type { PubSub, Subscription } from "../../../application/shared/ports/pubsub";
+import { GlobalTopic } from "../../../application/shared/topic";
 import type { SseConnection } from "./connection";
 import { SseHeartbeat } from "./heartbeat";
 import { SseHub } from "./hub";

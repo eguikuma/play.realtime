@@ -1,14 +1,14 @@
 import { Injectable, Logger, type OnModuleDestroy } from "@nestjs/common";
 import type { RoomId } from "@play.realtime/contracts";
 import { Redis, type RedisOptions } from "ioredis";
-import type { PubSub } from "../../application/ports/pubsub";
 import type {
   PresenceListener,
   PresenceSubscription,
   PresenceTransition,
   RoomPresence,
 } from "../../application/room/presence";
-import { GlobalTopic } from "../../application/topic";
+import type { PubSub } from "../../application/shared/ports/pubsub";
+import { GlobalTopic } from "../../application/shared/topic";
 
 /**
  * 在室遷移配信時の payload、購読側はルーム ID と遷移種別だけで自分の処理対象を判定できる

@@ -1,6 +1,6 @@
 import { Logger } from "@nestjs/common";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { Subscription } from "../../application/ports/pubsub";
+import type { Subscription } from "../../application/shared/ports/pubsub";
 import { InMemoryPubSub } from "./in-memory";
 
 describe("InMemoryPubSub", () => {

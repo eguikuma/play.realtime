@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { RoomId } from "@play.realtime/contracts";
-import { PubSub } from "../ports/pubsub";
+import { PubSub } from "../shared/ports/pubsub";
 import { RoomPresence } from "./presence";
 
 /**

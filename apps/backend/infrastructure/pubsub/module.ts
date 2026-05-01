@@ -1,5 +1,5 @@
 import { Global, Module } from "@nestjs/common";
-import { PubSub } from "../../application/ports/pubsub";
+import { PubSub } from "../../application/shared/ports/pubsub";
 import { Environment } from "../../environment";
 import { InMemoryPubSub } from "./in-memory";
 import { RedisPubSub } from "./redis";

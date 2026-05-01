@@ -1,7 +1,7 @@
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
-import type { PubSub } from "../ports/pubsub";
-import { GlobalTopic } from "../topic";
+import type { PubSub } from "../shared/ports/pubsub";
+import { GlobalTopic } from "../shared/topic";
 import { LeaveRoom } from "./leave.usecase";
 
 const roomId = "room-abc-1234" as RoomId;

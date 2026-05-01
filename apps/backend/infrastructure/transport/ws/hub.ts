@@ -6,8 +6,8 @@ import {
   type Topic,
 } from "@play.realtime/contracts";
 import { WsCloseCode } from "@play.realtime/transport-protocol";
-import { PubSub } from "../../../application/ports/pubsub";
-import { GlobalTopic } from "../../../application/topic";
+import { PubSub } from "../../../application/shared/ports/pubsub";
+import { GlobalTopic } from "../../../application/shared/topic";
 import type { WsConnection } from "./connection";
 import { WsHeartbeat } from "./heartbeat";
 

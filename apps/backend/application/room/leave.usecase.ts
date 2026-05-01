@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { MemberId, MemberLeftPayload, RoomId } from "@play.realtime/contracts";
-import { PubSub } from "../ports/pubsub";
-import { GlobalTopic } from "../topic";
+import { PubSub } from "../shared/ports/pubsub";
+import { GlobalTopic } from "../shared/topic";
 
 /**
  * ブラウザの `pagehide` 起点で送られてきた明示退出シグナルを、SSE と WebSocket の両 Hub へ fanout する usecase

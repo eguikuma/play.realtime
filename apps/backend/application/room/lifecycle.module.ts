@@ -1,6 +1,6 @@
 import { Global, Module } from "@nestjs/common";
 import { load } from "../../environment";
-import { PubSub } from "../ports/pubsub";
+import { PubSub } from "../shared/ports/pubsub";
 import { RoomLifecycle } from "./lifecycle";
 import { RoomPresence } from "./presence";
 

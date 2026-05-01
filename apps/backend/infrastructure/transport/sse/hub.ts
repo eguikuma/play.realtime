@@ -5,8 +5,8 @@ import {
   type RoomId,
   type Topic,
 } from "@play.realtime/contracts";
-import { PubSub } from "../../../application/ports/pubsub";
-import { GlobalTopic } from "../../../application/topic";
+import { PubSub } from "../../../application/shared/ports/pubsub";
+import { GlobalTopic } from "../../../application/shared/topic";
 import type { SseConnection } from "./connection";
 import { SseHeartbeat } from "./heartbeat";
 

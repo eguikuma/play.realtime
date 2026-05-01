@@ -1,8 +1,8 @@
 import type { HallwayTopic, MemberId, RoomId } from "@play.realtime/contracts";
 import { WsCloseCode } from "@play.realtime/transport-protocol";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { PubSub, Subscription } from "../../../application/ports/pubsub";
-import { GlobalTopic } from "../../../application/topic";
+import type { PubSub, Subscription } from "../../../application/shared/ports/pubsub";
+import { GlobalTopic } from "../../../application/shared/topic";
 import type { WsConnection } from "./connection";
 import { WsHeartbeat } from "./heartbeat";
 import { WsHub } from "./hub";

@@ -1,7 +1,7 @@
 import type { RoomId } from "@play.realtime/contracts";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { InMemoryRoomPresence } from "../../infrastructure/presence/in-memory";
-import type { PubSub } from "../ports/pubsub";
+import type { PubSub } from "../shared/ports/pubsub";
 import { RoomLifecycle } from "./lifecycle";
 
 const room = "room-abc-1234" as RoomId;

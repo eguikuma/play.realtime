@@ -1,6 +1,6 @@
 import { Injectable, Logger, type OnModuleDestroy } from "@nestjs/common";
 import { Redis } from "ioredis";
-import { PubSub, type Subscription } from "../../application/ports/pubsub";
+import { PubSub, type Subscription } from "../../application/shared/ports/pubsub";
 
 type Handler = (payload: unknown) => void;
 
