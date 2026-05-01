@@ -1,31 +1,22 @@
 import { Injectable } from "@nestjs/common";
-import { BgmEvents, type BgmTopic } from "@play.realtime/contracts";
-import type { z } from "zod";
+import type { BgmChanged, RoomId } from "@play.realtime/contracts";
 import { SseHub } from "../../infrastructure/transport/sse";
+import { topic } from "./topic";
 
 /**
- * `BgmEvents` 辞書のキーに限定される配信イベント種別
- * `BgmBroadcaster.broadcast` の `name` 引数を型で束縛する
- */
-type BgmEventName = Extract<keyof typeof BgmEvents, string>;
-
-/**
- * BGM SSE 配信を `BgmEvents` 辞書で型束縛する薄いラッパ
- * usecase 層は `SseHub` を直接触らずこの broadcaster 経由で配信し、辞書にないキーや payload 不一致をコンパイル時に弾く
+ * BGM SSE 配信のイベント別ファサード
+ * usecase 層は `SseHub` を直接触らずこの broadcaster の各メソッド経由で配信し、辞書にないキーや payload 不一致をシグネチャ単位でコンパイル時に弾く
+ * `RoomId` から `BgmTopic` への変換も内部に閉じ込め、usecase からトピック組み立ての関心を取り除く
  */
 @Injectable()
 export class BgmBroadcaster {
   constructor(private readonly hub: SseHub) {}
 
   /**
-   * 指定トピックへ BGM イベントを配信する、`name` は `BgmEvents` のキーに限定される
+   * BGM の現在状態が切り替わったことをルームの購読者全員に配信する
+   * 楽曲の差し替え、停止、直前操作の取り消しのいずれも同じ `Changed` イベントで通知する
    */
-  async broadcast<K extends BgmEventName>(
-    topic: BgmTopic,
-    name: K,
-    data: z.infer<(typeof BgmEvents)[K]>,
-    id?: string,
-  ): Promise<void> {
-    return this.hub.broadcast(topic, name, data, id);
+  async changed(roomId: RoomId, data: BgmChanged): Promise<void> {
+    await this.hub.broadcast(topic(roomId), "Changed", data);
   }
 }

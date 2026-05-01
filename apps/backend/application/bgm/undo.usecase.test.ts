@@ -34,8 +34,13 @@ const buildBgms = (initial: BgmState | null): BgmRepository => ({
   remove: vi.fn(),
 });
 
-const buildBroadcaster = (broadcast = vi.fn()): BgmBroadcaster =>
-  ({ broadcast }) as unknown as BgmBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof BgmBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): BgmBroadcaster =>
+  ({
+    changed: vi.fn(),
+    ...overrides,
+  }) as unknown as BgmBroadcaster;
 
 const blues = "Blues" as TrackId;
 const danceNight = "DanceNight" as TrackId;
@@ -77,17 +82,15 @@ describe("UndoBgm", () => {
       remove: vi.fn(),
     } as RoomRepository;
     const bgms = buildBgms(existing);
-    const broadcast = vi.fn();
-    const usecase = new UndoBgm(rooms, bgms, buildBroadcaster(broadcast));
+    const broadcaster = buildBroadcaster();
+    const usecase = new UndoBgm(rooms, bgms, broadcaster);
 
     const result = await usecase.execute({ roomId, memberId: alice, now });
 
     expect(result.current).toEqual(existing.undoable?.previous);
     expect(result.undoable).toBeNull();
     expect(bgms.save).toHaveBeenCalledWith(roomId, result);
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:bgm`, "Changed", {
-      state: result,
-    });
+    expect(broadcaster.changed).toHaveBeenCalledWith(roomId, { state: result });
   });
 
   it("domain.undo が投げた Error はそのまま呼び出し側に伝わる", async () => {

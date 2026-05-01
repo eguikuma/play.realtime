@@ -29,8 +29,13 @@ const buildBgms = (initial: BgmState | null = null): BgmRepository => ({
   remove: vi.fn(),
 });
 
-const buildBroadcaster = (broadcast = vi.fn()): BgmBroadcaster =>
-  ({ broadcast }) as unknown as BgmBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof BgmBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): BgmBroadcaster =>
+  ({
+    changed: vi.fn(),
+    ...overrides,
+  }) as unknown as BgmBroadcaster;
 
 const existing: BgmState = {
   current: {
@@ -60,8 +65,8 @@ describe("StopBgm", () => {
       remove: vi.fn(),
     } as RoomRepository;
     const bgms = buildBgms(existing);
-    const broadcast = vi.fn();
-    const usecase = new StopBgm(rooms, bgms, buildBroadcaster(broadcast));
+    const broadcaster = buildBroadcaster();
+    const usecase = new StopBgm(rooms, bgms, broadcaster);
 
     const result = await usecase.execute({ roomId, memberId, now });
 
@@ -69,8 +74,6 @@ describe("StopBgm", () => {
     expect(result.undoable?.previous).toEqual(existing.current);
     expect(result.undoable?.byMemberId).toBe(memberId);
     expect(bgms.save).toHaveBeenCalledWith(roomId, result);
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:bgm`, "Changed", {
-      state: result,
-    });
+    expect(broadcaster.changed).toHaveBeenCalledWith(roomId, { state: result });
   });
 });

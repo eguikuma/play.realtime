@@ -3,7 +3,6 @@ import type { BgmState, MemberId, RoomId, TrackId } from "@play.realtime/contrac
 import { BgmRepository, empty, set } from "../../domain/bgm";
 import { RoomNotFound, RoomRepository } from "../../domain/room";
 import { BgmBroadcaster } from "./broadcaster";
-import { topic } from "./topic";
 
 /**
  * BGM の再生トラックを切り替える usecase
@@ -38,7 +37,7 @@ export class SetBgm {
       now: input.now,
     });
     await this.bgms.save(input.roomId, next);
-    await this.broadcaster.broadcast(topic(input.roomId), "Changed", { state: next });
+    await this.broadcaster.changed(input.roomId, { state: next });
     return next;
   }
 }
