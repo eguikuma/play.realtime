@@ -1,31 +1,22 @@
 import { Injectable } from "@nestjs/common";
-import { MurmurEvents, type MurmurTopic } from "@play.realtime/contracts";
-import type { z } from "zod";
+import type { Murmur, RoomId } from "@play.realtime/contracts";
 import { SseHub } from "../../infrastructure/transport/sse";
+import { topic } from "./topic";
 
 /**
- * `MurmurEvents` 辞書のキーに限定される配信イベント種別
- * `MurmurBroadcaster.broadcast` の `name` 引数を型で束縛する
- */
-type MurmurEventName = Extract<keyof typeof MurmurEvents, string>;
-
-/**
- * ひとこと SSE 配信を `MurmurEvents` 辞書で型束縛する薄いラッパ
- * usecase 層は `SseHub` を直接触らずこの broadcaster 経由で配信し、辞書にないキーや payload 不一致をコンパイル時に弾く
+ * ひとこと SSE 配信のイベント別ファサード
+ * usecase 層は `SseHub` を直接触らずこの broadcaster の各メソッド経由で配信し、辞書にないキーや payload 不一致をシグネチャ単位でコンパイル時に弾く
+ * `RoomId` から `MurmurTopic` への変換も内部に閉じ込め、usecase からトピック組み立ての関心を取り除く
  */
 @Injectable()
 export class MurmurBroadcaster {
   constructor(private readonly hub: SseHub) {}
 
   /**
-   * 指定トピックへひとことイベントを配信する、`name` は `MurmurEvents` のキーに限定される
+   * 新しいひとこと投稿をルームの購読者全員に配信する
+   * `id` は SSE の `Last-Event-ID` 再送起点として `MurmurId` を渡す
    */
-  async broadcast<K extends MurmurEventName>(
-    topic: MurmurTopic,
-    name: K,
-    data: z.infer<(typeof MurmurEvents)[K]>,
-    id?: string,
-  ): Promise<void> {
-    return this.hub.broadcast(topic, name, data, id);
+  async posted(roomId: RoomId, data: Murmur, id: string): Promise<void> {
+    await this.hub.broadcast(topic(roomId), "Posted", data, id);
   }
 }

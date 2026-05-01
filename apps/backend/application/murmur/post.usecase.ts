@@ -4,7 +4,6 @@ import { MurmurRepository, post } from "../../domain/murmur";
 import { RoomNotFound, RoomRepository } from "../../domain/room";
 import { NanoidIdGenerator } from "../../infrastructure/id/nanoid";
 import { MurmurBroadcaster } from "./broadcaster";
-import { topic } from "./topic";
 
 /**
  * ひとこと投稿を受け付けて永続化し、購読中の全クライアントへ `Posted` を配信する usecase
@@ -36,7 +35,7 @@ export class PostMurmur {
       postedAt: new Date().toISOString(),
     });
     await this.murmurs.save(murmur);
-    await this.broadcaster.broadcast(topic(input.roomId), "Posted", murmur, murmur.id);
+    await this.broadcaster.posted(input.roomId, murmur, murmur.id);
     return murmur;
   }
 }

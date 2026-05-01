@@ -26,8 +26,13 @@ const buildIds = (): NanoidIdGenerator =>
     connection: vi.fn(),
   }) as unknown as NanoidIdGenerator;
 
-const buildBroadcaster = (broadcast = vi.fn()): MurmurBroadcaster =>
-  ({ broadcast }) as unknown as MurmurBroadcaster;
+const buildBroadcaster = (
+  overrides: Partial<Record<keyof MurmurBroadcaster, ReturnType<typeof vi.fn>>> = {},
+): MurmurBroadcaster =>
+  ({
+    posted: vi.fn(),
+    ...overrides,
+  }) as unknown as MurmurBroadcaster;
 
 describe("PostMurmur", () => {
   it("存在しないルームへの投稿は RoomNotFound を投げる", async () => {
@@ -67,11 +72,11 @@ describe("PostMurmur", () => {
       remove: vi.fn(),
     } as RoomRepository;
     const murmurs = { save: vi.fn(), latest: vi.fn(), remove: vi.fn() } as MurmurRepository;
-    const broadcast = vi.fn();
-    const usecase = new PostMurmur(rooms, murmurs, buildIds(), buildBroadcaster(broadcast));
+    const broadcaster = buildBroadcaster();
+    const usecase = new PostMurmur(rooms, murmurs, buildIds(), broadcaster);
 
     const result = await usecase.execute({ roomId, memberId, text: "good morning" });
 
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:murmur`, "Posted", result, result.id);
+    expect(broadcaster.posted).toHaveBeenCalledWith(roomId, result, result.id);
   });
 });
