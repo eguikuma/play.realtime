@@ -150,7 +150,8 @@ export class InMemoryHallwayRepository implements HallwayRepository {
   }
 
   /**
-   * 指定ルームに紐づく全招待と全通話を削除する、ルーム閉鎖時の一括クリーンアップで呼ばれる
+   * 指定ルームに紐づく全招待と全通話を削除する
+   * ルーム閉鎖時の一括クリーンアップで呼ばれる
    * 主マップと二次インデックスの両方から同時に落とし、残骸を残さないようにする
    */
   async remove(roomId: RoomId): Promise<void> {

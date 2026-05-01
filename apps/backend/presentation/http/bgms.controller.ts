@@ -57,7 +57,8 @@ export class BgmsController {
   }
 
   /**
-   * `POST /rooms/{roomId}/bgm` 指定トラックへ切り替える、`SetBgm` usecase が undo 窓を開いて `Changed` を配信する
+   * `POST /rooms/{roomId}/bgm` 指定トラックへ切り替える
+   * `SetBgm` usecase が undo 窓を開いて `Changed` を配信する
    */
   @Post()
   async set(
@@ -74,7 +75,8 @@ export class BgmsController {
   }
 
   /**
-   * `POST /rooms/{roomId}/bgm/stop` 再生を停止して無音にする、`StopBgm` usecase が undo 窓を開いて `Changed` を配信する
+   * `POST /rooms/{roomId}/bgm/stop` 再生を停止して無音にする
+   * `StopBgm` usecase が undo 窓を開いて `Changed` を配信する
    */
   @Post("stop")
   async stop(
@@ -85,7 +87,8 @@ export class BgmsController {
   }
 
   /**
-   * `POST /rooms/{roomId}/bgm/undo` 直前操作を取り消す、undo 窓が開いている間だけ他メンバーが呼べる
+   * `POST /rooms/{roomId}/bgm/undo` 直前操作を取り消す
+   * undo 窓が開いている間だけ他メンバーが呼べる
    */
   @Post("undo")
   async undo(

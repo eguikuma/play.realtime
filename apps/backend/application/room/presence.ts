@@ -26,11 +26,17 @@ export type PresenceSubscription = {
 export type RoomPresence = {
   /** 新しい接続を記録し、無人からの復帰ならリスナーへ `populated` を配信する */
   register: (roomId: RoomId) => void;
-  /** 接続を 1 本減らし、最後の接続が切れたらリスナーへ `empty` を配信する、二重解除は無視する */
+  /**
+   * 接続を 1 本減らし、最後の接続が切れたらリスナーへ `empty` を配信する
+   * 二重解除は無視する
+   * */
   deregister: (roomId: RoomId) => void;
-  /** 現在のルーム接続数を取得する、テストと診断用途が主 */
+  /** 現在のルーム接続数を取得する */
   countConnections: (roomId: RoomId) => Promise<number>;
-  /** 在室遷移リスナーを登録する、戻り値の `unsubscribe` で解除する */
+  /**
+   * 在室遷移リスナーを登録する
+   * 戻り値の `unsubscribe` で解除する
+   * */
   onTransition: (listener: PresenceListener) => PresenceSubscription;
 };
 

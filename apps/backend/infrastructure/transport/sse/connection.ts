@@ -40,7 +40,8 @@ export class SseConnection {
   }
 
   /**
-   * `: ` で始まる SSE コメント行を送る、heartbeat や接続確認のダミー送出に使う
+   * `: ` で始まる SSE コメント行を送る
+   * heartbeat や接続確認のダミー送出に使う
    */
   comment(text: string): void {
     this.write(`: ${text}\n\n`);
@@ -80,14 +81,16 @@ export class SseConnection {
   }
 
   /**
-   * 接続が閉じたときに呼ぶコールバックを登録する、`SseHub` が購読解除と heartbeat 停止に使う
+   * 接続が閉じたときに呼ぶコールバックを登録する
+   * `SseHub` が購読解除と heartbeat 停止に使う
    */
   onClose(callback: () => void): void {
     this.response.on("close", callback);
   }
 
   /**
-   * 書き込み時の例外は内部フラグを閉状態に倒すだけで再送しない、既に切断済みの接続へ書き続けて伝播した例外が hub を壊さないようにする
+   * 書き込み時の例外は内部フラグを閉状態に倒すだけで再送しない
+   * 既に切断済みの接続へ書き続けて伝播した例外が hub を壊さないようにする
    */
   private write(chunk: string): void {
     if (this.closed) {

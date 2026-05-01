@@ -10,7 +10,8 @@ export class HallwayInvitationTimers {
   private readonly timers = new Map<InvitationId, NodeJS.Timeout>();
 
   /**
-   * 失効タイマーを登録する、経過後にコールバックが呼ばれ、マップからも自動で削除される
+   * 失効タイマーを登録する
+   * 経過後にコールバックが呼ばれ、マップからも自動で削除される
    */
   register(id: InvitationId, delayMs: number, callback: () => void): void {
     const timeout = setTimeout(() => {
@@ -21,7 +22,8 @@ export class HallwayInvitationTimers {
   }
 
   /**
-   * 稼働中のタイマーを取り消す、既に発火済み、または未登録の場合は何もしない
+   * 稼働中のタイマーを取り消す
+   * 既に発火済み、または未登録の場合は何もしない
    */
   cancel(id: InvitationId): void {
     const timeout = this.timers.get(id);

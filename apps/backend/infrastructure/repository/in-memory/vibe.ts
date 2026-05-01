@@ -28,7 +28,8 @@ export class InMemoryVibeRepository implements VibeRepository {
   }
 
   /**
-   * 既存の接続だけを更新する、対象接続が未登録なら `updated` を `false` で返して呼び出し側の配信を止める
+   * 既存の接続だけを更新する
+   * 対象接続が未登録なら `updated` を `false` で返して呼び出し側の配信を止める
    */
   async update(
     roomId: RoomId,

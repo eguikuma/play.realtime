@@ -16,7 +16,8 @@ export const empty = (): BgmState => ({ current: null, undoable: null });
 
 /**
  * 新しいトラックへ切り替えた `BgmState` を返す純粋関数
- * `trackId` が許可リスト外なら `UnknownTrack` を投げる、直前の状態を `undoable.previous` に退避して undo 窓を開く
+ * `trackId` が許可リスト外なら `UnknownTrack` を投げる
+ * 直前の状態を `undoable.previous` に退避して undo 窓を開く
  */
 export const set = (
   state: BgmState,
@@ -36,7 +37,8 @@ export const set = (
 };
 
 /**
- * 再生を停止した `BgmState` を返す純粋関数、`current` を `null` に落とし、undo 窓を開いて直前状態を退避する
+ * 再生を停止した `BgmState` を返す純粋関数
+ * `current` を `null` に落とし、undo 窓を開いて直前状態を退避する
  */
 export const stop = (state: BgmState, input: { memberId: MemberId; now: Date }): BgmState => {
   return {
@@ -47,7 +49,7 @@ export const stop = (state: BgmState, input: { memberId: MemberId; now: Date }):
 
 /**
  * undo 窓を使って直前の BGM 状態へ戻す純粋関数
- * 操作者本人による undo は禁止、`UndoBySelf` を投げる
+ * 操作者本人による undo は禁止し、`UndoBySelf` を投げる
  * 窓が閉じている場合は `UndoUnavailable`、期限超過は `UndoExpired` を投げる
  */
 export const undo = (state: BgmState, input: { memberId: MemberId; now: Date }): BgmState => {

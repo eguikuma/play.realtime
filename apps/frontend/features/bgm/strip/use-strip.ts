@@ -13,7 +13,8 @@ import { useStream } from "../use-stream";
 /**
  * 画面下部の BGM ストリップに必要な状態、音声制御、undo バナー要否を集約するフック
  * SSE 購読、`<audio>` 制御、パネル開閉の外クリック解除、undo バナーの表示判定をまとめ、コンポーネント側は返り値を並べるだけにする
- * undo バナーは操作者本人には出さず、`undoable.byMemberId !== me.id` のときだけ表示する、自分でやり直す場合は undo ではなく再度 `set` や `stop` を促す設計に沿わせる
+ * undo バナーは操作者本人には出さず、`undoable.byMemberId !== me.id` のときだけ表示する
+ * 自分でやり直す場合は undo ではなく再度 `set` や `stop` を促す設計に沿わせる
  */
 export const useStrip = (roomId: RoomId) => {
   const me = useSession((state) => state.me);

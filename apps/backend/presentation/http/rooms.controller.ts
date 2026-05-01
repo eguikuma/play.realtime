@@ -46,7 +46,8 @@ export class RoomsController {
   }
 
   /**
-   * `POST /rooms/{roomId}/members` 既存ルームへ参加する、Cookie に残る `MemberId` を再入室候補として usecase へ渡してリロード時に同じメンバーへ寄せる
+   * `POST /rooms/{roomId}/members` 既存ルームへ参加する
+   * Cookie に残る `MemberId` を再入室候補として usecase へ渡してリロード時に同じメンバーへ寄せる
    */
   @Post(":roomId/members")
   async join(

@@ -276,7 +276,8 @@ export type HallwaySendMessageRequest = z.infer<typeof HallwaySendMessageRequest
 
 /**
  * `Leave` コマンドのペイロード契約
- * 参加者が明示的に通話から退出するときに送る、サーバ側は `CallEnded` の `explicit` として配信する
+ * 参加者が明示的に通話から退出するときに送る
+ * サーバ側は `CallEnded` の `explicit` として配信する
  */
 export const HallwayLeaveCallRequest = z.object({
   /** 退出する通話の `CallId` */

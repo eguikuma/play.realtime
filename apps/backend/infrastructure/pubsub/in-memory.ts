@@ -38,7 +38,8 @@ export class InMemoryPubSub implements PubSub {
   }
 
   /**
-   * 指定トピックを購読する、戻り値の `unsubscribe` で解除する
+   * 指定トピックを購読する
+   * 戻り値の `unsubscribe` で解除する
    * 解除時に購読者集合が空になればマップ自体も削除して、古いトピックの残骸を残さないようにする
    */
   subscribe<T>(topic: string, handler: (payload: T) => void): Subscription {
@@ -63,7 +64,8 @@ export class InMemoryPubSub implements PubSub {
   }
 
   /**
-   * 指定プレフィックスで始まる全トピックの購読を打ち切る、ルーム閉鎖時の `room:{roomId}:` 掃除で使う
+   * 指定プレフィックスで始まる全トピックの購読を打ち切る
+   * ルーム閉鎖時の `room:{roomId}:` 掃除で使う
    */
   closeByPrefix(prefix: string): void {
     for (const topic of [...this.subscribers.keys()]) {

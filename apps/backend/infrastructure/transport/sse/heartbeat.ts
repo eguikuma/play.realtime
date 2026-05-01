@@ -9,7 +9,8 @@ import type { SseConnection } from "./connection";
 @Injectable()
 export class SseHeartbeat {
   /**
-   * heartbeat ループを開始する、戻り値の関数を呼ぶと `clearInterval` で停止する
+   * heartbeat ループを開始する
+   * 戻り値の関数を呼ぶと `clearInterval` で停止する
    */
   start(connection: SseConnection): () => void {
     const timer = setInterval(() => {

@@ -41,7 +41,7 @@ export type HallwayDispatchLogger = {
 /**
  * 受信 envelope を 1 件ディスパッチする
  * 未知のコマンドは debug ログで静かに捨て、Domain Error は `CommandFailed` として送信元だけに返す
- * それ以外の例外は warn ログを残して黙って止める、他メンバーへは配信しない
+ * それ以外の例外は warn ログを残して黙って止め、他メンバーへは配信しない
  */
 export const dispatchHallwayCommand = async (params: {
   connection: WsConnection;

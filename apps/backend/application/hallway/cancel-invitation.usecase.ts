@@ -17,7 +17,8 @@ export class CancelHallwayInvitation {
   ) {}
 
   /**
-   * 招待の存在と発行者一致を確認する、他人の招待を勝手に Cancel するルートを塞ぐために発行者判定を必須にする
+   * 招待の存在と発行者一致を確認する
+   * 他人の招待を勝手に Cancel するルートを塞ぐために発行者判定を必須にする
    * 招待が見つからない、または発行者が自分でない場合は `InvitationNotFound` を投げる
    */
   async execute(input: {

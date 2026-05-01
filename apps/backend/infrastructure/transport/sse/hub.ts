@@ -51,7 +51,8 @@ export class SseHub implements OnModuleInit {
 
   /**
    * 接続を開いてトピックを購読し、heartbeat を開始する
-   * `onAttach` は購読成立直後に 1 度だけ呼ばれる、`Welcome` や初回 `Snapshot` の送出に使う
+   * `onAttach` は購読成立直後に 1 度だけ呼ばれる
+   * `Welcome` や初回 `Snapshot` の送出に使う
    * 接続切断時は購読解除と heartbeat 停止、自インスタンスの追跡集合からの除去を自動で行う
    */
   attach(
@@ -79,7 +80,8 @@ export class SseHub implements OnModuleInit {
   }
 
   /**
-   * 指定トピックへ `Envelope` を配信する、`id` は省略時 undefined を保持しない形でシリアライズする
+   * 指定トピックへ `Envelope` を配信する
+   * `id` は省略時 undefined を保持しない形でシリアライズする
    * 直接呼ぶことは想定しておらず、feature 別 broadcaster が contracts のイベント辞書で型束縛した上で呼び出す
    */
   async broadcast<T>(topic: Topic, name: string, data: T, id?: string): Promise<void> {

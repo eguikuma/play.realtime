@@ -73,7 +73,8 @@ export class CachingRoomRepository implements RoomRepository, OnModuleInit, OnMo
 
   /**
    * `RoomCacheInvalidate` topic を購読し、受信ペイロードの `roomId` を自分の cache から取り除く
-   * モジュール初期化時に 1 度だけ走る、購読解除は `onModuleDestroy` に任せる
+   * モジュール初期化時に 1 度だけ走る
+   * 購読解除は `onModuleDestroy` に任せる
    */
   onModuleInit(): void {
     this.subscription = this.pubsub.subscribe<RoomCacheInvalidatePayload>(
@@ -99,7 +100,8 @@ export class CachingRoomRepository implements RoomRepository, OnModuleInit, OnMo
   }
 
   /**
-   * `RoomCacheInvalidate` を配信する、配信失敗時は warn ログだけ残し例外は飲み込む
+   * `RoomCacheInvalidate` を配信する
+   * 配信失敗時は warn ログだけ残し例外は飲み込む
    * `save` や `remove` 自体は永続化に成功している前提で、配信失敗で全体を失敗扱いにすると一貫性がかえって悪くなるため
    */
   private async broadcastInvalidation(roomId: RoomId): Promise<void> {

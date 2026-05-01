@@ -7,7 +7,8 @@ import { useJoin } from "./use-join";
 
 /**
  * ランディングの Join タブで使うルーム ID 入力フォーム
- * ルーム ID を直接入力して参加できる、URL 共有が届かなかった場合のフォールバック経路として用意する
+ * ルーム ID を直接入力して参加できる
+ * URL 共有が届かなかった場合のフォールバック経路として用意する
  */
 export const Join = () => {
   const join = useJoin();

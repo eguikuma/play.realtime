@@ -7,7 +7,8 @@ import { type CommandTally, RedisMonitor } from "./monitor.js";
 
 /**
  * 1 サイクル分の調整つまみ
- * `visibilitySchedule` は各メンバーの集中・離席パターンを区間配列で表す、bot ごとに開始位相をずらして使う
+ * `visibilitySchedule` は各メンバーの集中・離席パターンを区間配列で表す
+ * bot ごとに開始位相をずらして使う
  * `murmurRounds` は全メンバーが順に投稿する周回数、`hallwayMessageRounds` は通話中の往復回数
  * `bgmRounds` はホスト 1 人が選曲と停止と取り消しを 1 セットで回す周回数、0 のときは BGM サイクルを実行しない
  * `graceMs` は退室後に room close grace の経過を待つ余白、ライフサイクル後始末の Redis コマンドまで MONITOR で拾う目的
@@ -45,7 +46,8 @@ const defaultSchedule: VisibilityWindow[] = [
 ];
 
 /**
- * `BENCH_VISIBILITY_SCHEDULE` を JSON として解釈する、未指定または不正な内容なら既定 schedule を返す
+ * `BENCH_VISIBILITY_SCHEDULE` を JSON として解釈する
+ * 未指定または不正な内容なら既定 schedule を返す
  * 形式は `[{"state":"visible","durationMs":14000}, ...]`
  */
 const readScheduleFromEnv = (raw: string | undefined): VisibilityWindow[] => {

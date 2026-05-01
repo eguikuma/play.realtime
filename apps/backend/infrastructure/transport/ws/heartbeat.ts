@@ -13,7 +13,8 @@ import type { WsConnection } from "./connection";
 @Injectable()
 export class WsHeartbeat {
   /**
-   * Ping を定期送出する、直近の Pong 受信時刻を見て間隔 + 猶予を超えたら `PongTimeout` で close する
+   * Ping を定期送出する
+   * 直近の Pong 受信時刻を見て間隔 + 猶予を超えたら `PongTimeout` で close する
    * 戻り値の `onPong` はクライアントからの `Pong` 受信時にハブから呼ばれ、タイマー起点を更新する
    */
   start(connection: WsConnection): { stop: () => void; onPong: () => void } {

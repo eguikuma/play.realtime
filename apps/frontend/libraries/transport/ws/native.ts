@@ -78,7 +78,8 @@ export const createNativeWsClient = (): WsClient => {
 };
 
 /**
- * 接続が `OPEN` のときのみ送信を試みる安全送信、送信例外は飲み込んで切断検知を `onclose` に任せる
+ * 接続が `OPEN` のときのみ送信を試みる
+ * 送信例外は飲み込んで切断検知を `onclose` に任せる
  */
 const send = <TData>(socket: WebSocket, name: string, data: TData): void => {
   if (socket.readyState !== WebSocket.OPEN) {
@@ -90,7 +91,8 @@ const send = <TData>(socket: WebSocket, name: string, data: TData): void => {
 };
 
 /**
- * 受信文字列を `Envelope` 形状に緩くパースする、JSON パース失敗、非オブジェクト、`name` が string でないいずれかで `null` を返す
+ * 受信文字列を `Envelope` 形状に緩くパースする
+ * JSON パース失敗、非オブジェクト、`name` が string でないいずれかで `null` を返す
  */
 const parse = (raw: string): Envelope | null => {
   try {

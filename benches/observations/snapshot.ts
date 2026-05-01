@@ -33,7 +33,7 @@ async function readCounter(redis: Redis): Promise<number> {
   const match = stats.match(/total_commands_processed:(\d+)/);
   if (!match) {
     throw new Error(
-      "INFO stats に total_commands_processed が含まれない、Upstash プランの制限で INFO サブコマンドが封じられている可能性",
+      "INFO stats に total_commands_processed が含まれない（Upstash プランの制限で INFO サブコマンドが封じられている可能性）",
     );
   }
   const captured = match[1];
@@ -65,7 +65,7 @@ async function main(): Promise<void> {
       output["secondCounter"] = second;
       output["overheadPerInfo"] = second - counter;
       output["note"] =
-        "overheadPerInfo が 1 なら INFO 自身が cmd として計上されている、0 なら計上対象外、それ以外なら別経路の発火が混在";
+        "overheadPerInfo が 1 なら INFO 自身が cmd として計上されており、0 なら計上対象外、それ以外なら別経路の発火が混在";
     }
 
     console.info(JSON.stringify(output, null, 2));

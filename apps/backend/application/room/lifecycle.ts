@@ -34,21 +34,24 @@ export class RoomLifecycle {
   }
 
   /**
-   * クリーンアップ関数を登録する、閉鎖時に登録順で await 直列実行される
+   * クリーンアップ関数を登録する
+   * 閉鎖時に登録順で await 直列実行される
    */
   registerCleanup(cleanup: RoomCleanup): void {
     this.cleanups.push(cleanup);
   }
 
   /**
-   * 既定 30 秒の猶予期間を上書きする、テストと `ROOM_GRACE_MS` 環境変数で使う
+   * 既定 30 秒の猶予期間を上書きする
+   * テストと `ROOM_GRACE_MS` 環境変数で使う
    */
   overrideGracePeriod(ms: number): void {
     this.graceMs = ms;
   }
 
   /**
-   * 指定ルームを即時閉鎖する、猶予タイマーがあれば取り消し、全クリーンアップを直列実行した後に PubSub の配信経路を閉じる
+   * 指定ルームを即時閉鎖する
+   * 猶予タイマーがあれば取り消し、全クリーンアップを直列実行した後に PubSub の配信経路を閉じる
    * クリーンアップ側の throw は飲み込み、後続のクリーンアップを止めない
    */
   async destroy(roomId: RoomId): Promise<void> {
@@ -64,7 +67,8 @@ export class RoomLifecycle {
   }
 
   /**
-   * 無人遷移を受けて猶予タイマーを開始する、既存タイマーがあれば差し替える
+   * 無人遷移を受けて猶予タイマーを開始する
+   * 既存タイマーがあれば差し替える
    */
   private startGrace(roomId: RoomId): void {
     this.cancelGrace(roomId);
@@ -77,7 +81,8 @@ export class RoomLifecycle {
   }
 
   /**
-   * 稼働中の猶予タイマーを取り消す、再入室や明示的 destroy からの呼び出しを想定する
+   * 稼働中の猶予タイマーを取り消す
+   * 再入室や明示的 destroy からの呼び出しを想定する
    */
   private cancelGrace(roomId: RoomId): void {
     const timer = this.graceTimers.get(roomId);

@@ -66,7 +66,8 @@ export class VibesController {
   }
 
   /**
-   * `POST /rooms/{roomId}/vibe` クライアントの可視状態変化を受ける、ボディで `connectionId` と新しい `status` を渡す
+   * `POST /rooms/{roomId}/vibe` クライアントの可視状態変化を受ける
+   * ボディで `connectionId` と新しい `status` を渡す
    */
   @Post()
   async change(

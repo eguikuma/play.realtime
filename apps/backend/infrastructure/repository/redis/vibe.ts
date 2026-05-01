@@ -12,7 +12,8 @@ import { aggregate, type VibeRepository } from "../../../domain/vibe";
 /**
  * `VibeRepository` の Redis 実装、メンバー 1 人あたりの状態を `vibe:{roomId}:member:{memberId}` Hash に `connectionId → VibeStatus` で保持し、ルームに属するメンバー集合を `vibe:{roomId}:members` Set で別管理する
  * メンバー単位の集約は毎回 `HVALS` で取得して `aggregate` を通すことでキャッシュ無しの一貫性を保ち、in-memory 実装と同じセマンティクスを再現する
- * `save` `update` `delete` は MULTI/EXEC を使わず素のコマンド列で分解する、`HSET` の戻り値と直後 `HVALS` の長さを併用して `isFirst` `isLast` を確定し、members set への `SADD` `SREM` は最後段で自己修復的に発火する
+ * `save` `update` `delete` は MULTI/EXEC を使わず素のコマンド列で分解する
+ * `HSET` の戻り値と直後 `HVALS` の長さを併用して `isFirst` `isLast` を確定し、members set への `SADD` `SREM` は最後段で自己修復的に発火する
  */
 @Injectable()
 export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {

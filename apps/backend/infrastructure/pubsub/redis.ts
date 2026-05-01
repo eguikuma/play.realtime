@@ -26,7 +26,8 @@ export class RedisPubSub implements PubSub, OnModuleDestroy {
   }
 
   /**
-   * Redis に payload を JSON 化して配信する、購読者がいなければ Redis 側で破棄される
+   * Redis に payload を JSON 化して配信する
+   * 購読者がいなければ Redis 側で破棄される
    * publish 自体の Promise は配信完了ではなくコマンド送出の完了で resolve するため、戻り値の `await` は配信到達保証ではない
    */
   async publish<T>(topic: string, payload: T): Promise<void> {
@@ -34,7 +35,8 @@ export class RedisPubSub implements PubSub, OnModuleDestroy {
   }
 
   /**
-   * 指定トピックを購読する、戻り値の `unsubscribe` で解除する
+   * 指定トピックを購読する
+   * 戻り値の `unsubscribe` で解除する
    * 内部 dispatch table に handler を追加し、当該トピック初の購読のときだけ Redis 側に `SUBSCRIBE` コマンドを送る
    * 解除時に handler 集合が空になれば Redis 側にも `UNSUBSCRIBE` を送って受信経路を畳む
    */
@@ -76,7 +78,8 @@ export class RedisPubSub implements PubSub, OnModuleDestroy {
   }
 
   /**
-   * 指定プレフィックスで始まる全トピックの購読を打ち切る、ルーム閉鎖時の `room:{roomId}:` 掃除で使う
+   * 指定プレフィックスで始まる全トピックの購読を打ち切る
+   * ルーム閉鎖時の `room:{roomId}:` 掃除で使う
    * 内部 dispatch table から該当 handler を消した後、Redis 側にも `UNSUBSCRIBE` を一括で送って受信経路ごと畳む
    */
   closeByPrefix(prefix: string): void {
@@ -101,7 +104,8 @@ export class RedisPubSub implements PubSub, OnModuleDestroy {
   }
 
   /**
-   * NestJS のシャットダウンフックで Redis 接続を閉じる、起動済みコネクションを未解放のまま落とさないようにする
+   * NestJS のシャットダウンフックで Redis 接続を閉じる
+   * 起動済みコネクションを未解放のまま落とさないようにする
    */
   async onModuleDestroy(): Promise<void> {
     await Promise.allSettled([this.publisher.quit(), this.subscriber.quit()]);

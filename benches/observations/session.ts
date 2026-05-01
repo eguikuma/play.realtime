@@ -10,7 +10,7 @@ import { Redis } from "ioredis";
  * このスクリプトは 1 接続に固定することで全 snapshot が同一ノード経由になり、差分を信頼できる値として扱える
  *
  * 操作
- * - Enter キー単押し snapshot を 1 つ取る、前回からの差分とセッション開始からの累積を併記する
+ * - Enter キー単押し snapshot を 1 つ取り、前回からの差分とセッション開始からの累積を併記する
  * - q + Enter / Ctrl+C 接続を閉じて終了する
  */
 
@@ -67,7 +67,7 @@ async function main(): Promise<void> {
       {
         event: "session-opened",
         sessionStart,
-        note: "Enter キーで snapshot を取得する、q + Enter で終了する",
+        note: "Enter キーで snapshot を取得し、q + Enter で終了する",
       },
       null,
       2,

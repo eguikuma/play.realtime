@@ -12,7 +12,7 @@ type Outgoing = {
 
 /**
  * 自分が誰かに話しかけている最中に画面左下に出す発信中バナー
- * 自分側からは呼び出しをやめる操作だけ提供する、応答待ちの状態を柔らかく伝える
+ * 自分側からは呼び出しをやめる操作だけ提供する
  */
 export const Outgoing = ({ toName, onCancel }: Outgoing) => (
   <div

@@ -7,9 +7,15 @@ import type { Room, RoomId } from "@play.realtime/contracts";
 export type RoomRepository = {
   /** ルーム 1 件を新規作成または上書き保存する */
   save: (room: Room) => Promise<void>;
-  /** 指定 ID のルームを取得する、存在しなければ `null` を返す */
+  /**
+   * 指定 ID のルームを取得する
+   * 存在しなければ `null` を返す
+   * */
   find: (id: RoomId) => Promise<Room | null>;
-  /** 指定 ID のルームを永続化から削除する、存在しない場合は何もしない */
+  /**
+   * 指定 ID のルームを永続化から削除する
+   * 存在しない場合は何もしない
+   * */
   remove: (id: RoomId) => Promise<void>;
 };
 

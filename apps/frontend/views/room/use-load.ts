@@ -16,7 +16,8 @@ import { isMissing } from "./errors";
 
 /**
  * ルーム画面の初期表示文脈
- * `joined` は入室済みで自分の Member がある状態、`guest` は未入室で入室フォームを出す、`missing` はルームが存在せず `notFound` に流す
+ * `joined` は入室済みで自分の Member がある状態で、`guest` は未入室で入室フォームを出す
+ * `missing` はルームが存在せず `notFound` に流す
  */
 type RoomContext =
   | { kind: "joined"; room: Room; me: Member }

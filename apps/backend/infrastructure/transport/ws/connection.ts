@@ -30,7 +30,8 @@ export class WsConnection {
   }
 
   /**
-   * 1 通分の `WsEnvelope` を JSON にして送る、送信時の例外は内部フラグを閉状態に倒すだけで再送しない
+   * 1 通分の `WsEnvelope` を JSON にして送る
+   * 送信時の例外は内部フラグを閉状態に倒すだけで再送しない
    */
   send<T>(name: string, data: T): void {
     if (this.closed) {
@@ -46,7 +47,8 @@ export class WsConnection {
   }
 
   /**
-   * 接続を閉じる、`code` には `WsCloseCode` の値を渡してクライアント側で切断理由を分岐させる
+   * 接続を閉じる
+   * `code` には `WsCloseCode` の値を渡してクライアント側で切断理由を分岐させる
    */
   close(code?: number): void {
     if (this.closed) {
@@ -58,7 +60,8 @@ export class WsConnection {
   }
 
   /**
-   * 受信フレームを文字列として中継する、`Buffer` で届いた場合も `toString` で正規化してから渡す
+   * 受信フレームを文字列として中継する
+   * `Buffer` で届いた場合も `toString` で正規化してから渡す
    */
   onMessage(handler: (raw: string) => void): void {
     this.socket.on("message", (data: RawData) => {

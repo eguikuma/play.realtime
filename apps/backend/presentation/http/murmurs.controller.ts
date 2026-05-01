@@ -27,7 +27,8 @@ export class MurmursController {
   ) {}
 
   /**
-   * `POST /rooms/{roomId}/murmurs` ひとことを投稿する、本文のみを受けて usecase 側が永続化と `Posted` 配信を行う
+   * `POST /rooms/{roomId}/murmurs` ひとことを投稿する
+   * 本文のみを受けて usecase 側が永続化と `Posted` 配信を行う
    */
   @Post()
   async create(

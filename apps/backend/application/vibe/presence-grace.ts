@@ -18,7 +18,8 @@ export class VibePresenceGrace {
   private readonly timers = new Map<string, NodeJS.Timeout>();
 
   /**
-   * 指定メンバー宛の猶予タイマーを張る、同メンバーの既存タイマーがあれば差し替える
+   * 指定メンバー宛の猶予タイマーを張る
+   * 同メンバーの既存タイマーがあれば差し替える
    * 時間経過で `fire` が呼ばれ、呼ばれた側で `Left` 配信などの確定処理を行う
    */
   schedule(roomId: RoomId, memberId: MemberId, fire: () => void | Promise<void>): void {
@@ -36,7 +37,8 @@ export class VibePresenceGrace {
   }
 
   /**
-   * 指定メンバーの稼働中タイマーを取り消す、取り消せたかどうかを `boolean` で返す
+   * 指定メンバーの稼働中タイマーを取り消す
+   * 取り消せたかどうかを `boolean` で返す
    * 戻り値が `true` のとき、呼び出し側は「再入室だったので `Joined` ではなく `Updated` を配信する」判断に使える
    */
   cancel(roomId: RoomId, memberId: MemberId): boolean {

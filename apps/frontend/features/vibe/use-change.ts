@@ -12,7 +12,8 @@ import { useVibe } from "./store";
 
 /**
  * クライアントの可視状態変化をサーバへ POST する送信関数を返すフック
- * `Welcome` 未着で `connectionId` が未確定の間は送信を抑止する、HTTP 失敗時は次回の可視状態変化でまた送るため無視する
+ * `Welcome` 未着で `connectionId` が未確定の間は送信を抑止する
+ * HTTP 失敗時は次回の可視状態変化でまた送るため無視する
  */
 export const useChange = (roomId: RoomId) => {
   const connectionId = useVibe((state) => state.connectionId);

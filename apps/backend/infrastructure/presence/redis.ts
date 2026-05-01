@@ -66,7 +66,8 @@ export class RedisRoomPresence implements RoomPresence, OnModuleDestroy {
 
   /**
    * 接続数 counter を `DECR` で 1 減らし、戻り値が 0 なら 1→0 遷移とみなして `empty` を pub/sub 経由で配信する
-   * 0 になった counter key はその場で `DEL` を別コマンドで投げて掃除する、`DEL` 前に新規 register が来ても新しい遷移は次の `INCR` 戻り値で正しく判定される
+   * 0 になった counter key はその場で `DEL` を別コマンドで投げて掃除する
+   * `DEL` 前に新規 register が来ても新しい遷移は次の `INCR` 戻り値で正しく判定される
    * 戻り値が負なら deregister が register より多く呼ばれた状態で、warn ログを残しつつ counter を `0` に戻して整合を回復する
    */
   deregister(roomId: RoomId): void {
@@ -130,7 +131,8 @@ export class RedisRoomPresence implements RoomPresence, OnModuleDestroy {
   }
 
   /**
-   * 遷移を pub/sub に配信する、配信完了は待たず fire-and-forget で次の処理へ進める
+   * 遷移を pub/sub に配信する
+   * 配信完了は待たず fire-and-forget で次の処理へ進める
    */
   private publish(roomId: RoomId, kind: PresenceTransition): void {
     this.pubsub
