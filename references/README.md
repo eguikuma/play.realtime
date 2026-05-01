@@ -1,9 +1,89 @@
-## 目次
+# りもどきのリアルタイム通信ガイド
 
-1. [01 通信方式の使い分け判断軸](./01-communication-pattern.md)（SSE と WebSocket と Polling の選択）
-2. [02 サーバ進化と fanout](./02-server-evolution-and-fanout.md)（単一サーバから Redis pubsub への発展）
-3. [03 在席判定の grace パターン](./03-presence-grace.md)（切断と再接続の境目）
-4. [04 多 instance dispatch の決定論性](./04-dispatch-determinism.md)（1 instance だけが fire を担当する仕組み）
-5. [05 退室シグナル経路の重ね合わせ](./05-leave-signal-paths.md)（3 経路の協調で全閉じを集約）
-6. [06 多 instance での接続数集計](./06-connection-counting.md)（atomic counter の活用）
-7. [07 双方向状態同期](./07-bidirectional-state.md)（WS が必要な機能の状態管理）
+## このフォルダについて
+
+play.realtime のリアルタイム通信のしくみを、章立てで順を追って解説する資料です
+
+「画面が勝手に動く」体験から始めて、SSE と WebSocket の使い分け、いる人を数える仕組み、複数サーバへの拡張まで、層を積み重ねる順序で書いています
+
+## 読み手として想定している人
+
+Web 開発は分かるけれど、SSE や WebSocket は触ったことがない開発者を第一読者にしています
+
+HTTP のリクエストとレスポンス、JSON、TypeScript の最低限は前提にしています
+
+## 読み始める順番
+
+第 1 章から順に読むのが基本です
+
+第 1 章と第 2 章で土台を作り、第 3 章で全体の使い分けの地図を出します
+
+第 4 章と第 5 章は SSE と WebSocket それぞれの実装に降りていく各論なので、第 3 章まで読んでいれば、どちらから読んでもかまいません
+
+第 6 章と第 7 章は深部で、ユーザの感覚と実装の細部を埋めるための章です
+
+## 各章の概要
+
+### 第 1 章 リアルタイムって何が起きているのか
+
+[01-what-is-realtime.md](./01-what-is-realtime.md)
+
+普段の Web のリクエストとレスポンスとの対比で、「自分が操作していないのにサーバ側の出来事が勝手に届く」体験を言葉にします
+
+### 第 2 章 3 つのやり方 ポーリング SSE WebSocket
+
+[02-three-ways.md](./02-three-ways.md)
+
+リアルタイム通信を実現する 3 つのやり方を、子どもの問い合わせ、ラジオ放送、電話、という比喩で並べて、それぞれの「会話の作法」を掴みます
+
+### 第 3 章 りもどきの使い分け
+
+[03-feature-mapping.md](./03-feature-mapping.md)
+
+りもどきの 4 機能 —— 空気、作業音、ひとこと、廊下トーク —— と通信方式の対応を表で示し、「サーバから一方向に流すだけで足りるか」という判断軸を言語化します
+
+### 第 4 章 SSE で動く 3 機能
+
+[04-sse-three-features.md](./04-sse-three-features.md)
+
+空気、作業音、ひとことの 3 機能の挙動を、ユーザ目線、ネットワーク目線、実装ファイルの順に降りて、SSE の生地に編み込まれた heartbeat と retry と close 検知の 3 つの仕組みを見ます
+
+### 第 5 章 WebSocket で動く廊下トーク
+
+[05-ws-hallway.md](./05-ws-hallway.md)
+
+廊下トークだけが WebSocket を選んでいる理由を、招待と通話の双方向対称性から導きます
+
+Ping と Pong の生存確認、close code、Upgrade 時の認可、接続切れ後の片付け、この 4 つの手当ても扱います
+
+### 第 6 章 「いる人」をどう数えるか
+
+[06-presence.md](./06-presence.md)
+
+ルームに今いる人をサーバがどう判定しているかを、接続単位とメンバー単位の 2 段集計、grace の長さの使い分け、退出シグナルの 3 経路という観点で見ていきます
+
+### 第 7 章 サーバが複数になると何が変わるか
+
+[07-multi-server.md](./07-multi-server.md)
+
+サーバを 1 台から複数台に増やすときに何が壊れるか、それをどう直すかを見ます
+
+pub/sub を中継にした配信と、owner side key 方式の dispatch が中心です
+
+## 図の形式
+
+各章の図は Mermaid で書かれています
+
+GitHub の Markdown レンダラがネイティブで Mermaid を表示するため、追加のセットアップは要りません
+
+ローカルで Mermaid を見たい場合は、VSCode に Mermaid プレビュー拡張を入れると便利です
+
+## 関連する場所
+
+実装の入口は各章末の「実物はどこにあるか」にまとめてあります
+
+全体の地図として、3 か所だけ挙げておきます
+
+- `apps/backend/` —— サーバ側の実装
+- `apps/frontend/` —— ブラウザ側の実装
+- `packages/transport-protocol/` —— SSE と WebSocket の共有定数
