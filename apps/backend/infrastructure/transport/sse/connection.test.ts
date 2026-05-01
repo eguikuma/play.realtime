@@ -73,7 +73,7 @@ describe("SseConnection", () => {
     expect(chunk?.endsWith("\n\n")).toBe(true);
   });
 
-  it("イベントに id を渡すと id 行を付与する", () => {
+  it("イベントに `id` を渡すと `id` 行を付与する", () => {
     const { response, writes } = buildResponse();
     const connection = new SseConnection(connectionId, memberId, roomId, response);
     connection.open();

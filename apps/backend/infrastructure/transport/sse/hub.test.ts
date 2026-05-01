@@ -110,7 +110,7 @@ describe("SseHub", () => {
     });
   });
 
-  it("接続時の初期処理 callback を実行する", async () => {
+  it("接続時の初期処理コールバックを実行する", async () => {
     const { pubsub } = buildPubSub();
     const hub = new SseHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection();
@@ -122,7 +122,7 @@ describe("SseHub", () => {
     expect(onAttach).toHaveBeenCalledWith(connection);
   });
 
-  it("起動時に member-leave トピックを購読する", () => {
+  it("起動時に `member-leave` トピックを購読する", () => {
     const { pubsub, subscribers } = buildPubSub();
     const hub = new SseHub(pubsub, buildHeartbeat());
 
@@ -131,7 +131,7 @@ describe("SseHub", () => {
     expect(subscribers.get(GlobalTopic.MemberLeft)?.length).toBe(1);
   });
 
-  it("closeByMember は同一 roomId と memberId の接続だけを閉じる", () => {
+  it("`closeByMember` は同一 `roomId` と `memberId` の接続だけを閉じる", () => {
     const { pubsub } = buildPubSub();
     const hub = new SseHub(pubsub, buildHeartbeat());
     const target = buildConnection(testRoomId, testMemberId);
@@ -149,7 +149,7 @@ describe("SseHub", () => {
     expect(otherRoom.connection.close).not.toHaveBeenCalled();
   });
 
-  it("member-leave 配信を受けると同一メンバーの接続を閉じる", () => {
+  it("`member-leave` 配信を受けると同一メンバーの接続を閉じる", () => {
     const { pubsub } = buildPubSub();
     const hub = new SseHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection(testRoomId, testMemberId);
@@ -161,7 +161,7 @@ describe("SseHub", () => {
     expect(connection.close).toHaveBeenCalledOnce();
   });
 
-  it("member-leave のペイロードが不正なら何もしない", () => {
+  it("`member-leave` のペイロードが不正なら何もしない", () => {
     const { pubsub } = buildPubSub();
     const hub = new SseHub(pubsub, buildHeartbeat());
     const { connection } = buildConnection(testRoomId, testMemberId);
