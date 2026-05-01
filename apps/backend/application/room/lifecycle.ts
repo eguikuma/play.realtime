@@ -6,7 +6,7 @@ import { RoomPresence } from "./presence";
 
 /**
  * ルーム閉鎖時に呼ばれるクリーンアップ関数
- * 各機能のリポジトリ側で登録し、`RoomCleanupRegistrar` が起動時にまとめて差し込む
+ * 各機能のリポジトリ側で登録し、`RoomCleanupBootstrap` が起動時にまとめて差し込む
  */
 export type RoomCleanup = (roomId: RoomId) => Promise<void>;
 

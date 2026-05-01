@@ -12,7 +12,7 @@ import { RoomLifecycle } from "./lifecycle";
  * 登録順がそのまま閉鎖時の削除順になるため、vibe、bgm、murmur、hallway の周辺データを先に消してから最後にルーム本体を消す並びにしている
  */
 @Injectable()
-export class RoomCleanupRegistrar implements OnModuleInit {
+export class RoomCleanupBootstrap implements OnModuleInit {
   constructor(
     private readonly lifecycle: RoomLifecycle,
     @Inject(VibeRepository) private readonly vibe: VibeRepository,
