@@ -38,6 +38,47 @@ describe("InMemoryVibeRepository", () => {
     expect(result).toEqual([{ memberId, status: "present" }]);
   });
 
+  it("既存接続の update は集約結果を書き換えて updated を返す", async () => {
+    const repository = new InMemoryVibeRepository();
+    const roomId = "room-abc-1234" as RoomId;
+    const memberId = "member-alice" as MemberId;
+
+    await repository.save(roomId, memberId, "conn-1" as ConnectionId, "present");
+    const result = await repository.update(roomId, memberId, "conn-1" as ConnectionId, "focused");
+
+    expect(result).toEqual({ updated: true, aggregated: "focused" });
+    expect(await repository.get(roomId, memberId)).toBe("focused");
+  });
+
+  it("台帳に居ない接続への update は何もせず updated 偽を返す", async () => {
+    const repository = new InMemoryVibeRepository();
+    const roomId = "room-abc-1234" as RoomId;
+    const memberId = "member-alice" as MemberId;
+
+    const result = await repository.update(
+      roomId,
+      memberId,
+      "conn-phantom" as ConnectionId,
+      "present",
+    );
+
+    expect(result).toEqual({ updated: false, aggregated: null });
+    expect(await repository.snapshot(roomId)).toEqual([]);
+  });
+
+  it("削除済み接続への update は復活させずに updated 偽を返す", async () => {
+    const repository = new InMemoryVibeRepository();
+    const roomId = "room-abc-1234" as RoomId;
+    const memberId = "member-alice" as MemberId;
+
+    await repository.save(roomId, memberId, "conn-1" as ConnectionId, "present");
+    await repository.delete(roomId, memberId, "conn-1" as ConnectionId);
+    const result = await repository.update(roomId, memberId, "conn-1" as ConnectionId, "focused");
+
+    expect(result).toEqual({ updated: false, aggregated: null });
+    expect(await repository.snapshot(roomId)).toEqual([]);
+  });
+
   it("削除は最後の接続で isLast を返し集約結果は null になる", async () => {
     const repository = new InMemoryVibeRepository();
     const roomId = "room-abc-1234" as RoomId;

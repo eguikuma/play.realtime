@@ -8,6 +8,7 @@ import type { ConnectionId, MemberId, RoomId, Vibe, VibeStatus } from "@play.rea
 export type VibeRepository = {
   /**
    * メンバーの接続 1 本ぶんのステータスを保存し 集約後の値と メンバーの初接続かを返す
+   * 新規接続の受け入れ時にのみ呼ぶ 既存接続に対する状態変更では `update` を使い 削除済み接続の復活を防ぐ
    */
   save: (
     roomId: RoomId,
@@ -15,6 +16,16 @@ export type VibeRepository = {
     connectionId: ConnectionId,
     status: VibeStatus,
   ) => Promise<{ isFirst: boolean; aggregated: VibeStatus }>;
+  /**
+   * 既存の接続に限ってステータスを書き換え 集約後の値と 実際に更新できたかを返す
+   * 接続が台帳に無ければ何もせず 更新失敗 扱いで返すことで 状態変更要求が削除済み接続を復活させる事故を避ける
+   */
+  update: (
+    roomId: RoomId,
+    memberId: MemberId,
+    connectionId: ConnectionId,
+    status: VibeStatus,
+  ) => Promise<{ updated: boolean; aggregated: VibeStatus | null }>;
   /**
    * メンバーの接続 1 本ぶんを取り除き 集約後の値と メンバーの最終接続かを返す
    */

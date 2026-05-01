@@ -21,6 +21,7 @@ const member: Member = {
 
 const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => ({
   save: vi.fn(async () => ({ isFirst: true, aggregated: "present" as VibeStatus })),
+  update: vi.fn(),
   delete: vi.fn(),
   snapshot: vi.fn(),
   get: vi.fn(),

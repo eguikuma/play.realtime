@@ -17,6 +17,7 @@ const buildRoom = (): Room =>
 
 const buildVibes = (snapshot: Vibe[] = []): VibeRepository => ({
   save: vi.fn(),
+  update: vi.fn(),
   delete: vi.fn(),
   snapshot: vi.fn(async () => snapshot),
   get: vi.fn(),

@@ -35,6 +35,24 @@ export class InMemoryVibeRepository implements VibeRepository {
   }
 
   /**
+   * 既存接続の状態のみを書き換えて 集約後の値と「更新に至ったか」を返す
+   * 接続が台帳に無ければ何もせず 新規接続の作成は `save` に限定することで 削除済み接続が状態変更で蘇る事故を防ぐ
+   */
+  async update(
+    roomId: RoomId,
+    memberId: MemberId,
+    connectionId: ConnectionId,
+    status: VibeStatus,
+  ): Promise<{ updated: boolean; aggregated: VibeStatus | null }> {
+    const connections = this.store.get(roomId)?.get(memberId);
+    if (!connections || !connections.has(connectionId)) {
+      return { updated: false, aggregated: null };
+    }
+    connections.set(connectionId, status);
+    return { updated: true, aggregated: aggregate([...connections.values()]) };
+  }
+
+  /**
    * 接続単位の状態を削除して 集約後の値と「メンバーの最終接続か」を返す
    * メンバー単位の空マップもここで後片付けする
    */

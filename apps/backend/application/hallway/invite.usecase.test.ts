@@ -42,6 +42,7 @@ const buildHallway = (overrides: Partial<HallwayRepository> = {}): HallwayReposi
 
 const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => ({
   save: vi.fn(),
+  update: vi.fn(),
   delete: vi.fn(),
   snapshot: vi.fn(),
   get: vi.fn(async () => "present" as VibeStatus),

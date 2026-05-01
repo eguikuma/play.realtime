@@ -11,6 +11,7 @@ const connectionId = "conn-1" as ConnectionId;
 
 const buildVibes = (overrides: Partial<VibeRepository> = {}): VibeRepository => ({
   save: vi.fn(),
+  update: vi.fn(),
   delete: vi.fn(async () => ({ isLast: true, aggregated: null })),
   snapshot: vi.fn(),
   get: vi.fn(),
