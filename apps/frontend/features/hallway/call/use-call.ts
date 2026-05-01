@@ -2,8 +2,8 @@
 
 import type { CallId, MemberId } from "@play.realtime/contracts";
 import { type SyntheticEvent, useRef, useState } from "react";
-import { useRoom } from "@/features/room/store";
 import { toHHMM } from "@/libraries/date";
+import { useSession } from "@/stores/session";
 import { useHallway } from "../store";
 import { useActions } from "../use-actions";
 import { useAutoscroll } from "../use-autoscroll";
@@ -18,8 +18,8 @@ type Call = {
  * `hasMeta` は「同じ発言者の連投」でヘッダ情報を抑制するフラグ、吹き出しの連続をまとまりとして見せるために使う
  */
 export const useCall = ({ callId }: Call) => {
-  const me = useRoom((state) => state.me);
-  const members = useRoom((state) => state.room?.members ?? []);
+  const me = useSession((state) => state.me);
+  const members = useSession((state) => state.room?.members ?? []);
   const messages = useHallway((state) => state.messages[callId] ?? []);
   const actions = useActions();
 

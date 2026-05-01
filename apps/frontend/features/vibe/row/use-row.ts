@@ -3,7 +3,7 @@
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { useMemo } from "react";
 import { useHallway } from "@/features/hallway/store";
-import { useRoom } from "@/features/room/store";
+import { useSession } from "@/stores/session";
 import type { AvatarState } from "../avatar";
 import { useVibe } from "../store";
 import { useChange } from "../use-change";
@@ -24,8 +24,8 @@ type Avatar = {
  * `onInvite` は招待不可条件を全て満たしたときだけ関数で返し、それ以外は `null` にして UI のボタン押下経路を型で塞ぐ
  */
 export const useRow = (roomId: RoomId) => {
-  const me = useRoom((state) => state.me);
-  const members = useRoom((state) => state.room?.members ?? []);
+  const me = useSession((state) => state.me);
+  const members = useSession((state) => state.room?.members ?? []);
   const statuses = useVibe((state) => state.statuses);
   const connectionId = useVibe((state) => state.connectionId);
   const invitations = useHallway((state) => state.invitations);

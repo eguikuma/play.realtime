@@ -11,8 +11,8 @@ import { notFound } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { http } from "@/libraries/http-client";
 import { HttpFailure } from "@/libraries/transport/http";
+import { useSession } from "@/stores/session";
 import { isMissing } from "./errors";
-import { useRoom } from "./store";
 
 /**
  * ルーム画面の初期表示文脈
@@ -48,13 +48,13 @@ const fetchRoomContext = async (roomId: RoomId): Promise<RoomContext> => {
 };
 
 /**
- * ルーム画面のマウント時に 2 段フェッチを走らせ、`useRoom` ストアへ結果を転写するフック
+ * ルーム画面のマウント時に 2 段フェッチを走らせ、`useSession` ストアへ結果を転写するフック
  * `missing` は即 `notFound()` で Next.js の 404 に流し、コンポーネント側は描画されずに 404 画面へ遷移する
  * ネットワーク失敗など致命的エラーは `error` state に残し、UI 側で再試行操作を提供できるようにする
  */
 export const useLoad = (roomId: RoomId) => {
-  const setRoom = useRoom((state) => state.setRoom);
-  const setMe = useRoom((state) => state.setMe);
+  const setRoom = useSession((state) => state.setRoom);
+  const setMe = useSession((state) => state.setMe);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const [missing, setMissing] = useState(false);

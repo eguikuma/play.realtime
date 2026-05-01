@@ -3,20 +3,20 @@
 import { type RoomId, VibeEndpoint, VibeEvents } from "@play.realtime/contracts";
 import { useEffect } from "react";
 import type { z } from "zod";
-import { useRoom } from "@/features/room/store";
 import { useConnectionStatus } from "@/libraries/connection-status/store";
 import { origin } from "@/libraries/environment";
 import { sse } from "@/libraries/sse-client";
 import { useSse } from "@/libraries/transport";
+import { useSession } from "@/stores/session";
 import { useVibe } from "./store";
 
 /**
- * Vibe SSE の購読を張り、受信イベントを `useVibe`、`useRoom`、`useConnectionStatus` に転写するフック
+ * Vibe SSE の購読を張り、受信イベントを `useVibe`、`useSession`、`useConnectionStatus` に転写するフック
  * `roomId` が `null` のときは接続せず、ルーム画面に到達して入室済みになって初めて購読開始する
  * `handlers` の `satisfies` で `VibeEvents` 全件の網羅を型検査に委ね、イベント追加時の実装漏れを検出する
  */
 export const useStream = (roomId: RoomId | null) => {
-  const addMember = useRoom((state) => state.addMember);
+  const addMember = useSession((state) => state.addMember);
   const setSnapshot = useVibe((state) => state.setSnapshot);
   const setStatus = useVibe((state) => state.setStatus);
   const remove = useVibe((state) => state.remove);

@@ -2,7 +2,7 @@
 
 import type { RoomId } from "@play.realtime/contracts";
 import { type SyntheticEvent, useState } from "react";
-import { useRoom } from "@/features/room/store";
+import { useSession } from "@/stores/session";
 import { useMutations } from "../../use-mutations";
 
 /**
@@ -20,7 +20,7 @@ type Compose = {
  * 未入室 (me が null) のときは投稿を受け付けないので、入力欄と送信経路を内部で止める
  */
 export const useCompose = ({ roomId }: Compose) => {
-  const me = useRoom((state) => state.me);
+  const me = useSession((state) => state.me);
   const mutations = useMutations(roomId);
 
   const [text, setText] = useState("");

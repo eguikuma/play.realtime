@@ -2,7 +2,7 @@
 
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useRoom } from "@/features/room/store";
+import { useSession } from "@/stores/session";
 import { useBgm } from "../store";
 import { Tracks } from "../tracks";
 import { useDismiss } from "../use-dismiss";
@@ -16,8 +16,8 @@ import { useStream } from "../use-stream";
  * undo バナーは操作者本人には出さず、`undoable.byMemberId !== me.id` のときだけ表示する、自分でやり直す場合は undo ではなく再度 `set` や `stop` を促す設計に沿わせる
  */
 export const useStrip = (roomId: RoomId) => {
-  const me = useRoom((state) => state.me);
-  const members = useRoom((state) => state.room?.members ?? []);
+  const me = useSession((state) => state.me);
+  const members = useSession((state) => state.room?.members ?? []);
   const state = useBgm((state) => state.state);
 
   useStream(me ? roomId : null);

@@ -3,7 +3,8 @@
 import type { RoomId } from "@play.realtime/contracts";
 import { use } from "react";
 import { LoadingBadge } from "@/components/loading-badge";
-import { Entrance, RoomStage, useLoad, useRoom } from "@/features/room";
+import { Entrance, RoomStage, useLoad } from "@/features/room";
+import { useSession } from "@/stores/session";
 
 /**
  * `/rooms/{roomId}` のエントリー
@@ -14,7 +15,7 @@ export default function RoomEntry({ params }: { params: Promise<{ roomId: string
   const { roomId } = use(params);
   const branded = roomId as RoomId;
   const { loading } = useLoad(branded);
-  const me = useRoom((state) => state.me);
+  const me = useSession((state) => state.me);
 
   if (loading) {
     return <LoadingBadge />;

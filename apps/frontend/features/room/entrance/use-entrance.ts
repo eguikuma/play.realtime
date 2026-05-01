@@ -10,17 +10,17 @@ import { notFound } from "next/navigation";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
 import { http } from "@/libraries/http-client";
+import { useSession } from "@/stores/session";
 import { isMissing } from "../errors";
-import { useRoom } from "../store";
 
 /**
  * URL 共有からやってきた未入室ユーザが名前を入れて入室する入室フォームのフック
- * POST 成功で `useRoom` を更新して画面を「入室済み」モードへ切り替え、404 と 400 では Next.js の `notFound()` に流す
+ * POST 成功で `useSession` を更新して画面を「入室済み」モードへ切り替え、404 と 400 では Next.js の `notFound()` に流す
  * それ以外の失敗は toast で伝え、UI のフォームは入力内容を保って再試行できるようにする
  */
 export const useEntrance = (roomId: RoomId) => {
-  const setRoom = useRoom((state) => state.setRoom);
-  const setMe = useRoom((state) => state.setMe);
+  const setRoom = useSession((state) => state.setRoom);
+  const setMe = useSession((state) => state.setMe);
 
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);

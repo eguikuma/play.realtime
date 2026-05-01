@@ -2,7 +2,7 @@
 
 import type { MemberId, RoomId, TrackId } from "@play.realtime/contracts";
 import { TrackIds } from "@play.realtime/contracts";
-import { useRoom } from "@/features/room/store";
+import { useSession } from "@/stores/session";
 import { useBgm } from "../store";
 import { Tracks } from "../tracks";
 import { useMutations } from "../use-mutations";
@@ -17,7 +17,7 @@ type Panel = {
  * 選曲または停止を実行すると即座に `onClose` でパネルを閉じ、以降の描画は SSE `Changed` の配信に委ねる
  */
 export const usePanel = ({ roomId, onClose }: Panel) => {
-  const members = useRoom((state) => state.room?.members ?? []);
+  const members = useSession((state) => state.room?.members ?? []);
   const state = useBgm((state) => state.state);
   const mutations = useMutations(roomId);
 

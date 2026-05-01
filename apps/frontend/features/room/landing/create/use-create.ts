@@ -4,18 +4,18 @@ import { CreateRoomRequest, RoomEndpoint, RoomMembership } from "@play.realtime/
 import { useRouter } from "next/navigation";
 import { type SyntheticEvent, useState } from "react";
 import { toast } from "sonner";
-import { useRoom } from "@/features/room/store";
 import { http } from "@/libraries/http-client";
+import { useSession } from "@/stores/session";
 
 /**
  * ルーム新規作成フォームの状態と送信処理をまとめたフック
- * POST 成功で `useRoom` を更新し、`router.push` で作成したルーム画面へ遷移する
+ * POST 成功で `useSession` を更新し、`router.push` で作成したルーム画面へ遷移する
  * 失敗は toast で通知して、ユーザの入力値は保ったまま再試行できるようにする
  */
 export const useCreate = () => {
   const router = useRouter();
-  const setRoom = useRoom((state) => state.setRoom);
-  const setMe = useRoom((state) => state.setMe);
+  const setRoom = useSession((state) => state.setRoom);
+  const setMe = useSession((state) => state.setMe);
 
   const [hostName, setHostName] = useState("");
   const [loading, setLoading] = useState(false);

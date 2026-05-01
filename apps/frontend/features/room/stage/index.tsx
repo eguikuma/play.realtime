@@ -5,8 +5,8 @@ import { BgmStrip } from "@/features/bgm";
 import { HallwayOverlays } from "@/features/hallway";
 import { Compose, MurmurBody } from "@/features/murmur";
 import { useVibe, VibeRow } from "@/features/vibe";
+import { useSession } from "@/stores/session";
 import { BrandMark } from "../layout";
-import { useRoom } from "../store";
 import { useLeave } from "../use-leave";
 import { MeBadge } from "./me-badge";
 
@@ -23,7 +23,7 @@ type Stage = {
  * Hallway の招待と通話オーバーレイは fixed 配置でレイアウトと独立しており、Grid 化の影響を受けない
  */
 export const RoomStage = ({ roomId }: Stage) => {
-  const me = useRoom((state) => state.me);
+  const me = useSession((state) => state.me);
   const presentCount = useVibe((state) => Object.keys(state.statuses).length);
   useLeave(roomId);
 

@@ -2,7 +2,7 @@
 
 import type { RoomId } from "@play.realtime/contracts";
 import { useMemo } from "react";
-import { useRoom } from "@/features/room/store";
+import { useSession } from "@/stores/session";
 import { useMurmur } from "../store";
 import { useFresh } from "../use-fresh";
 import { useStream } from "../use-stream";
@@ -13,8 +13,8 @@ import { useStream } from "../use-stream";
  * 投稿者が退室済みの場合は `匿名` として表示し、サーバ側の memberId が見つからないケースでも画面が崩れないようにする
  */
 export const useBody = (roomId: RoomId) => {
-  const me = useRoom((state) => state.me);
-  const members = useRoom((state) => state.room?.members ?? []);
+  const me = useSession((state) => state.me);
+  const members = useSession((state) => state.room?.members ?? []);
   const list = useMurmur((state) => state.list);
 
   useStream(me ? roomId : null);

@@ -2,7 +2,7 @@
 
 import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { useMemo } from "react";
-import { useRoom } from "@/features/room/store";
+import { useSession } from "@/stores/session";
 import { useHallway } from "../store";
 import { useActions } from "../use-actions";
 import { useStream } from "../use-stream";
@@ -13,8 +13,8 @@ import { useStream } from "../use-stream";
  * 通話相手の名前は 2 人の `memberIds` から自分以外を選び、見つからないときは先頭メンバーへフォールバックする
  */
 export const useOverlays = (roomId: RoomId) => {
-  const me = useRoom((state) => state.me);
-  const members = useRoom((state) => state.room?.members ?? []);
+  const me = useSession((state) => state.me);
+  const members = useSession((state) => state.room?.members ?? []);
   const invitations = useHallway((state) => state.invitations);
   const calls = useHallway((state) => state.calls);
   const actions = useActions();
