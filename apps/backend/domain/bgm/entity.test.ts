@@ -17,7 +17,7 @@ const currentOf = (trackId: TrackId, setBy: MemberId, setAt: string): BgmCurrent
 });
 
 describe("set", () => {
-  it("空の state に set すると current が入って undoable 窓が開く", () => {
+  it("空の状態で曲を選ぶと現在の曲が入って undo 窓が開く", () => {
     const now = new Date("2026-04-22T10:00:00.000Z");
 
     const next = set(empty, { trackId: blues, memberId: alice, now });
@@ -34,7 +34,7 @@ describe("set", () => {
     });
   });
 
-  it("既存 current がある state に set すると previous に旧値が残る", () => {
+  it("現在の曲がある状態で別の曲を選ぶと旧曲が直前の曲として残る", () => {
     const previous = currentOf(blues, alice, "2026-04-22T10:00:00.000Z");
     const state: BgmState = { current: previous, undoable: null };
     const now = new Date("2026-04-22T10:05:00.000Z");
@@ -47,7 +47,7 @@ describe("set", () => {
     expect(next.undoable?.byMemberId).toBe(bob);
   });
 
-  it("未登録 track を指定すると UnknownTrack を投げる", () => {
+  it("未登録の曲を指定すると UnknownTrack を投げる", () => {
     const now = new Date("2026-04-22T10:00:00.000Z");
 
     expect(() => set(empty, { trackId: "unknown-track" as TrackId, memberId: alice, now })).toThrow(
@@ -57,7 +57,7 @@ describe("set", () => {
 });
 
 describe("stop", () => {
-  it("鳴っている BGM を stop すると current が null になり previous に旧値が残る", () => {
+  it("鳴っている BGM を停止すると現在の曲が無音になり旧曲が直前の曲として残る", () => {
     const previous = currentOf(blues, alice, "2026-04-22T10:00:00.000Z");
     const state: BgmState = { current: previous, undoable: null };
     const now = new Date("2026-04-22T10:05:00.000Z");
@@ -69,7 +69,7 @@ describe("stop", () => {
     expect(next.undoable?.byMemberId).toBe(bob);
   });
 
-  it("既に無音の state を stop すると previous も null の undoable 窓が開く", () => {
+  it("既に無音の状態を停止すると直前の曲も無いままの undo 窓が開く", () => {
     const now = new Date("2026-04-22T10:00:00.000Z");
 
     const next = stop(empty, { memberId: alice, now });
@@ -85,7 +85,7 @@ describe("undo", () => {
   const current = currentOf(danceNight, bob, "2026-04-22T10:00:00.000Z");
   const previous = currentOf(blues, alice, "2026-04-22T09:00:00.000Z");
 
-  it("undo 窓中の変更を他 member が取り消すと current が previous に戻る", () => {
+  it("undo 窓内の変更を他のメンバーが取り消すと現在の曲が直前の曲に戻る", () => {
     const state: BgmState = {
       current,
       undoable: { until, previous, byMemberId: bob },
@@ -98,7 +98,7 @@ describe("undo", () => {
     expect(next.undoable).toBeNull();
   });
 
-  it("previous が null の undoable を undo すると current も null に戻る", () => {
+  it("直前の曲が無い undo を実行すると現在の曲も無音に戻る", () => {
     const state: BgmState = {
       current,
       undoable: { until, previous: null, byMemberId: bob },
@@ -121,7 +121,7 @@ describe("undo", () => {
     expect(() => undo(state, { memberId: bob, now })).toThrow(UndoBySelf);
   });
 
-  it("窓が expire した後の undo は UndoExpired を投げる", () => {
+  it("undo 窓が失効した後の undo は UndoExpired を投げる", () => {
     const state: BgmState = {
       current,
       undoable: { until, previous, byMemberId: bob },
@@ -131,7 +131,7 @@ describe("undo", () => {
     expect(() => undo(state, { memberId: alice, now })).toThrow(UndoExpired);
   });
 
-  it("undoable が無い state への undo は UndoUnavailable を投げる", () => {
+  it("undo 窓が無い状態への undo は UndoUnavailable を投げる", () => {
     const state: BgmState = { current, undoable: null };
     const now = new Date("2026-04-22T10:00:05.000Z");
 
