@@ -1,4 +1,4 @@
-import type { Member, MemberId, Room, RoomId } from "@play.realtime/contracts";
+import type { Member, Room, RoomId } from "@play.realtime/contracts";
 
 /**
  * 新しいルームをホスト 1 人の状態で作成する
@@ -14,6 +14,9 @@ export const create = (parameters: { id: RoomId; host: Member; createdAt: string
 /**
  * 既存ルームに新しいメンバーを追加した新しい `Room` を返す純粋関数
  * 同一 ID のメンバーが既に入室している場合は入力をそのまま返し、再参加でメンバー配列が膨らまないようにする
+ *
+ * `Room.members` は入場名簿として時間的に単調増加する集合で、一度載ったメンバーが配列から消えることはない
+ * 離席や再入室の実態は Vibe aggregate が connection 単位で別途管理しており、Room からメンバーを削除する経路は持たない
  */
 export const join = (room: Room, member: Member): Room => {
   if (room.members.some((existing) => existing.id === member.id)) {
@@ -21,12 +24,3 @@ export const join = (room: Room, member: Member): Room => {
   }
   return { ...room, members: [...room.members, member] };
 };
-
-/**
- * ルームから指定メンバーを除いた新しい `Room` を返す純粋関数
- * 元のルームを書き換えず、呼び出し元は戻り値を永続化する前提で使う
- */
-export const leave = (room: Room, memberId: MemberId): Room => ({
-  ...room,
-  members: room.members.filter((each) => each.id !== memberId),
-});

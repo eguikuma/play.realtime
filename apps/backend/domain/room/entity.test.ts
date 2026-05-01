@@ -1,6 +1,6 @@
-import { Member, MemberId, RoomId } from "@play.realtime/contracts";
+import { Member, RoomId } from "@play.realtime/contracts";
 import { describe, expect, it } from "vitest";
-import { create, join, leave } from "./entity";
+import { create, join } from "./entity";
 
 const roomId = RoomId.parse("test-room-12");
 const createdAt = "2026-04-18T00:00:00.000Z";
@@ -43,25 +43,5 @@ describe("join", () => {
 
     expect(same).toBe(room);
     expect(same.members).toHaveLength(1);
-  });
-});
-
-describe("leave", () => {
-  it("指定したメンバーがルームから退出する", () => {
-    const room = create({ id: roomId, host, createdAt });
-    const withGuest = join(room, guest);
-
-    const afterLeave = leave(withGuest, guest.id);
-
-    expect(afterLeave.members).toEqual([host]);
-  });
-
-  it("存在しない id を指定してもルームの状態は変わらない", () => {
-    const room = create({ id: roomId, host, createdAt });
-    const unknown = MemberId.parse("unknown-id");
-
-    const afterLeave = leave(room, unknown);
-
-    expect(afterLeave.members).toEqual([host]);
   });
 });
