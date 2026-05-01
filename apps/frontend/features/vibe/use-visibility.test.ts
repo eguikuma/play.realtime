@@ -33,12 +33,25 @@ describe("useVisibility", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it("マウント時に `visibility` が `visible` なら `present` を通知する", () => {
+  it("マウント時に `visibility` が `visible` なら `notifyJoined` の `present` 登録に委ねて送信を抑止する", () => {
     setVisibility("visible");
     const onChange = vi.fn();
     renderHook(() => useVisibility({ enabled: true, onChange }));
 
-    expect(onChange).toHaveBeenCalledWith("present");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("マウント直後に `visible` のままタブが戻ってきても `lastSent` 同期済みで重複送信されない", () => {
+    setVisibility("visible");
+    const onChange = vi.fn();
+    renderHook(() => useVisibility({ enabled: true, onChange }));
+
+    act(() => {
+      setVisibility("visible");
+      vi.advanceTimersByTime(8_000);
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("マウント時に `visibility` が `hidden` なら `focused` を通知する", () => {
