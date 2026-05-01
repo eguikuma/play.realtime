@@ -1,4 +1,5 @@
 import {
+  BgmEvents,
   type BgmState,
   type MemberId,
   Room,
@@ -62,6 +63,8 @@ describe("SetBgm", () => {
     expect(result.current?.trackId).toBe(trackId);
     expect(result.undoable?.byMemberId).toBe(memberId);
     expect(bgms.save).toHaveBeenCalledWith(roomId, result);
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:bgm`, "Changed", { state: result });
+    expect(broadcast).toHaveBeenCalledWith(BgmEvents, `room:${roomId}:bgm`, "Changed", {
+      state: result,
+    });
   });
 });

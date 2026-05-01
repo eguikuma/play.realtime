@@ -3,6 +3,7 @@ import {
   type MemberId,
   Room,
   type RoomId,
+  VibeEvents,
   type VibeStatus,
 } from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
@@ -66,7 +67,7 @@ describe("ChangeVibeStatus", () => {
 
     expect(vibes.update).toHaveBeenCalledWith(roomId, memberId, connectionId, "focused");
     expect(vibes.save).not.toHaveBeenCalled();
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Update", {
       memberId,
       status: "present",
     });

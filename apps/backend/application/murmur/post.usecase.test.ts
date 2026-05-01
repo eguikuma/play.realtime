@@ -1,4 +1,11 @@
-import { type MemberId, Murmur, type MurmurId, Room, type RoomId } from "@play.realtime/contracts";
+import {
+  type MemberId,
+  Murmur,
+  MurmurEvents,
+  type MurmurId,
+  Room,
+  type RoomId,
+} from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
 import type { MurmurRepository } from "../../domain/murmur";
 import { RoomNotFound, type RoomRepository } from "../../domain/room";
@@ -75,6 +82,12 @@ describe("PostMurmur", () => {
 
     const result = await usecase.execute({ roomId, memberId, text: "good morning" });
 
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:murmur`, "Posted", result, result.id);
+    expect(broadcast).toHaveBeenCalledWith(
+      MurmurEvents,
+      `room:${roomId}:murmur`,
+      "Posted",
+      result,
+      result.id,
+    );
   });
 });

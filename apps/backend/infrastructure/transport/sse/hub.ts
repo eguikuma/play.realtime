@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import type { z } from "zod";
 import { PubSub } from "../../../application/ports/pubsub";
 import type { SseConnection } from "./connection";
 import { SseHeartbeat } from "./heartbeat";
@@ -12,6 +13,12 @@ type Envelope = {
   data: unknown;
   id?: string;
 };
+
+/**
+ * SSE `broadcast` の引数を contracts 由来のイベント辞書で束縛するための型
+ * キー側は辞書キーの文字列リテラルに、値側は対応する Zod schema から推論された payload 型に狭まる
+ */
+type EventMap = Record<string, z.ZodType>;
 
 /**
  * SSE 接続を PubSub トピックへ紐付け、クライアントへの emit を集約するサービス
@@ -53,8 +60,15 @@ export class SseHub {
 
   /**
    * 指定トピックへ `Envelope` を配信する、`id` は省略時 undefined を保持しない形でシリアライズする
+   * `events` は contracts 由来のイベント辞書で、`name` が辞書キーに、`data` が対応 schema の推論型に縛られる
    */
-  async broadcast<T>(topic: string, name: string, data: T, id?: string): Promise<void> {
+  async broadcast<E extends EventMap, K extends Extract<keyof E, string>>(
+    _events: E,
+    topic: string,
+    name: K,
+    data: z.infer<E[K]>,
+    id?: string,
+  ): Promise<void> {
     const envelope: Envelope = { name, data, ...(id !== undefined ? { id } : {}) };
     await this.pubsub.publish(topic, envelope);
   }

@@ -1,8 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import * as z from "zod";
 import type { PubSub, Subscription } from "../../../application/ports/pubsub";
 import type { WsConnection } from "./connection";
 import { WsHeartbeat } from "./heartbeat";
 import { WsHub } from "./hub";
+
+const TestMessages = {
+  Invited: z.object({ invitationId: z.string() }),
+  Message: z.object({ text: z.string() }),
+} as const;
 
 type Handler = (payload: unknown) => void;
 type MessageHandler = (raw: string) => void;
@@ -100,7 +106,7 @@ describe("WsHub", () => {
     const { pubsub } = buildPubSub();
     const hub = new WsHub(pubsub, buildHeartbeat());
 
-    await hub.broadcast("room:abc:hallway", "Invited", { invitationId: "i1" });
+    await hub.broadcast(TestMessages, "room:abc:hallway", "Invited", { invitationId: "i1" });
 
     expect(pubsub.publish).toHaveBeenCalledWith("room:abc:hallway", {
       name: "Invited",
@@ -114,7 +120,7 @@ describe("WsHub", () => {
     const { connection } = buildConnection();
 
     hub.attach(connection, { topic: "room:abc:hallway" });
-    await hub.broadcast("room:abc:hallway", "Message", { text: "hi" });
+    await hub.broadcast(TestMessages, "room:abc:hallway", "Message", { text: "hi" });
 
     expect(connection.send).toHaveBeenCalledWith("Message", { text: "hi" });
   });

@@ -1,4 +1,10 @@
-import type { ConnectionId, MemberId, RoomId, VibeStatus } from "@play.realtime/contracts";
+import {
+  type ConnectionId,
+  type MemberId,
+  type RoomId,
+  VibeEvents,
+  type VibeStatus,
+} from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
 import type { VibeRepository } from "../../domain/vibe";
 import type { SseHub } from "../../infrastructure/transport/sse";
@@ -42,7 +48,9 @@ describe("NotifyVibeLeft", () => {
     const fire = call?.[2] as (() => Promise<void>) | undefined;
     await fire?.();
 
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Left", { memberId });
+    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Left", {
+      memberId,
+    });
   });
 
   it("他の接続が残るときは集約結果を Update として即時配信し grace には積まない", async () => {
@@ -55,11 +63,16 @@ describe("NotifyVibeLeft", () => {
 
     await usecase.execute({ roomId, memberId, connectionId });
 
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Update", {
       memberId,
       status: "focused",
     });
-    expect(broadcast).not.toHaveBeenCalledWith(`room:${roomId}:vibe`, "Left", expect.anything());
+    expect(broadcast).not.toHaveBeenCalledWith(
+      VibeEvents,
+      `room:${roomId}:vibe`,
+      "Left",
+      expect.anything(),
+    );
     expect(grace.schedule).not.toHaveBeenCalled();
   });
 });

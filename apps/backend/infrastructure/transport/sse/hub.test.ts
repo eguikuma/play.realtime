@@ -1,8 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import * as z from "zod";
 import type { PubSub, Subscription } from "../../../application/ports/pubsub";
 import type { SseConnection } from "./connection";
 import { SseHeartbeat } from "./heartbeat";
 import { SseHub } from "./hub";
+
+const TestEvents = {
+  posted: z.object({ text: z.string() }),
+} as const;
 
 type Handler = (payload: unknown) => void;
 
@@ -93,7 +98,7 @@ describe("SseHub", () => {
     const { pubsub } = buildPubSub();
     const hub = new SseHub(pubsub, buildHeartbeat());
 
-    await hub.broadcast("room:abc:murmur", "posted", { text: "hi" }, "murmur-1");
+    await hub.broadcast(TestEvents, "room:abc:murmur", "posted", { text: "hi" }, "murmur-1");
 
     expect(pubsub.publish).toHaveBeenCalledWith("room:abc:murmur", {
       name: "posted",

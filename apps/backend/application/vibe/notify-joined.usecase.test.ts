@@ -3,6 +3,7 @@ import {
   type Member,
   type MemberId,
   type RoomId,
+  VibeEvents,
   type VibeStatus,
 } from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
@@ -44,7 +45,7 @@ describe("NotifyVibeJoined", () => {
     await usecase.execute({ roomId, member, connectionId });
 
     expect(vibes.save).toHaveBeenCalledWith(roomId, member.id, connectionId, "present");
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Joined", {
+    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Joined", {
       member,
       status: "present",
     });
@@ -59,11 +60,16 @@ describe("NotifyVibeJoined", () => {
 
     await usecase.execute({ roomId, member, connectionId });
 
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Update", {
       memberId: member.id,
       status: "focused",
     });
-    expect(broadcast).not.toHaveBeenCalledWith(`room:${roomId}:vibe`, "Joined", expect.anything());
+    expect(broadcast).not.toHaveBeenCalledWith(
+      VibeEvents,
+      `room:${roomId}:vibe`,
+      "Joined",
+      expect.anything(),
+    );
   });
 
   it("grace 期間中に再接続した場合は Left 予約を cancel し Joined ではなく Update を配信する", async () => {
@@ -75,10 +81,15 @@ describe("NotifyVibeJoined", () => {
     await usecase.execute({ roomId, member, connectionId });
 
     expect(grace.cancel).toHaveBeenCalledWith(roomId, member.id);
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:vibe`, "Update", {
+    expect(broadcast).toHaveBeenCalledWith(VibeEvents, `room:${roomId}:vibe`, "Update", {
       memberId: member.id,
       status: "present",
     });
-    expect(broadcast).not.toHaveBeenCalledWith(`room:${roomId}:vibe`, "Joined", expect.anything());
+    expect(broadcast).not.toHaveBeenCalledWith(
+      VibeEvents,
+      `room:${roomId}:vibe`,
+      "Joined",
+      expect.anything(),
+    );
   });
 });

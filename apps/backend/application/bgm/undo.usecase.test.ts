@@ -1,4 +1,5 @@
 import {
+  BgmEvents,
   type BgmState,
   type MemberId,
   Room,
@@ -85,7 +86,9 @@ describe("UndoBgm", () => {
     expect(result.current).toEqual(existing.undoable?.previous);
     expect(result.undoable).toBeNull();
     expect(bgms.save).toHaveBeenCalledWith(roomId, result);
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:bgm`, "Changed", { state: result });
+    expect(broadcast).toHaveBeenCalledWith(BgmEvents, `room:${roomId}:bgm`, "Changed", {
+      state: result,
+    });
   });
 
   it("domain.undo が投げた Error はそのまま呼び出し側に伝わる", async () => {

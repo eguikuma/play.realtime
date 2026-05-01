@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import type { ConnectionId, Member, RoomId } from "@play.realtime/contracts";
+import { type ConnectionId, type Member, type RoomId, VibeEvents } from "@play.realtime/contracts";
 import { VibeRepository } from "../../domain/vibe";
 import { SseHub } from "../../infrastructure/transport/sse";
 import { VibePresenceGrace } from "./presence-grace";
@@ -35,13 +35,13 @@ export class NotifyVibeJoined {
     );
     const rejoined = this.grace.cancel(input.roomId, input.member.id);
     if (isFirst && !rejoined) {
-      await this.hub.broadcast(topic(input.roomId), "Joined", {
+      await this.hub.broadcast(VibeEvents, topic(input.roomId), "Joined", {
         member: input.member,
         status: aggregated,
       });
       return;
     }
-    await this.hub.broadcast(topic(input.roomId), "Update", {
+    await this.hub.broadcast(VibeEvents, topic(input.roomId), "Update", {
       memberId: input.member.id,
       status: aggregated,
     });

@@ -1,4 +1,5 @@
-import type { MemberId, RoomId } from "@play.realtime/contracts";
+import { HallwayServerMessages, type MemberId, type RoomId } from "@play.realtime/contracts";
+import type { z } from "zod";
 import type { WsHub } from "../../infrastructure/transport/ws";
 
 /**
@@ -11,15 +12,20 @@ export const topic = (roomId: RoomId, memberId: MemberId): string =>
 /**
  * 指定メンバー全員宛に並列で WebSocket 配信するヘルパ
  * 送信先メンバー数は通常 2 名の通話参加者、またはルーム人数分で、直列配信では遅延が積み重なるため `Promise.all` で捌く
+ * `name` と `data` は `HallwayServerMessages` 辞書で型が束縛され、辞書にないキーや payload 不一致を呼び出し側で弾く
  */
-export const broadcastToMembers = async <T>(
+export const broadcastToMembers = async <
+  K extends Extract<keyof typeof HallwayServerMessages, string>,
+>(
   hub: WsHub,
   roomId: RoomId,
   memberIds: readonly MemberId[],
-  name: string,
-  data: T,
+  name: K,
+  data: z.infer<(typeof HallwayServerMessages)[K]>,
 ): Promise<void> => {
   await Promise.all(
-    memberIds.map((memberId) => hub.broadcast(topic(roomId, memberId), name, data)),
+    memberIds.map((memberId) =>
+      hub.broadcast(HallwayServerMessages, topic(roomId, memberId), name, data),
+    ),
   );
 };

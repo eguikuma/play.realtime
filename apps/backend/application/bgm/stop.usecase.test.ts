@@ -1,4 +1,5 @@
 import {
+  BgmEvents,
   type BgmState,
   type MemberId,
   Room,
@@ -69,6 +70,8 @@ describe("StopBgm", () => {
     expect(result.undoable?.previous).toEqual(existing.current);
     expect(result.undoable?.byMemberId).toBe(memberId);
     expect(bgms.save).toHaveBeenCalledWith(roomId, result);
-    expect(broadcast).toHaveBeenCalledWith(`room:${roomId}:bgm`, "Changed", { state: result });
+    expect(broadcast).toHaveBeenCalledWith(BgmEvents, `room:${roomId}:bgm`, "Changed", {
+      state: result,
+    });
   });
 });

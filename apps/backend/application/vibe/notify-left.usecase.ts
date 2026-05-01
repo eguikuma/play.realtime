@@ -1,5 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
-import type { ConnectionId, MemberId, RoomId } from "@play.realtime/contracts";
+import {
+  type ConnectionId,
+  type MemberId,
+  type RoomId,
+  VibeEvents,
+} from "@play.realtime/contracts";
 import { VibeRepository } from "../../domain/vibe";
 import { SseHub } from "../../infrastructure/transport/sse";
 import { VibePresenceGrace } from "./presence-grace";
@@ -33,13 +38,13 @@ export class NotifyVibeLeft {
     );
     if (isLast || aggregated === null) {
       this.grace.schedule(input.roomId, input.memberId, async () => {
-        await this.hub.broadcast(topic(input.roomId), "Left", {
+        await this.hub.broadcast(VibeEvents, topic(input.roomId), "Left", {
           memberId: input.memberId,
         });
       });
       return;
     }
-    await this.hub.broadcast(topic(input.roomId), "Update", {
+    await this.hub.broadcast(VibeEvents, topic(input.roomId), "Update", {
       memberId: input.memberId,
       status: aggregated,
     });

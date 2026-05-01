@@ -1,5 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
-import type { ConnectionId, MemberId, RoomId, VibeStatus } from "@play.realtime/contracts";
+import {
+  type ConnectionId,
+  type MemberId,
+  type RoomId,
+  VibeEvents,
+  type VibeStatus,
+} from "@play.realtime/contracts";
 import { RoomNotFound, RoomRepository } from "../../domain/room";
 import { VibeRepository } from "../../domain/vibe";
 import { SseHub } from "../../infrastructure/transport/sse";
@@ -40,7 +46,7 @@ export class ChangeVibeStatus {
     if (!updated || aggregated === null) {
       return;
     }
-    await this.hub.broadcast(topic(input.roomId), "Update", {
+    await this.hub.broadcast(VibeEvents, topic(input.roomId), "Update", {
       memberId: input.memberId,
       status: aggregated,
     });
