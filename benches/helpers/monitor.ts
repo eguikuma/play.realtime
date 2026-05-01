@@ -1,9 +1,11 @@
 import { Redis } from "ioredis";
 
 /**
- * `RedisMonitor` の集計結果、ローカル Redis に流れた全コマンドを種別ごと・キー名前空間ごとに合算する
- * `total` は MONITOR で観測した行数の総和、`byCommand` は `publish` `hset` 等の小文字コマンド名で集計
- * `byNamespace` はキー先頭のコロン区切りプレフィックス (`vibe:` `hallway:` `presence:` 等) ごとの発火回数で、機能別の支配率を見るのに使う
+ * `RedisMonitor` の集計結果
+ * ローカル Redis に流れた全コマンドを種別ごとと キー名前空間ごとに合算する
+ * `total` は MONITOR で観測した行数の総和
+ * `byCommand` は `publish` `hset` 等の小文字コマンド名で集計
+ * `byNamespace` はキー先頭のコロン区切りプレフィックス（`vibe:` `hallway:` `presence:` 等）ごとの発火回数で、機能別の支配率を見るのに使う
  */
 export type CommandTally = {
   total: number;

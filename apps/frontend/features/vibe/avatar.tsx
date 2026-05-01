@@ -6,7 +6,10 @@ import { cn } from "@/libraries/classname";
 
 /**
  * 1 人分のアバターが取りうる状態
- * `self` は自分のアバター、`present` は在室中で招待できる相手、`focused` はタブ非表示などで集中中の相手、`calling` は他の誰かと通話中の相手を示す
+ * `self` は自分のアバター
+ * `present` は在室中で招待できる相手
+ * `focused` はタブ非表示などで集中中の相手
+ * `calling` は他の誰かと通話中の相手
  */
 export type AvatarState = "present" | "focused" | "calling" | "self";
 

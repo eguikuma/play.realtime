@@ -31,8 +31,11 @@ type HallwayState = {
 
 /**
  * 廊下トークの状態と WebSocket 送信ハンドルを集約する zustand ストア
- * 招待、通話、通話ごとのメッセージ配列を ID キーのマップで保持し、`send` は接続中だけ値を持ち切断時に `null` へ戻す
- * `setSnapshot` は購読開始直後の全置換、`addCall` は通話開始時にメッセージ配列を空で作成、`removeCall` は終了時にメッセージもまとめて破棄する
+ * 招待、通話、通話ごとのメッセージ配列を ID キーのマップで保持する
+ * `send` は接続中だけ値を持ち切断時に `null` へ戻す
+ * `setSnapshot` は購読開始直後の全置換
+ * `addCall` は通話開始時にメッセージ配列を空で作成
+ * `removeCall` は終了時にメッセージもまとめて破棄する
  */
 export const useHallway = create<HallwayState>()((set) => ({
   connectionId: null,

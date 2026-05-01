@@ -12,7 +12,8 @@ import { SseHeartbeat } from "./heartbeat";
 
 /**
  * PubSub を経由して SSE クライアントへ配信するイベント 1 件の内部形式
- * `name` は SSE の `event` 行、`id` は `Last-Event-ID` の再送起点に対応する
+ * `name` は SSE の `event` 行に対応する
+ * `id` は `Last-Event-ID` の再送起点に対応する
  */
 type Envelope = {
   name: string;

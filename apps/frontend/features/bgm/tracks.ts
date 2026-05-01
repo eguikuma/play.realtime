@@ -2,7 +2,9 @@ import type { TrackId } from "@play.realtime/contracts";
 
 /**
  * 1 曲分のメタデータ
- * `title` はクレジット表記、`src` は `public/bgms/` 以下の静的配信パス、`gain` は曲ごとの音量補正係数で 0 〜 1 で指定する
+ * `title` はクレジット表記
+ * `src` は `public/bgms/` 以下の静的配信パス
+ * `gain` は曲ごとの音量補正係数で 0 〜 1 で指定する
  */
 export type Track = {
   title: string;

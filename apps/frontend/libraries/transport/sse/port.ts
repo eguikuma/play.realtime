@@ -33,7 +33,8 @@ export type SseConnection = {
 export type SseClient = {
   /**
    * 指定 URL へ接続して `events` のキーごとにリスナーを張る
-   * `onEvent` は Zod 検証を通ったペイロードのみで呼ばれ、`onStateChange` は接続状態遷移を受け取るオプショナルコールバック
+   * `onEvent` は Zod 検証を通ったペイロードのみで呼ばれる
+   * `onStateChange` は接続状態遷移を受け取るオプショナルコールバック
    */
   connect<TMap extends SseEvents>(parameters: {
     url: string;

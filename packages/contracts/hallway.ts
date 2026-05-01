@@ -108,7 +108,10 @@ export type HallwayInvited = z.infer<typeof HallwayInvited>;
 
 /**
  * 招待が終了した理由
- * `expired` は期限切れ、`declined` は相手が `Decline`、`cancelled` は自分が `Cancel`、`accepted` は相手が `Accept` して通話が成立したことを指す
+ * `expired` は期限切れ
+ * `declined` は相手が `Decline` した
+ * `cancelled` は自分が `Cancel` した
+ * `accepted` は相手が `Accept` して通話が成立した
  */
 export const InvitationEndReason = z.enum(["expired", "declined", "cancelled", "accepted"]);
 export type InvitationEndReason = z.infer<typeof InvitationEndReason>;

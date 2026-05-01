@@ -16,7 +16,9 @@ import { HallwayGateway } from "./hallway.gateway";
 /**
  * 廊下トーク機能を組み立てる Module
  * Hallway 固有の usecase、broadcaster を束ね、`RoomsModule` から `GetRoomMembership` を取り込む
- * `RoomRepository`、`VibeRepository`、`HallwayRepository` 実装は Global の `RepositoryModule` から、`HallwayInvitationTimers` は `TimerModule` から、`HallwayConnectionCounter` は `CounterModule` から注入される
+ * `RoomRepository`、`VibeRepository`、`HallwayRepository` 実装は Global の `RepositoryModule` から注入される
+ * `HallwayInvitationTimers` は `TimerModule` から注入される
+ * `HallwayConnectionCounter` は `CounterModule` から注入される
  */
 @Module({
   imports: [RoomsModule, WsModule],

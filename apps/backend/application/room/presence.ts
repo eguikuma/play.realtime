@@ -20,7 +20,8 @@ export type PresenceSubscription = {
 
 /**
  * ルームごとの現在接続数をカウントして、`empty` と `populated` の遷移をリスナーへ通知するサービスの port 型
- * `register` と `deregister` は SSE と WebSocket の両方の transport 層から呼ばれ、`onTransition` の購読者は `RoomLifecycle` を主とする
+ * `register` と `deregister` は SSE と WebSocket の両方の transport 層から呼ばれる
+ * `onTransition` の購読者は `RoomLifecycle` を主とする
  * 具体実装はインフラ層の `infrastructure/presence/` に置き、in-memory と Redis のどちらに倒すかは `STORAGE_DRIVER` 環境変数で切り替える
  */
 export type RoomPresence = {

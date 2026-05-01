@@ -9,7 +9,8 @@ import type {
 
 /**
  * `RoomPresence` port の in-memory 実装、単一プロセスの `Map` でルーム別の接続数をカウントする
- * `register` で 0→1 へ遷移したら `populated` を、`deregister` で 1→0 へ遷移したら `empty` をリスナー全件に同期配信する
+ * `register` で 0→1 へ遷移したら `populated` をリスナー全件に同期配信する
+ * `deregister` で 1→0 へ遷移したら `empty` をリスナー全件に同期配信する
  */
 @Injectable()
 export class InMemoryRoomPresence implements RoomPresence {

@@ -34,7 +34,8 @@ export type WsConnection = {
 export type WsClient = {
   /**
    * 指定 URL に接続して `events` のキーごとに受信リスナーを張る
-   * `onEvent` は Zod 検証を通ったペイロードのみで呼ばれ、`onStateChange` は接続状態遷移を受け取るオプショナルコールバック
+   * `onEvent` は Zod 検証を通ったペイロードのみで呼ばれる
+   * `onStateChange` は接続状態遷移を受け取るオプショナルコールバック
    */
   connect: <TMap extends WsEvents>(parameters: {
     url: string;
