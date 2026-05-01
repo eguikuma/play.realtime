@@ -45,11 +45,11 @@ describe("InMemoryMurmurRepository", () => {
     await repository.save(buildMurmur(roomA, "a", 1));
     await repository.save(buildMurmur(roomB, "b", 2));
 
-    const a = await repository.latest(roomA, 10);
-    const b = await repository.latest(roomB, 10);
+    const roomALatest = await repository.latest(roomA, 10);
+    const roomBLatest = await repository.latest(roomB, 10);
 
-    expect(a.map((each) => each.text)).toEqual(["a"]);
-    expect(b.map((each) => each.text)).toEqual(["b"]);
+    expect(roomALatest.map((each) => each.text)).toEqual(["a"]);
+    expect(roomBLatest.map((each) => each.text)).toEqual(["b"]);
   });
 
   it("ルーム単位の取り除きで配下の投稿が破棄される", async () => {
