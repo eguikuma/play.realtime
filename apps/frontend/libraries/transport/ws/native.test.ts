@@ -3,6 +3,8 @@ import * as z from "zod";
 import { createNativeWsClient } from "./native";
 import { WsState } from "./port";
 
+const TEST_HALLWAY_URL = "ws://api.test/rooms/room/hallway";
+
 class MockWebSocket {
   static readonly CONNECTING = 0;
   static readonly OPEN = 1;
@@ -48,7 +50,7 @@ describe("createNativeWsClient", () => {
     const onStateChange = vi.fn();
     const ws = createNativeWsClient();
     ws.connect({
-      url: "ws://api.test/rooms/r1/hallway",
+      url: TEST_HALLWAY_URL,
       events: {},
       onEvent: vi.fn(),
       onStateChange,
@@ -61,7 +63,7 @@ describe("createNativeWsClient", () => {
     const onStateChange = vi.fn();
     const ws = createNativeWsClient();
     ws.connect({
-      url: "ws://api.test/rooms/r1/hallway",
+      url: TEST_HALLWAY_URL,
       events: {},
       onEvent: vi.fn(),
       onStateChange,
@@ -76,7 +78,7 @@ describe("createNativeWsClient", () => {
     const onEvent = vi.fn();
     const ws = createNativeWsClient();
     ws.connect({
-      url: "ws://api.test/rooms/r1/hallway",
+      url: TEST_HALLWAY_URL,
       events: { Hello: z.object({ message: z.string() }) },
       onEvent,
     });
@@ -90,7 +92,7 @@ describe("createNativeWsClient", () => {
     const onEvent = vi.fn();
     const ws = createNativeWsClient();
     ws.connect({
-      url: "ws://api.test/rooms/r1/hallway",
+      url: TEST_HALLWAY_URL,
       events: { Hello: z.object({ message: z.string() }) },
       onEvent,
     });
@@ -109,7 +111,7 @@ describe("createNativeWsClient", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const ws = createNativeWsClient();
     ws.connect({
-      url: "ws://api.test/rooms/r1/hallway",
+      url: TEST_HALLWAY_URL,
       events: { Hello: z.object({ message: z.string() }) },
       onEvent,
     });
@@ -125,7 +127,7 @@ describe("createNativeWsClient", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const ws = createNativeWsClient();
     ws.connect({
-      url: "ws://api.test/rooms/r1/hallway",
+      url: TEST_HALLWAY_URL,
       events: { Hello: z.object({ message: z.string() }) },
       onEvent,
     });
@@ -139,7 +141,7 @@ describe("createNativeWsClient", () => {
   it("`OPEN` 状態の送信で封筒をソケットへ送る", () => {
     const ws = createNativeWsClient();
     const connection = ws.connect({
-      url: "ws://api.test/rooms/r1/hallway",
+      url: TEST_HALLWAY_URL,
       events: {},
       onEvent: vi.fn(),
     });
@@ -147,22 +149,22 @@ describe("createNativeWsClient", () => {
     if (!socket) throw new Error("socket not created");
     socket.readyState = MockWebSocket.OPEN;
 
-    connection.send("Invite", { inviteeId: "m2" });
+    connection.send("Invite", { inviteeId: "invitee" });
 
-    expect(socket.sent).toContain(`{"name":"Invite","data":{"inviteeId":"m2"}}`);
+    expect(socket.sent).toContain(`{"name":"Invite","data":{"inviteeId":"invitee"}}`);
   });
 
   it("`CONNECTING` 状態での送信は無視する", () => {
     const ws = createNativeWsClient();
     const connection = ws.connect({
-      url: "ws://api.test/rooms/r1/hallway",
+      url: TEST_HALLWAY_URL,
       events: {},
       onEvent: vi.fn(),
     });
     const socket = MockWebSocket.last;
     if (!socket) throw new Error("socket not created");
 
-    connection.send("Invite", { inviteeId: "m2" });
+    connection.send("Invite", { inviteeId: "invitee" });
 
     expect(socket.sent).toHaveLength(0);
   });
@@ -171,7 +173,7 @@ describe("createNativeWsClient", () => {
     const onStateChange = vi.fn();
     const ws = createNativeWsClient();
     const connection = ws.connect({
-      url: "ws://api.test/rooms/r1/hallway",
+      url: TEST_HALLWAY_URL,
       events: {},
       onEvent: vi.fn(),
       onStateChange,
