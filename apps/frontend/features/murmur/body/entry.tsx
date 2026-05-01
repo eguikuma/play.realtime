@@ -6,11 +6,18 @@ import { cn } from "@/libraries/classname";
 import { toHHMM } from "@/libraries/date";
 
 type Entry = {
+  /** 表示する 1 件のひとこと、本文と投稿時刻 / 投稿者 ID を含む */
   murmur: Murmur;
+  /** 投稿者の表示名、退室済みメンバーは「匿名」をフックから受け取る */
   authorName: string;
+  /** 直近に増えた投稿かどうか、true のときだけ滲み込むようなアニメーションを当てる */
   fresh: boolean;
 };
 
+/**
+ * ひとこと一覧の 1 件分の表示
+ * 頭文字アバター / 投稿者名 / 投稿時刻をヘッダに、本文を下段に置く
+ */
 export const Entry = ({ murmur, authorName, fresh }: Entry) => (
   <article
     className={cn("flex flex-col gap-2", fresh && "animate-ink-bleed")}

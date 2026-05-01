@@ -7,7 +7,16 @@ import { Empty } from "./empty";
 import { Entry } from "./entry";
 import { useBody } from "./use-body";
 
-export const MurmurBody = ({ roomId }: { roomId: RoomId }) => {
+type MurmurBody = {
+  /** 表示対象のルーム ID、SSE 購読と投稿 API の宛先に使う */
+  roomId: RoomId;
+};
+
+/**
+ * ルーム画面中央のひとことパネル
+ * 上部に投稿フォーム、下部に投稿一覧を並べ、投稿が 1 件もないときは空状態メッセージを出す
+ */
+export const MurmurBody = ({ roomId }: MurmurBody) => {
   const body = useBody(roomId);
 
   return (

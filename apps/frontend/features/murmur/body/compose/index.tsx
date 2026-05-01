@@ -8,10 +8,16 @@ import { cn } from "@/libraries/classname";
 import { useCompose } from "./use-compose";
 
 type Compose = {
+  /** 投稿先のルーム ID、POST /rooms/{roomId}/murmurs の送信先に使う */
   roomId: RoomId;
+  /** 未入室などで投稿を受け付けない状態のとき true、入力欄と送信経路を止める */
   disabled: boolean;
 };
 
+/**
+ * ひとこと投稿フォーム
+ * 入力欄と残り文字数表示を 1 行に収め、空白のみの投稿はフック側で無効化する
+ */
 export const Compose = ({ roomId, disabled }: Compose) => {
   const compose = useCompose({ roomId, disabled });
 
