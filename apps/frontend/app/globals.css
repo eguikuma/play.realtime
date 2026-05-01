@@ -59,6 +59,7 @@
     --animate-breath: breath 4.2s ease-in-out infinite;
     --animate-ink-bleed: ink-bleed 520ms var(--ease-paper) both;
     --animate-slip-in: slip-in 280ms var(--ease-snap) both;
+    --animate-slip-in-flat: slip-in-flat 280ms var(--ease-snap) both;
     --animate-slip-out: slip-out 180ms var(--ease-paper) both;
     --animate-marquee: marquee 30s linear infinite;
     --animate-lamp-drift: lamp-drift 22s ease-in-out infinite alternate;
@@ -176,6 +177,17 @@
     100% {
         opacity: 0;
         transform: translateX(16px) rotate(-2deg);
+    }
+}
+
+@keyframes slip-in-flat {
+    0% {
+        opacity: 0;
+        transform: translateX(-16px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
     }
 }
 
