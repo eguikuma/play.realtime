@@ -1,4 +1,4 @@
-import type { MemberId, RoomId } from "@play.realtime/contracts";
+import type { ConnectionId, MemberId, RoomId } from "@play.realtime/contracts";
 import type { Response } from "express";
 import { describe, expect, it, vi } from "vitest";
 import { SseConnection } from "./connection";
@@ -42,7 +42,7 @@ const buildResponse = () => {
   return { response, writes, headers, fireClose };
 };
 
-const connectionId = "connection-1";
+const connectionId = "connection-1" as ConnectionId;
 const memberId = "member-alice" as MemberId;
 const roomId = "room-abc-1234" as RoomId;
 

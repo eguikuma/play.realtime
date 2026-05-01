@@ -29,7 +29,7 @@ export class RedisRoomPresence implements RoomPresence, OnModuleDestroy {
   private readonly client: Redis;
   private readonly pubsub: PubSub;
   private readonly listeners = new Set<PresenceListener>();
-  private readonly transitionSubscription: { unsubscribe: () => void };
+  private readonly transitionSubscription: PresenceSubscription;
   private readonly logger = new Logger(RedisRoomPresence.name);
 
   constructor(redisUrl: string, pubsub: PubSub, options: RedisOptions = {}) {

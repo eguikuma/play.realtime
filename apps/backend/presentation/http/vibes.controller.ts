@@ -1,10 +1,5 @@
 import { Body, Controller, Get, Inject, Param, Post, Res, UseGuards } from "@nestjs/common";
-import {
-  ChangeVibeStatusRequest,
-  type ConnectionId,
-  type MemberId,
-  RoomId,
-} from "@play.realtime/contracts";
+import { ChangeVibeStatusRequest, type MemberId, RoomId } from "@play.realtime/contracts";
 import type { Response } from "express";
 import { GetRoomMembership } from "../../application/room/get-membership.usecase";
 import { RoomPresence } from "../../application/room/presence";
@@ -48,7 +43,7 @@ export class VibesController {
     @CurrentMember() member: { id: MemberId },
     @Res() response: Response,
   ): void {
-    const connectionId = this.ids.connection() as ConnectionId;
+    const connectionId = this.ids.connection();
     const connection = new SseConnection(connectionId, member.id, roomId, response);
     this.presence.register(roomId);
     this.hub.attach(connection, {

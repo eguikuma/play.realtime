@@ -1,4 +1,4 @@
-import type { MemberId, RoomId } from "@play.realtime/contracts";
+import type { ConnectionId, MemberId, RoomId } from "@play.realtime/contracts";
 import { SSE_CONTENT_TYPE, SSE_RETRY_MS } from "@play.realtime/transport-protocol";
 import type { Response } from "express";
 
@@ -11,7 +11,7 @@ export class SseConnection {
   private closed = false;
 
   constructor(
-    readonly id: string,
+    readonly id: ConnectionId,
     readonly memberId: MemberId,
     readonly roomId: RoomId,
     private readonly response: Response,

@@ -1,11 +1,5 @@
 import { Body, Controller, Get, Inject, Param, Post, Res, UseGuards } from "@nestjs/common";
-import {
-  type BgmState,
-  type ConnectionId,
-  type MemberId,
-  RoomId,
-  SetBgmRequest,
-} from "@play.realtime/contracts";
+import { type BgmState, type MemberId, RoomId, SetBgmRequest } from "@play.realtime/contracts";
 import type { Response } from "express";
 import { GetBgmSnapshot } from "../../application/bgm/get-snapshot.usecase";
 import { SetBgm } from "../../application/bgm/set.usecase";
@@ -47,7 +41,7 @@ export class BgmsController {
     @CurrentMember() member: { id: MemberId },
     @Res() response: Response,
   ): void {
-    const connectionId = this.ids.connection() as ConnectionId;
+    const connectionId = this.ids.connection();
     const connection = new SseConnection(connectionId, member.id, roomId, response);
     this.presence.register(roomId);
     this.hub.attach(connection, {

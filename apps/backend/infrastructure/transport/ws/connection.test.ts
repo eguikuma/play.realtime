@@ -1,4 +1,4 @@
-import type { MemberId, RoomId } from "@play.realtime/contracts";
+import type { ConnectionId, MemberId, RoomId } from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
 import type { WebSocket } from "ws";
 import { WsConnection } from "./connection";
@@ -37,7 +37,7 @@ const buildSocket = () => {
   return { socket, sends, fire };
 };
 
-const connectionId = "connection-1";
+const connectionId = "connection-1" as ConnectionId;
 const memberId = "member-alice" as MemberId;
 const roomId = "room-abc-1234" as RoomId;
 

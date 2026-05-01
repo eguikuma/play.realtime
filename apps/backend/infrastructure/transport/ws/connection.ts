@@ -1,4 +1,4 @@
-import type { MemberId, RoomId } from "@play.realtime/contracts";
+import type { ConnectionId, MemberId, RoomId } from "@play.realtime/contracts";
 import type { RawData, WebSocket } from "ws";
 
 /**
@@ -18,7 +18,7 @@ export class WsConnection {
   private closed = false;
 
   constructor(
-    readonly id: string,
+    readonly id: ConnectionId,
     readonly memberId: MemberId,
     readonly roomId: RoomId,
     private readonly socket: WebSocket,

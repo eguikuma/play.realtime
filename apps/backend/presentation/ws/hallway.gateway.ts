@@ -2,7 +2,7 @@ import type { IncomingMessage } from "node:http";
 import type { Duplex } from "node:stream";
 import { Inject, Injectable, Logger, type OnModuleInit } from "@nestjs/common";
 import { HttpAdapterHost } from "@nestjs/core";
-import { type ConnectionId, MemberId, RoomId } from "@play.realtime/contracts";
+import { MemberId, RoomId } from "@play.realtime/contracts";
 import { type WebSocket, WebSocketServer } from "ws";
 import { AcceptHallwayInvitation } from "../../application/hallway/accept-invitation.usecase";
 import { CancelHallwayInvitation } from "../../application/hallway/cancel-invitation.usecase";
@@ -159,7 +159,7 @@ export class HallwayGateway implements OnModuleInit {
    * WebSocket 接続切断時は `RoomPresence.deregister` と `HallwayConnectionCounter.detach` の両方を呼び、そのメンバー最後の接続だった場合だけ `CleanupHallwayOnDisconnect` を走らせる
    */
   private onConnected(ws: WebSocket, roomId: RoomId, memberId: MemberId): void {
-    const connectionId = this.ids.connection() as ConnectionId;
+    const connectionId = this.ids.connection();
     const connection = new WsConnection(connectionId, memberId, roomId, ws);
 
     this.presence.register(roomId);

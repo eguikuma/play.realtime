@@ -1,6 +1,13 @@
 import { randomUUID } from "node:crypto";
 import { Injectable } from "@nestjs/common";
-import { CallId, InvitationId, MemberId, MurmurId, RoomId } from "@play.realtime/contracts";
+import {
+  CallId,
+  ConnectionId,
+  InvitationId,
+  MemberId,
+  MurmurId,
+  RoomId,
+} from "@play.realtime/contracts";
 
 /**
  * ドメインのブランド型 ID を採番するユーティリティ
@@ -30,9 +37,9 @@ export class NanoidIdGenerator {
   }
 
   /**
-   * ブランド型ではなく素の `string` を返す接続 ID、SSE と WebSocket の接続単位の識別子として使う
+   * SSE と WebSocket の接続単位の識別子を採番する
    */
-  connection(): string {
-    return randomUUID().replace(/-/g, "");
+  connection(): ConnectionId {
+    return ConnectionId.parse(randomUUID().replace(/-/g, ""));
   }
 }
