@@ -1,0 +1,19 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# 新規公開から 1440 分 (24時間) 経過するまでそのバージョンを解決しない
+# 24h の待機は悪意あるバージョンがコミュニティに検知・削除される時間を稼ぐ
+minimumReleaseAge: 1440
+
+# 特定パッケージを minimumReleaseAge の例外にしたい時ここに列挙する
+minimumReleaseAgeExclude: []
+
+# git+ssh 等の exotic な依存が間接依存として紛れ込むのをブロックする
+# 直接依存は明示指定なら許可される
+blockExoticSubdeps: true
+
+# postinstall / preinstall 等のライフサイクルスクリプト実行を allowlist 式にする
+# デフォルトは全拒否で、本当に必要になったパッケージのみここで許可する
+# 初期は空にしておき、pnpm install でブロック警告が出たら内容を確認して追加する
+allowBuilds: {}
