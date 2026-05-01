@@ -54,6 +54,7 @@ const _Environment = z
       });
     }
   });
+
 export type Environment = z.infer<typeof _Environment>;
 
 /**
