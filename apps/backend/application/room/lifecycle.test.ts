@@ -35,8 +35,8 @@ describe("RoomLifecycle", () => {
       throw new Error("boom");
     });
     const healthy = vi.fn(async () => undefined);
-    lifecycle.registerCleanup(failing);
-    lifecycle.registerCleanup(healthy);
+    lifecycle.addCleanup(failing);
+    lifecycle.addCleanup(healthy);
 
     presence.attach(room);
     presence.detach(room);
@@ -53,7 +53,7 @@ describe("RoomLifecycle", () => {
     const lifecycle = new RoomLifecycle(presence, pubsub, grace);
     lifecycle.overrideGracePeriod(10_000);
     const cleanup = vi.fn(async () => undefined);
-    lifecycle.registerCleanup(cleanup);
+    lifecycle.addCleanup(cleanup);
 
     presence.attach(room);
     presence.detach(room);

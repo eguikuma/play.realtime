@@ -35,10 +35,10 @@ export class RoomLifecycle {
   }
 
   /**
-   * クリーンアップ関数を登録する
-   * 閉鎖時に登録順で await 直列実行される
+   * クリーンアップ関数を末尾に追加する
+   * 閉鎖時に追加順で await 直列実行される
    */
-  registerCleanup(cleanup: RoomCleanup): void {
+  addCleanup(cleanup: RoomCleanup): void {
     this.cleanups.push(cleanup);
   }
 

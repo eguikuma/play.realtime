@@ -23,10 +23,10 @@ export class RoomCleanupBootstrap implements OnModuleInit {
   ) {}
 
   onModuleInit(): void {
-    this.lifecycle.registerCleanup((roomId: RoomId) => this.vibe.remove(roomId));
-    this.lifecycle.registerCleanup((roomId: RoomId) => this.bgm.remove(roomId));
-    this.lifecycle.registerCleanup((roomId: RoomId) => this.murmur.remove(roomId));
-    this.lifecycle.registerCleanup((roomId: RoomId) => this.hallway.remove(roomId));
-    this.lifecycle.registerCleanup((roomId: RoomId) => this.room.remove(roomId));
+    this.lifecycle.addCleanup((roomId: RoomId) => this.vibe.remove(roomId));
+    this.lifecycle.addCleanup((roomId: RoomId) => this.bgm.remove(roomId));
+    this.lifecycle.addCleanup((roomId: RoomId) => this.murmur.remove(roomId));
+    this.lifecycle.addCleanup((roomId: RoomId) => this.hallway.remove(roomId));
+    this.lifecycle.addCleanup((roomId: RoomId) => this.room.remove(roomId));
   }
 }
