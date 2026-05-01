@@ -19,6 +19,7 @@ import { RedisRoomPresence } from "./redis";
         if (environment.STORAGE_DRIVER === "redis") {
           return new RedisRoomPresence(environment.REDIS_URL as string, pubsub);
         }
+
         return new InMemoryRoomPresence();
       },
       inject: [Environment, PubSub],

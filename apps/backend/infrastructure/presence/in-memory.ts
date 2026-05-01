@@ -14,7 +14,6 @@ import type {
 @Injectable()
 export class InMemoryRoomPresence implements RoomPresence {
   private readonly counts = new Map<RoomId, number>();
-
   private readonly listeners = new Set<PresenceListener>();
 
   register(roomId: RoomId): void {
@@ -30,12 +29,14 @@ export class InMemoryRoomPresence implements RoomPresence {
     if (before <= 0) {
       return;
     }
+
     const after = before - 1;
     if (after === 0) {
       this.counts.delete(roomId);
       this.fire(roomId, "empty");
       return;
     }
+
     this.counts.set(roomId, after);
   }
 
