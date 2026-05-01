@@ -10,7 +10,6 @@ import type { MurmurRepository } from "../../../domain/murmur";
 @Injectable()
 export class RedisMurmurRepository implements MurmurRepository, OnModuleDestroy {
   private readonly client: Redis;
-
   private readonly logger = new Logger(RedisMurmurRepository.name);
 
   constructor(redisUrl: string, options: RedisOptions = {}) {
@@ -25,6 +24,7 @@ export class RedisMurmurRepository implements MurmurRepository, OnModuleDestroy 
     if (limit <= 0) {
       return [];
     }
+
     const raws = await this.client.lrange(this.key(roomId), -limit, -1);
     return raws.map((raw) => Murmur.parse(JSON.parse(raw)));
   }

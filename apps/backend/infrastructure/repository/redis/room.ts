@@ -10,7 +10,6 @@ import type { RoomRepository } from "../../../domain/room";
 @Injectable()
 export class RedisRoomRepository implements RoomRepository, OnModuleDestroy {
   private readonly client: Redis;
-
   private readonly logger = new Logger(RedisRoomRepository.name);
 
   constructor(redisUrl: string, options: RedisOptions = {}) {

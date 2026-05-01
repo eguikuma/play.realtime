@@ -10,7 +10,6 @@ import type { BgmRepository } from "../../../domain/bgm";
 @Injectable()
 export class RedisBgmRepository implements BgmRepository, OnModuleDestroy {
   private readonly client: Redis;
-
   private readonly logger = new Logger(RedisBgmRepository.name);
 
   constructor(redisUrl: string, options: RedisOptions = {}) {

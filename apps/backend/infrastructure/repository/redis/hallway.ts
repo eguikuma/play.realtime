@@ -19,7 +19,6 @@ import type { HallwayRepository } from "../../../domain/hallway";
 @Injectable()
 export class RedisHallwayRepository implements HallwayRepository, OnModuleDestroy {
   private readonly client: Redis;
-
   private readonly logger = new Logger(RedisHallwayRepository.name);
 
   constructor(redisUrl: string, options: RedisOptions = {}) {
@@ -65,6 +64,7 @@ export class RedisHallwayRepository implements HallwayRepository, OnModuleDestro
     if (ids.length === 0) {
       return [];
     }
+
     const raws = await this.client.mget(...ids.map((id) => this.invitationKey(id as InvitationId)));
     return raws
       .filter((raw): raw is string => raw !== null)
@@ -116,6 +116,7 @@ export class RedisHallwayRepository implements HallwayRepository, OnModuleDestro
     if (ids.length === 0) {
       return [];
     }
+
     const raws = await this.client.mget(...ids.map((id) => this.callKey(id as CallId)));
     return raws
       .filter((raw): raw is string => raw !== null)
@@ -127,6 +128,7 @@ export class RedisHallwayRepository implements HallwayRepository, OnModuleDestro
     if (!call) {
       return;
     }
+
     const tx = this.client.multi();
     tx.del(this.callKey(id));
     for (const memberId of call.memberIds) {

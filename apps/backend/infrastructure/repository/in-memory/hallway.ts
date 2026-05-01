@@ -18,17 +18,11 @@ import type { HallwayRepository } from "../../../domain/hallway";
 @Injectable()
 export class InMemoryHallwayRepository implements HallwayRepository {
   private readonly invitations = new Map<InvitationId, Invitation>();
-
   private readonly calls = new Map<CallId, Call>();
-
   private readonly outgoingByMember = new Map<MemberId, InvitationId>();
-
   private readonly incomingByMember = new Map<MemberId, InvitationId>();
-
   private readonly callByMember = new Map<MemberId, CallId>();
-
   private readonly invitationsByRoom = new Map<RoomId, Set<InvitationId>>();
-
   private readonly callsByRoom = new Map<RoomId, Set<CallId>>();
 
   async saveInvitation(invitation: Invitation): Promise<void> {
@@ -65,6 +59,7 @@ export class InMemoryHallwayRepository implements HallwayRepository {
     if (!ids) {
       return [];
     }
+
     const result: Invitation[] = [];
     for (const id of ids) {
       const invitation = this.invitations.get(id);
@@ -84,6 +79,7 @@ export class InMemoryHallwayRepository implements HallwayRepository {
     if (!invitation) {
       return;
     }
+
     this.invitations.delete(id);
     this.outgoingByMember.delete(invitation.fromMemberId);
     this.incomingByMember.delete(invitation.toMemberId);
@@ -123,6 +119,7 @@ export class InMemoryHallwayRepository implements HallwayRepository {
     if (!ids) {
       return [];
     }
+
     const result: Call[] = [];
     for (const id of ids) {
       const call = this.calls.get(id);
@@ -138,6 +135,7 @@ export class InMemoryHallwayRepository implements HallwayRepository {
     if (!call) {
       return;
     }
+
     this.calls.delete(id);
     for (const memberId of call.memberIds) {
       this.callByMember.delete(memberId);
@@ -168,6 +166,7 @@ export class InMemoryHallwayRepository implements HallwayRepository {
       }
       this.invitationsByRoom.delete(roomId);
     }
+
     const callIds = this.callsByRoom.get(roomId);
     if (callIds) {
       for (const id of callIds) {

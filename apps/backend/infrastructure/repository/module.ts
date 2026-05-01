@@ -31,6 +31,7 @@ import { RedisVibeRepository } from "./redis/vibe";
         if (environment.STORAGE_DRIVER === "redis") {
           return new RedisRoomRepository(environment.REDIS_URL as string);
         }
+
         return new InMemoryRoomRepository();
       },
       inject: [Environment],
@@ -41,6 +42,7 @@ import { RedisVibeRepository } from "./redis/vibe";
         if (environment.STORAGE_DRIVER === "redis") {
           return new RedisVibeRepository(environment.REDIS_URL as string);
         }
+
         return new InMemoryVibeRepository();
       },
       inject: [Environment],
@@ -51,6 +53,7 @@ import { RedisVibeRepository } from "./redis/vibe";
         if (environment.STORAGE_DRIVER === "redis") {
           return new RedisBgmRepository(environment.REDIS_URL as string);
         }
+
         return new InMemoryBgmRepository();
       },
       inject: [Environment],
@@ -61,6 +64,7 @@ import { RedisVibeRepository } from "./redis/vibe";
         if (environment.STORAGE_DRIVER === "redis") {
           return new RedisMurmurRepository(environment.REDIS_URL as string);
         }
+
         return new InMemoryMurmurRepository();
       },
       inject: [Environment],
@@ -71,6 +75,7 @@ import { RedisVibeRepository } from "./redis/vibe";
         if (environment.STORAGE_DRIVER === "redis") {
           return new RedisHallwayRepository(environment.REDIS_URL as string);
         }
+
         return new InMemoryHallwayRepository();
       },
       inject: [Environment],

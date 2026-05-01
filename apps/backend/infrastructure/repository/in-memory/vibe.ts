@@ -40,6 +40,7 @@ export class InMemoryVibeRepository implements VibeRepository {
     if (!connections?.has(connectionId)) {
       return { updated: false, aggregated: null };
     }
+
     connections.set(connectionId, status);
     return { updated: true, aggregated: aggregate([...connections.values()]) };
   }
@@ -58,11 +59,13 @@ export class InMemoryVibeRepository implements VibeRepository {
     if (!room || !connections) {
       return { isLast: true, aggregated: null };
     }
+
     connections.delete(connectionId);
     if (connections.size === 0) {
       room.delete(memberId);
       return { isLast: true, aggregated: null };
     }
+
     return { isLast: false, aggregated: aggregate([...connections.values()]) };
   }
 

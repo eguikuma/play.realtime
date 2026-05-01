@@ -17,7 +17,6 @@ import { aggregate, type VibeRepository } from "../../../domain/vibe";
 @Injectable()
 export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
   private readonly client: Redis;
-
   private readonly logger = new Logger(RedisVibeRepository.name);
 
   constructor(redisUrl: string, options: RedisOptions = {}) {
@@ -56,6 +55,7 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
     if (exists === 0) {
       return { updated: false, aggregated: null };
     }
+
     const results = await this.client
       .multi()
       .hset(memberKey, connectionId, JSON.stringify(status))
@@ -84,6 +84,7 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
       await this.client.multi().srem(membersKey, memberId).del(memberKey).exec();
       return { isLast: true, aggregated: null };
     }
+
     const rawValues = this.coerceArray(results, 2);
     const aggregated = aggregate(rawValues.map((raw) => VibeStatus.parse(JSON.parse(raw))));
     return { isLast: false, aggregated };
@@ -94,6 +95,7 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
     if (memberIds.length === 0) {
       return [];
     }
+
     const pipeline = this.client.pipeline();
     for (const memberId of memberIds) {
       pipeline.hvals(this.memberKey(roomId, memberId as MemberId));
@@ -106,6 +108,7 @@ export class RedisVibeRepository implements VibeRepository, OnModuleDestroy {
       if (rawValues.length === 0) {
         continue;
       }
+
       const status = aggregate(rawValues.map((raw) => VibeStatus.parse(JSON.parse(raw))));
       snapshot.push({ memberId, status });
     }
