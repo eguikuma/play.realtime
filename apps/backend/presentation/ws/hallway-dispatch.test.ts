@@ -2,7 +2,7 @@ import type { MemberId, RoomId } from "@play.realtime/contracts";
 import { describe, expect, it, vi } from "vitest";
 import { InviterBusy } from "../../domain/hallway/errors";
 import type { WsConnection } from "../../infrastructure/transport/ws";
-import { dispatchHallwayCommand, type HallwayCommandHandlers } from "./hallway.gateway";
+import { dispatchHallwayCommand, type HallwayCommandHandlers } from "./hallway-dispatch";
 
 const roomId = "room-abc-1234" as RoomId;
 const memberId = "m-1" as MemberId;
