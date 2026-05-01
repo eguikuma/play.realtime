@@ -4,8 +4,16 @@ import { useEffect, useState } from "react";
 
 import { useConnectionStatus } from "@/libraries/connection-status/store";
 
+/**
+ * 接続異常がこの時間以上継続したときだけバナーを表示する
+ * 瞬間的な reconnect では表示せず、復旧まで時間がかかりそうな状態だけユーザに伝えるための閾値
+ */
 const VISIBLE_MS = 3_000;
 
+/**
+ * 4 経路の接続状態を横断的に監視して、3 秒以上 `error` が続いた場合だけ「再接続中」バナーを出す
+ * 最古の `error.since` から経過時間を測り、閾値未満の場合は `setTimeout` で再判定タイミングを組む
+ */
 export const ConnectionBanner = () => {
   const statuses = useConnectionStatus((store) => store.statuses);
   const [now, setNow] = useState(() => Date.now());
