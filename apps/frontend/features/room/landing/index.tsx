@@ -1,0 +1,26 @@
+"use client";
+
+import { Backdrop, Shell } from "../layout";
+import { Create } from "./create";
+import { Join } from "./join";
+import { Tabs } from "./tabs";
+import { useLanding } from "./use-landing";
+
+/**
+ * ルートのランディングページ
+ * 作成と参加の 2 タブを切り替え どちらか 1 つの入力欄だけを視覚的に目立たせる
+ */
+export const LandingPage = () => {
+  const landing = useLanding();
+
+  return (
+    <Backdrop>
+      <Shell headline="今日も、なんとなく一緒に" lede="リモートだけど、リモートじゃない">
+        <div className="flex flex-col gap-6 rounded-xl border border-rule bg-paper/80 p-7 shadow-[0_1px_0_var(--rule),0_20px_40px_-24px_oklch(from_var(--ink)_l_c_h/0.18)] backdrop-blur-sm md:p-8">
+          <Tabs tab={landing.tab} onTab={landing.onTab} />
+          {landing.tab === "create" ? <Create /> : <Join />}
+        </div>
+      </Shell>
+    </Backdrop>
+  );
+};
