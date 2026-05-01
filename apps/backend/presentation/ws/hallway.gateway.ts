@@ -13,7 +13,7 @@ import { GetHallwaySnapshot } from "../../application/hallway/get-snapshot.useca
 import { InviteHallway } from "../../application/hallway/invite.usecase";
 import { LeaveHallwayCall } from "../../application/hallway/leave-call.usecase";
 import { SendHallwayMessage } from "../../application/hallway/send-message.usecase";
-import { topic } from "../../application/hallway/topic";
+import { Topic } from "../../application/hallway/topic";
 import { GetRoomMembership } from "../../application/room/get-membership.usecase";
 import { RoomPresence } from "../../application/room/presence";
 import { load } from "../../environment";
@@ -164,7 +164,7 @@ export class HallwayGateway implements OnModuleInit {
 
     this.presence.register(roomId);
     this.hub.attach(connection, {
-      topic: topic(roomId, memberId),
+      topics: [Topic.room(roomId), Topic.message(roomId, memberId)],
       onAttach: async (attached) => {
         this.counter.attach(roomId, memberId);
         attached.send("Welcome", { connectionId });
